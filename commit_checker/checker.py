@@ -6,23 +6,36 @@ from datetime import datetime, timezone
 def get_today_date():
     return datetime.now(timezone.utc).date().isoformat()
 
-def check_local_commits(base_path):
+def check_local_commits(paths):
+    """Check local commits in one or more paths"""
     today = get_today_date()
     repos_checked = []
+    
+    # Handle both single path (backward compatibility) and multiple paths
+    if isinstance(paths, str):
+        paths = [paths]
+    elif paths is None:
+        return repos_checked
 
-    for root, dirs, files in os.walk(base_path):
-        if '.git' in dirs:
-            try:
-                log = subprocess.check_output(
-                    ["git", "--git-dir", os.path.join(root, ".git"), "--work-tree", root,
-                     "log", "--since=midnight", "--pretty=format:%h %s"],
-                    stderr=subprocess.DEVNULL
-                ).decode("utf-8").strip()
-                if log:
-                    repos_checked.append((root, log))
-            except Exception:
-                continue
-            dirs.clear()  # don't search nested .git repos
+    for base_path in paths:
+        if not base_path or not os.path.exists(base_path):
+            continue
+            
+        for root, dirs, files in os.walk(base_path):
+            if '.git' in dirs:
+                try:
+                    log = subprocess.check_output(
+                        ["git", "--git-dir", os.path.join(root, ".git"), "--work-tree", root,
+                         "log", "--since=midnight", "--pretty=format:%h %s"],
+                        stderr=subprocess.DEVNULL
+                    ).decode("utf-8").strip()
+                    if log:
+                        # Make path relative to base_path for cleaner display
+                        display_path = os.path.relpath(root, base_path) if root != base_path else os.path.basename(root)
+                        repos_checked.append((display_path, log))
+                except Exception:
+                    continue
+                dirs.clear()  # don't search nested .git repos
 
     return repos_checked
 

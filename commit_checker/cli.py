@@ -2,7 +2,7 @@ import argparse
 import os
 import sys
 from .checker import check_github_commits, check_local_commits
-from .config import config_exists, load_config, prompt_config
+from .config import config_exists, load_config, prompt_config, get_auto_config
 from .uninstaller import full_uninstall
 
 from .bootstrap import bootstrap
@@ -20,7 +20,18 @@ if not early_args.check_only:
 
 def main():
     if not config_exists():
-        config = prompt_config()
+        # Try auto-detection first
+        config = get_auto_config()
+        if config and config.get('local_paths'):
+            print("🔍 Auto-detected your development setup!")
+            # Still ask for GitHub username if not provided
+            if not config.get('github_username'):
+                username = input("👤 GitHub username: ").strip()
+                config['github_username'] = username
+                from .config import save_config
+                save_config(config)
+        else:
+            config = prompt_config()
     else:
         config = load_config()
 
@@ -89,8 +100,16 @@ def main():
             output(f"✅ {repo} — {count} commit(s)")
             silent_output(f"{repo}: {count} commit(s)")
 
-    output(f"\n🗂️  Scanning local path: {config['local_path']}")
-    local = check_local_commits(config["local_path"])
+    # Handle both old and new config formats
+    local_paths = config.get('local_paths', [config.get('local_path', '')]) if config.get('local_path') else config.get('local_paths', [])
+    
+    if local_paths:
+        output(f"\n🗂️  Scanning {len(local_paths)} local path(s):")
+        for path in local_paths:
+            if path:
+                output(f"   📁 {path}")
+    
+    local = check_local_commits(local_paths)
     if not local:
         output("😢 No local commits found today.")
         silent_output("No local commits today")
