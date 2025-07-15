@@ -1,102 +1,81 @@
 # 🟢 commit-checker
 
-Keep your GitHub streak green with a lightweight, cross-platform CLI tool.  
-Automatically checks your daily commits — both **public (GitHub)** and **local (SSH/git)** — and reminds you to stay consistent 🧠⚙️
+Keep your GitHub streak green with a lightweight, cross-platform tool.  
+Automatically checks your daily commits — both **public (GitHub)** and **local (git)** — with smart path detection 🧠⚙️
 
 ---
 
 ## ✨ Features
 
-- ✅ Tracks **GitHub public & private** commits  
-- 🗂️ Checks **local git repos** for daily activity  
-- 💾 One-time setup (GitHub + dev folder)  
-- 🛠️ Auto-installs dependencies  
-- ⚙️ Auto-runs in terminal on startup  
-- 🌍 Cross-platform (macOS, Linux, Windows PowerShell)  
-- 📦 Installable globally with one-liner script  
-- 🔔 **Self-updating** from GitHub  
-- 💖 Built-in `--support` option to tip the creator  
+- ✅ **Smart auto-detection** of git repositories
+- ✅ **Cross-platform** support (macOS, Linux, Windows)
+- ✅ **Multiple development folders** monitoring
+- ✅ **GitHub public & private** commits tracking
+- ✅ **No pip installation issues** - works with any Python setup
+- ✅ **One-line installation** with curl/bash
+- ✅ **Auto-updates** files from GitHub
+- ✅ **Complete uninstall** functionality
 
 ---
 
-## 🧪 Quick Install
+## 🚀 Quick Install (Recommended)
 
-### 🌀 One-liner install:
+### **Standalone Version** (No pip issues!)
+```bash
+curl -s https://raw.githubusercontent.com/AmariahAK/commit-checker/main/scripts/install-standalone.sh | bash
+```
+
+### **Or Run Directly** (No installation)
+```bash
+curl -s https://raw.githubusercontent.com/AmariahAK/commit-checker/main/scripts/commit-checker-standalone.sh | bash
+```
+
+### **Traditional pip Install** (If you prefer)
 ```bash
 curl -s https://raw.githubusercontent.com/AmariahAK/commit-checker/main/install.sh | bash
 ```
-or using wget:
+
+---
+
+## 🔧 Smart Setup Experience
+
+On first run, commit-checker intelligently detects your development setup:
 
 ```bash
-wget -qO- https://raw.githubusercontent.com/AmariahAK/commit-checker/main/install.sh | bash
+🔍 Found these potential development folders:
+   1. Current directory: /Users/you/project (git repo)
+   2. /Users/you/Documents/GitHub (15 git repos found)
+   3. /Users/you/Developer (8 git repos found)
+   Or enter a custom path
+   (Default: /Users/you/Documents/GitHub)
+
+📂 Enter number (1-3), custom path, or press Enter for default:
 ```
 
-> **📦 pip install:** Coming soon! We're working on PyPI package distribution for easier installation.
-
 ---
 
-## 🧠 First-Time Setup
-On your first run, the tool will ask:
+## 🎛️ Usage
 
-👤 GitHub username
-
-🔑 GitHub token (optional – for private repos)
-
-📁 Local dev folder (e.g. ~/Documents/Github)
-
-Then it remembers forever (until you run --setup again).
-And yep — it'll automatically run each time you launch a terminal 💻
-
----
-
-## 🖥️ Usage
-Just type:
-
+**Basic usage:**
 ```bash
 commit-checker
 ```
-You'll get a daily summary:
 
-```bash
-🌐 GitHub: @AmariahAK
-✅ AmariahAK/commit-checker — 2 commit(s)
-
-🗂️ Scanning local path: /Users/amariah/Documents/Github
-📁 project-1/
-✅ 8a3c12 Initial commit
-✅ 9b4e23 Added support flag
-```
+**All available commands:**
+- `commit-checker` - Check today's commits
+- `commit-checker --setup` - Reconfigure settings
+- `commit-checker --uninstall` - Remove completely
+- `commit-checker --support` - Show support info
+- `commit-checker --silent` - Minimal output
+- `commit-checker --nocolor` - Disable emojis/colors
 
 ---
 
-## 🗑️ Uninstalling
+## 🌍 Cross-Platform Path Detection
 
-To completely remove commit-checker from your system:
-
-```bash
-commit-checker --uninstall
-```
-
-This will:
-- ✅ Remove the Python package via pip
-- ✅ Delete all configuration files (`~/.commit-checker/`)
-- ✅ Remove auto-run entries from shell startup files (`.bashrc`, `.zshrc`, etc.)
-- ✅ Clean up all traces of the extension
-
-You'll be prompted to confirm before proceeding. After uninstalling, you may need to restart your terminal or run `source ~/.bashrc` (or `~/.zshrc`) to fully remove the auto-run behavior.
-
----
-
-## 🎛️ CLI Flags
-| Flag | Description |
-|------|-------------|
-| `--setup` | Re-run onboarding config |
-| `--uninstall` | Completely remove commit-checker from your system |
-| `--support` | Show donation link to support dev |
-| `--silent` | Minimal output (clean log mode) |
-| `--nocolor` | Disable emojis and colors in output |
-| `--check-only` | Run check without startup actions |
-| `--update` | Manually check for new GitHub version |
+**macOS**: `~/Documents/GitHub`, `~/Developer`, `~/Desktop/GitHub`  
+**Linux**: `~/workspace`, `~/devel`, `/var/www`  
+**Windows**: `~/source`, `C:\Projects`, `C:\xampp\htdocs`
 
 ---
 
@@ -106,32 +85,33 @@ You'll be prompted to confirm before proceeding. After uninstalling, you may nee
 commit-checker/
 ├── 📄 LICENSE.md                 # MIT License
 ├── 📖 README.md                  # This file
-├── 📦 setup.py                   # Python package setup
+├── 📦 setup.py                   # Python package setup (pip version)
 ├── 📋 requirements.txt           # Python dependencies
-├── 🚀 install.sh                 # One-liner installation script
-└── commit_checker/               # Main package directory
+├── 🚀 install.sh                 # Traditional pip installation
+├── scripts/                      # Standalone versions
+│   ├── 🎯 install-standalone.sh  # Standalone installer
+│   └── 🚀 commit-checker-standalone.sh  # Standalone script
+└── commit_checker/               # Core Python modules
     ├── 🔧 __init__.py            # Package initialization
-    ├── 🎯 cli.py                 # Command-line interface
-    ├── ✅ checker.py             # Core commit checking logic
+    ├── ✅ checker.py             # Commit checking logic
     ├── ⚙️ config.py              # Configuration management
-    ├── 🔄 updater.py             # Auto-update functionality
-    ├── 🗑️ uninstaller.py         # Complete uninstall functionality
-    └── 🚀 bootstrap.py           # Initial setup and bootstrapping
+    ├── 🔍 path_detector.py       # Smart path detection
+    └── 🔄 updater.py             # Auto-update functionality
 ```
 
 ---
 
 ## 💖 Support This Project
+
 If this tool helps you stay on track, show some love 💚
 
 **Donate via PayPal:**  
 📬 amariah.abish@gmail.com
 
-Even small support helps keep the streak alive for devs worldwide 🌍
-
 ---
 
 ## 👨🏽‍💻 Built By
+
 **Amariah Kamau**  
 📂 GitHub: [@AmariahAK](https://github.com/AmariahAK)  
 🌐 Portfolio: https://portfolio-pied-five-61.vercel.app
@@ -139,24 +119,21 @@ Even small support helps keep the streak alive for devs worldwide 🌍
 ---
 
 ## 📄 License
+
 Licensed under the [MIT License](LICENSE.md).
-
-Please give visible credit if you fork or remix:
-> Built by Amariah – https://github.com/AmariahAK
-
-Suggestions and PRs are always welcome 💬
 
 ---
 
-## 📚 Quick Navigation
-- 📖 [README.md](README.md) - You are here
-- 📄 [LICENSE.md](LICENSE.md) - MIT License details
-- 📦 [setup.py](setup.py) - Python package configuration
-- 📋 [requirements.txt](requirements.txt) - Dependencies list
-- 🚀 [install.sh](install.sh) - Installation script
-- 🎯 [commit_checker/cli.py](commit_checker/cli.py) - CLI interface
-- ✅ [commit_checker/checker.py](commit_checker/checker.py) - Core logic
-- ⚙️ [commit_checker/config.py](commit_checker/config.py) - Configuration
-- 🔄 [commit_checker/updater.py](commit_checker/updater.py) - Auto-updater
-- 🗑️ [commit_checker/uninstaller.py](commit_checker/uninstaller.py) - Uninstall functionality
-- 🚀 [commit_checker/bootstrap.py](commit_checker/bootstrap.py) - Setup logic
+## 🎉 Recent Updates
+
+### v0.2.0 - Smart Detection & Standalone Support
+- 🔍 **Smart auto-detection** of git repositories
+- 🌍 **Enhanced cross-platform** support
+- 📁 **Multiple path monitoring**
+- 🚀 **Standalone bash version** (no pip issues!)
+- 🛠️ **Improved setup experience**
+
+### v0.1.0 - Initial Release
+- ✅ Basic GitHub and local commit tracking
+- 🎛️ CLI interface with multiple flags
+- 🔄 Auto-update functionality
