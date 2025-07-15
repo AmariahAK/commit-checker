@@ -3,6 +3,12 @@ import os
 from .checker import check_github_commits, check_local_commits
 from .config import config_exists, load_config, prompt_config
 
+from .bootstrap import bootstrap
+bootstrap()
+
+from .updater import check_for_updates
+check_for_updates()
+
 def main():
     if not config_exists():
         config = prompt_config()
