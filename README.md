@@ -69,10 +69,29 @@ You'll get a daily summary:
 
 ---
 
+## 🗑️ Uninstalling
+
+To completely remove commit-checker from your system:
+
+```bash
+commit-checker --uninstall
+```
+
+This will:
+- ✅ Remove the Python package via pip
+- ✅ Delete all configuration files (`~/.commit-checker/`)
+- ✅ Remove auto-run entries from shell startup files (`.bashrc`, `.zshrc`, etc.)
+- ✅ Clean up all traces of the extension
+
+You'll be prompted to confirm before proceeding. After uninstalling, you may need to restart your terminal or run `source ~/.bashrc` (or `~/.zshrc`) to fully remove the auto-run behavior.
+
+---
+
 ## 🎛️ CLI Flags
 | Flag | Description |
 |------|-------------|
 | `--setup` | Re-run onboarding config |
+| `--uninstall` | Completely remove commit-checker from your system |
 | `--support` | Show donation link to support dev |
 | `--silent` | Minimal output (clean log mode) |
 | `--nocolor` | Disable emojis and colors in output |
@@ -90,12 +109,13 @@ commit-checker/
 ├── 📦 setup.py                   # Python package setup
 ├── 📋 requirements.txt           # Python dependencies
 ├── 🚀 install.sh                 # One-liner installation script
-└── commit-checker/               # Main package directory
+└── commit_checker/               # Main package directory
     ├── 🔧 __init__.py            # Package initialization
     ├── 🎯 cli.py                 # Command-line interface
     ├── ✅ checker.py             # Core commit checking logic
     ├── ⚙️ config.py              # Configuration management
     ├── 🔄 updater.py             # Auto-update functionality
+    ├── 🗑️ uninstaller.py         # Complete uninstall functionality
     └── 🚀 bootstrap.py           # Initial setup and bootstrapping
 ```
 
@@ -134,8 +154,9 @@ Suggestions and PRs are always welcome 💬
 - 📦 [setup.py](setup.py) - Python package configuration
 - 📋 [requirements.txt](requirements.txt) - Dependencies list
 - 🚀 [install.sh](install.sh) - Installation script
-- 🎯 [commit-checker/cli.py](commit-checker/cli.py) - CLI interface
-- ✅ [commit-checker/checker.py](commit-checker/checker.py) - Core logic
-- ⚙️ [commit-checker/config.py](commit-checker/config.py) - Configuration
-- 🔄 [commit-checker/updater.py](commit-checker/updater.py) - Auto-updater
-- 🚀 [commit-checker/bootstrap.py](commit-checker/bootstrap.py) - Setup logic
+- 🎯 [commit_checker/cli.py](commit_checker/cli.py) - CLI interface
+- ✅ [commit_checker/checker.py](commit_checker/checker.py) - Core logic
+- ⚙️ [commit_checker/config.py](commit_checker/config.py) - Configuration
+- 🔄 [commit_checker/updater.py](commit_checker/updater.py) - Auto-updater
+- 🗑️ [commit_checker/uninstaller.py](commit_checker/uninstaller.py) - Uninstall functionality
+- 🚀 [commit_checker/bootstrap.py](commit_checker/bootstrap.py) - Setup logic

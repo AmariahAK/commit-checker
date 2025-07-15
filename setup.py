@@ -6,7 +6,7 @@ setup(
     description="CLI tool to check your daily GitHub and local commits",
     author="Amariah Kamau",
     packages=find_packages(),
-    install_requires=["requests"],
+    install_requires=["requests", "colorama", "packaging"],
     entry_points={
         "console_scripts": [
             "commit-checker = commit_checker.cli:main"

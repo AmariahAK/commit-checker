@@ -8,6 +8,9 @@ REPO = "AmariahAK/commit-checker"
 def check_for_updates():
     try:
         response = requests.get(f"https://api.github.com/repos/{REPO}/releases/latest")
+        if response.status_code == 404:
+            # No releases found, skip update check silently
+            return False
         response.raise_for_status()
         latest = response.json()["tag_name"].lstrip("v")
         
@@ -20,5 +23,7 @@ def check_for_updates():
                 subprocess.run(update_command, shell=True)
                 return True
     except Exception as e:
-        print(f"⚠️  Update check failed: {e}")
+        # Only show error if it's not a 404 (no releases)
+        if "404" not in str(e):
+            print(f"⚠️  Update check failed: {e}")
     return False
