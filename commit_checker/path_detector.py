@@ -45,8 +45,8 @@ def get_common_dev_paths():
             home / 'Developer',
             home / 'Desktop/GitHub',
             home / 'Desktop/Projects',
-            '/Applications/XAMPP/htdocs',
-            '/usr/local/var/www'
+            Path('/Applications/XAMPP/htdocs'),
+            Path('/usr/local/var/www')
         ]
         for path in mac_paths:
             if path.exists() and path.is_dir():
@@ -56,9 +56,9 @@ def get_common_dev_paths():
         linux_paths = [
             home / 'workspace',
             home / 'devel',
-            '/var/www',
-            '/opt/lampp/htdocs',
-            '/home/git'
+            Path('/var/www'),
+            Path('/opt/lampp/htdocs'),
+            Path('/home/git')
         ]
         for path in linux_paths:
             if path.exists() and path.is_dir():
@@ -68,16 +68,15 @@ def get_common_dev_paths():
         windows_paths = [
             home / 'source',
             home / 'Source',
-            'C:\\inetpub\\wwwroot',
-            'C:\\xampp\\htdocs',
-            'C:\\wamp\\www',
-            'D:\\Projects',
-            'C:\\Projects'
+            Path('C:\\inetpub\\wwwroot'),
+            Path('C:\\xampp\\htdocs'),
+            Path('C:\\wamp\\www'),
+            Path('D:\\Projects'),
+            Path('C:\\Projects')
         ]
         for path in windows_paths:
-            path_obj = Path(path)
-            if path_obj.exists() and path_obj.is_dir():
-                common_paths.append(str(path_obj))
+            if path.exists() and path.is_dir():
+                common_paths.append(str(path))
     
     return common_paths
 

@@ -20,17 +20,31 @@ Automatically checks your daily commits — both **public (GitHub)** and **local
 
 ## 🚀 Quick Install (Recommended)
 
-### **Standalone Version** (No pip issues!)
+### **Method 1: Safe Installation** (Recommended - avoids encoding issues)
+```bash
+curl -s https://raw.githubusercontent.com/AmariahAK/commit-checker/main/scripts/install-safe.sh | bash
+```
+
+### **Method 2: Manual Download** (Most reliable)
+```bash
+curl -s https://raw.githubusercontent.com/AmariahAK/commit-checker/main/scripts/install-standalone.sh -o /tmp/install.sh
+chmod +x /tmp/install.sh
+/tmp/install.sh
+```
+
+### **Method 3: Direct Pipe** (May have encoding issues on some systems)
 ```bash
 curl -s https://raw.githubusercontent.com/AmariahAK/commit-checker/main/scripts/install-standalone.sh | bash
 ```
 
-### **Or Run Directly** (No installation)
+### **Method 4: Run Without Installation**
 ```bash
-curl -s https://raw.githubusercontent.com/AmariahAK/commit-checker/main/scripts/commit-checker-standalone.sh | bash
+curl -s https://raw.githubusercontent.com/AmariahAK/commit-checker/main/scripts/commit-checker-standalone.sh -o /tmp/commit-checker.sh
+chmod +x /tmp/commit-checker.sh
+/tmp/commit-checker.sh
 ```
 
-### **Traditional pip Install** (If you prefer)
+### **Method 5: Traditional pip Install**
 ```bash
 curl -s https://raw.githubusercontent.com/AmariahAK/commit-checker/main/install.sh | bash
 ```
