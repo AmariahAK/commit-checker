@@ -1,6 +1,20 @@
 import os
 import json
-from .path_detector import get_suggested_paths, get_best_default_path, auto_detect_dev_paths
+import sys
+import importlib.util
+
+# Handle imports for both standalone and package modes
+try:
+    from .path_detector import get_suggested_paths, get_best_default_path, auto_detect_dev_paths
+except ImportError:
+    # Standalone mode - load path_detector directly
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    spec = importlib.util.spec_from_file_location("path_detector", os.path.join(current_dir, "path_detector.py"))
+    path_detector = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(path_detector)
+    get_suggested_paths = path_detector.get_suggested_paths
+    get_best_default_path = path_detector.get_best_default_path
+    auto_detect_dev_paths = path_detector.auto_detect_dev_paths
 
 CONFIG_PATH = os.path.expanduser("~/.commit-checker/config.json")
 

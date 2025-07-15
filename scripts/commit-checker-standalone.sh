@@ -66,12 +66,35 @@ def ensure_dependency(package):
 # Ensure required packages
 ensure_dependency("requests")
 
-# Import our modules
+# Import our modules with absolute imports
+import importlib.util
+import importlib
+
+def load_module(name, path):
+    spec = importlib.util.spec_from_file_location(name, path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
 try:
-    from checker import check_github_commits, check_local_commits
-    from config import config_exists, load_config, prompt_config, get_auto_config, save_config
-    from path_detector import get_current_git_repo
-except ImportError as e:
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    # Load modules
+    checker = load_module("checker", os.path.join(script_dir, "checker.py"))
+    config = load_module("config", os.path.join(script_dir, "config.py"))
+    path_detector = load_module("path_detector", os.path.join(script_dir, "path_detector.py"))
+    
+    # Get functions from modules
+    check_github_commits = checker.check_github_commits
+    check_local_commits = checker.check_local_commits
+    config_exists = config.config_exists
+    load_config = config.load_config
+    prompt_config = config.prompt_config
+    get_auto_config = config.get_auto_config
+    save_config = config.save_config
+    get_current_git_repo = path_detector.get_current_git_repo
+    
+except Exception as e:
     print(f"❌ Error importing modules: {e}")
     sys.exit(1)
 
