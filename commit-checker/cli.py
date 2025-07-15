@@ -1,33 +1,37 @@
 import argparse
-from .checker import check_local_commits, check_github_commits
+import os
+from .checker import check_github_commits, check_local_commits
+from .config import config_exists, load_config, prompt_config
 
 def main():
-    parser = argparse.ArgumentParser(description="Check GitHub + local commits for today.")
-    parser.add_argument("--github", help="GitHub username")
-    parser.add_argument("--token", help="GitHub token (optional)")
-    parser.add_argument("--local", help="Local repo base path (e.g. ~/Projects)", default=None)
+    if not config_exists():
+        config = prompt_config()
+    else:
+        config = load_config()
 
+    parser = argparse.ArgumentParser(description="Check today's GitHub + local commits.")
+    parser.add_argument("--setup", action="store_true", help="Reset your config")
     args = parser.parse_args()
 
-    if args.github:
-        print(f"🌍 Checking GitHub commits for @{args.github}...")
-        error, commits = check_github_commits(args.github, args.token)
-        if error:
-            print(error)
-        elif not commits:
-            print("😢 No public commits found today.")
-        else:
-            for repo, count in commits:
-                print(f"✅ {repo} — {count} commit(s)")
+    if args.setup:
+        config = prompt_config()
 
-    if args.local:
-        print(f"\n📁 Scanning local repos in: {args.local}")
-        results = check_local_commits(os.path.expanduser(args.local))
-        if not results:
-            print("😢 No local commits found today.")
-        else:
-            for path, log in results:
-                print(f"✅ {path}:\n{log}\n")
+    print(f"🌐 GitHub: @{config['github_username']}")
+    error, commits = check_github_commits(config["github_username"], config["github_token"])
+    if error:
+        print(error)
+    elif not commits:
+        print("😢 No public commits found today.")
+    else:
+        print("\n🟢 GitHub Commits:")
+        for repo, count in commits:
+            print(f"✅ {repo} — {count} commit(s)")
 
-if __name__ == "__main__":
-    main()
+    print(f"\n🗂️  Scanning local path: {config['local_path']}")
+    local = check_local_commits(config["local_path"])
+    if not local:
+        print("😢 No local commits found today.")
+    else:
+        print("\n🟩 Local Commits:")
+        for path, log in local:
+            print(f"📁 {path}:\n{log}\n")
