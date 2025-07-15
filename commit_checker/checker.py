@@ -9,13 +9,13 @@ def get_today_date():
 def check_local_commits(paths):
     """Check local commits in one or more paths"""
     today = get_today_date()
-    repos_checked = []
+    repos_found = {}  # Use dict to avoid duplicates and group by repo
     
     # Handle both single path (backward compatibility) and multiple paths
     if isinstance(paths, str):
         paths = [paths]
     elif paths is None:
-        return repos_checked
+        return []
 
     for base_path in paths:
         if not base_path or not os.path.exists(base_path):
@@ -24,20 +24,54 @@ def check_local_commits(paths):
         for root, dirs, files in os.walk(base_path):
             if '.git' in dirs:
                 try:
+                    # Get today's commits
                     log = subprocess.check_output(
                         ["git", "--git-dir", os.path.join(root, ".git"), "--work-tree", root,
                          "log", "--since=midnight", "--pretty=format:%h %s"],
                         stderr=subprocess.DEVNULL
                     ).decode("utf-8").strip()
+                    
                     if log:
-                        # Make path relative to base_path for cleaner display
-                        display_path = os.path.relpath(root, base_path) if root != base_path else os.path.basename(root)
-                        repos_checked.append((display_path, log))
+                        # Get repository name
+                        repo_name = os.path.basename(root)
+                        
+                        # Get remote URL to better identify the repo
+                        try:
+                            remote_url = subprocess.check_output(
+                                ["git", "--git-dir", os.path.join(root, ".git"), "--work-tree", root,
+                                 "config", "--get", "remote.origin.url"],
+                                stderr=subprocess.DEVNULL
+                            ).decode("utf-8").strip()
+                            
+                            # Extract repo name from URL if possible
+                            if remote_url:
+                                if remote_url.endswith('.git'):
+                                    remote_url = remote_url[:-4]
+                                repo_name = remote_url.split('/')[-1]
+                                
+                        except Exception:
+                            pass  # Use directory name if can't get remote
+                        
+                        # Count commits
+                        commit_count = len(log.split('\n')) if log else 0
+                        
+                        # Store unique repos with their info
+                        repo_key = f"{repo_name}:{root}"  # Use path to ensure uniqueness
+                        if repo_key not in repos_found:
+                            repos_found[repo_key] = {
+                                'name': repo_name,
+                                'path': root,
+                                'commits': log,
+                                'count': commit_count
+                            }
+                        
                 except Exception:
                     continue
                 dirs.clear()  # don't search nested .git repos
 
-    return repos_checked
+    # Convert to list format for compatibility
+    return [(repo_info['name'], repo_info['path'], repo_info['commits'], repo_info['count']) 
+            for repo_info in repos_found.values()]
 
 def check_github_commits(username, token=None):
     url = f"https://api.github.com/users/{username}/events"

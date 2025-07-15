@@ -190,9 +190,12 @@ def main():
             silent_output("No local commits today")
         else:
             output("\n🟩 Local Commits:")
-            for path, log in local:
-                output(f"📁 {path}:\n{log}\n")
-                silent_output(f"{path}: {log.count(chr(10))} commit(s)")
+            for repo_name, repo_path, commits, count in local:
+                output(f"📁 Repository: {repo_name}")
+                output(f"   📍 Path: {repo_path}")
+                output(f"   📊 {count} commit(s) today:")
+                output(f"   {commits}\n")
+                silent_output(f"{repo_name}: {count} commit(s)")
     except Exception as e:
         output(f"⚠️  Local check failed: {e}")
 
