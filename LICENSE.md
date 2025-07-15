@@ -1,4 +1,4 @@
-MIT License
+# MIT License
 
 Copyright (c) 2025 Amariah
 
@@ -12,14 +12,17 @@ subject to the following conditions:
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
 
---- 💬 Personal Note ---
+---
+
+## 💬 Personal Note
 If you remix or fork this project, kindly include visible credit to:
 > Built by Amariah – https://github.com/AmariahAK
 
 Suggestions, improvements, or custom versions are welcome — just give credit where it's due 💚
 
-For more information about this project, see: README.md
---- End note ---
+For more information about this project, see: [README.md](README.md)
+
+---
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -29,22 +32,25 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-📚 Project Navigation:
-- 📖 README.md - Main documentation and usage guide
-- 📄 LICENSE - You are here
-- 📦 setup.py - Python package configuration
-- 🚀 install.sh - One-liner installation script
-- 📋 requirements.txt - Python dependencies
+---
 
-🔧 Source Code Files:
-- 🎯 commit-checker/cli.py - Command-line interface
-- ✅ commit-checker/checker.py - Core commit checking logic
-- ⚙️ commit-checker/config.py - Configuration management
-- 🔄 commit-checker/updater.py - Auto-update functionality
-- 🚀 commit-checker/bootstrap.py - Initial setup and bootstrapping
-- 🔧 commit-checker/__init__.py - Package initialization
+## 📚 Project Navigation
+- 📖 [README.md](README.md) - Main documentation and usage guide
+- 📄 [LICENSE.md](LICENSE.md) - You are here
+- 📦 [setup.py](setup.py) - Python package configuration
+- 🚀 [install.sh](install.sh) - One-liner installation script
+- 📋 [requirements.txt](requirements.txt) - Python dependencies
 
-💡 Quick Links:
-- 🌐 GitHub Repository: https://github.com/AmariahAK/commit-checker
-- 👨🏽‍💻 Author Profile: https://github.com/AmariahAK
-- 🌍 Portfolio: https://portfolio-pied-five-61.vercel.app
+## 🔧 Source Code Files
+- 🎯 [commit-checker/cli.py](commit-checker/cli.py) - Command-line interface
+- ✅ [commit-checker/checker.py](commit-checker/checker.py) - Core commit checking logic
+- ⚙️ [commit-checker/config.py](commit-checker/config.py) - Configuration management
+- 🔄 [commit-checker/updater.py](commit-checker/updater.py) - Auto-update functionality
+- 🚀 [commit-checker/bootstrap.py](commit-checker/bootstrap.py) - Initial setup and bootstrapping
+- 🔧 [commit-checker/__init__.py](commit-checker/__init__.py) - Package initialization
+
+## 💡 Quick Links
+- 🌐 [GitHub Repository](https://github.com/AmariahAK/commit-checker)
+- 👨🏽‍💻 [Author Profile](https://github.com/AmariahAK)
+- 🌍 [Portfolio](https://portfolio-pied-five-61.vercel.app)
+```

@@ -85,7 +85,7 @@ You'll get a daily summary:
 
 ```
 commit-checker/
-├── 📄 LICENSE                    # MIT License
+├── 📄 LICENSE.md                 # MIT License
 ├── 📖 README.md                  # This file
 ├── 📦 setup.py                   # Python package setup
 ├── 📋 requirements.txt           # Python dependencies
@@ -119,7 +119,7 @@ Even small support helps keep the streak alive for devs worldwide 🌍
 ---
 
 ## 📄 License
-Licensed under the [MIT License](LICENSE).
+Licensed under the [MIT License](LICENSE.md).
 
 Please give visible credit if you fork or remix:
 > Built by Amariah – https://github.com/AmariahAK
@@ -130,7 +130,7 @@ Suggestions and PRs are always welcome 💬
 
 ## 📚 Quick Navigation
 - 📖 [README.md](README.md) - You are here
-- 📄 [LICENSE](LICENSE) - MIT License details
+- 📄 [LICENSE.md](LICENSE.md) - MIT License details
 - 📦 [setup.py](setup.py) - Python package configuration
 - 📋 [requirements.txt](requirements.txt) - Dependencies list
 - 🚀 [install.sh](install.sh) - Installation script
@@ -139,4 +139,3 @@ Suggestions and PRs are always welcome 💬
 - ⚙️ [commit-checker/config.py](commit-checker/config.py) - Configuration
 - 🔄 [commit-checker/updater.py](commit-checker/updater.py) - Auto-updater
 - 🚀 [commit-checker/bootstrap.py](commit-checker/bootstrap.py) - Setup logic
-```
