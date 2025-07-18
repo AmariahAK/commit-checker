@@ -5,8 +5,8 @@ import importlib.util
 
 # Handle imports for both standalone and package modes
 try:
-    from .checker import check_github_commits, check_local_commits
-    from .config import config_exists, load_config, prompt_config, get_auto_config, save_config
+    from .checker import check_github_commits, check_local_commits, scan_repos, get_most_active_repo
+    from .config import config_exists, load_config, prompt_config, get_auto_config, save_config, delete_config
     from .updater import check_for_updates
     from .bootstrap import bootstrap
 except ImportError:
@@ -26,11 +26,14 @@ except ImportError:
         
         check_github_commits = checker.check_github_commits
         check_local_commits = checker.check_local_commits
+        scan_repos = checker.scan_repos
+        get_most_active_repo = checker.get_most_active_repo
         config_exists = config.config_exists
         load_config = config.load_config
         prompt_config = config.prompt_config
         get_auto_config = config.get_auto_config
         save_config = config.save_config
+        delete_config = config.delete_config
         check_for_updates = updater.check_for_updates
         
         # Simple bootstrap function
@@ -61,12 +64,33 @@ except ImportError:
         sys.exit(1)
 
 def uninstall_package():
-    """Remove the commit-checker package via pip"""
+    """Remove the commit-checker package via pip and clean up config"""
     import subprocess
+    import shutil
     try:
         print("🗑️  Uninstalling commit-checker package...")
         subprocess.check_call([sys.executable, "-m", "pip", "uninstall", "commit-checker", "-y"])
         print("✅ Package uninstalled successfully")
+        
+        # Remove config directory
+        print("🗑️  Removing configuration files...")
+        delete_config()
+        
+        # Try to remove binary from common locations
+        binary_paths = [
+            "/usr/local/bin/commit-checker",
+            os.path.expanduser("~/.local/bin/commit-checker")
+        ]
+        
+        for binary_path in binary_paths:
+            if os.path.exists(binary_path):
+                try:
+                    os.remove(binary_path)
+                    print(f"🗑️  Removed {binary_path}")
+                except Exception:
+                    pass
+        
+        print("✅ Commit Checker has been fully removed.")
         return True
     except subprocess.CalledProcessError as e:
         print(f"⚠️  Could not uninstall package: {e}")
@@ -110,14 +134,26 @@ def main():
     parser.add_argument("--nocolor", action="store_true", help="Disable emojis and colors in output")
     parser.add_argument("--check-only", action="store_true", help="Run check without startup actions")
     parser.add_argument("--update", action="store_true", help="Manually check for new GitHub version")
+    
+    # New feature flags
+    parser.add_argument("--scan", action="store_true", help="Scan repo folder for all git repositories")
+    parser.add_argument("--repos-summary", action="store_true", help="Show full summary of all local repos")
+    parser.add_argument("--most-active", action="store_true", help="Show most active repository")
+    parser.add_argument("--day", action="store_true", help="Use with --most-active for daily timeframe")
+    parser.add_argument("--week", action="store_true", help="Use with --most-active for weekly timeframe")  
+    parser.add_argument("--month", action="store_true", help="Use with --most-active for monthly timeframe")
+    parser.add_argument("--force", action="store_true", help="Use with --uninstall to bypass confirmation")
     args = parser.parse_args()
 
     if args.uninstall:
-        confirm = input("⚠️  This will completely remove commit-checker from your system. Continue? [y/N]: ").lower()
-        if confirm in ["y", "yes"]:
+        if args.force:
             uninstall_package()
         else:
-            print("❌ Uninstall cancelled.")
+            confirm = input("⚠️  This will completely remove commit-checker from your system. Continue? [y/N]: ").lower()
+            if confirm in ["y", "yes"]:
+                uninstall_package()
+            else:
+                print("❌ Uninstall cancelled.")
         sys.exit(0)
 
     if args.support:
@@ -138,13 +174,16 @@ def main():
     if args.setup:
         config = prompt_config()
 
-    # Handle output formatting based on flags
+    # Handle output formatting based on flags and config
     def format_output(text, emoji="", color=True):
-        if args.nocolor:
+        # Check if user wants plain output or emoji output is disabled
+        if args.nocolor or config.get('output') == 'plain':
             # Strip emojis and simplify output
             text = text.replace("🌐", "").replace("🟢", "").replace("🟩", "")
             text = text.replace("✅", "").replace("😢", "").replace("📁", "")
-            text = text.replace("🗂️", "").replace(" — ", " - ")
+            text = text.replace("🗂️", "").replace(" — ", " - ").replace("→", "->")
+            text = text.replace("🧮", "").replace("🕒", "").replace("🔥", "")
+            text = text.replace("📅", "").replace("❌", "").replace("🔍", "")
             return text.strip()
         return text
 
@@ -155,6 +194,77 @@ def main():
     def silent_output(text):
         if args.silent:
             print(format_output(text))
+
+    # Handle new feature flags first
+    if args.scan:
+        repo_folder = config.get('repo_folder')
+        if not repo_folder:
+            print("❌ No repo folder configured. Run --setup first.")
+            sys.exit(1)
+        
+        output(f"🔍 Scanning {repo_folder} for git repositories...")
+        repos = scan_repos(repo_folder)
+        
+        if repos:
+            output(f"\n📁 Scanned {len(repos)} repos:\n")
+            for repo in repos:
+                status_emoji = "✅" if repo['today_commits'] > 0 else "❌"
+                if config.get('output') == 'emoji':
+                    output(f"{repo['name']} → {status_emoji} {repo['today_commits']} today | 🧮 {repo['total_commits']} total | 🕒 {repo['last_commit_date']}")
+                else:
+                    output(f"{repo['name']} -> {repo['today_commits']} today | {repo['total_commits']} total | {repo['last_commit_date']}")
+        else:
+            output("❌ No git repositories found.")
+        sys.exit(0)
+    
+    if args.repos_summary:
+        repo_folder = config.get('repo_folder')
+        if not repo_folder:
+            print("❌ No repo folder configured. Run --setup first.")
+            sys.exit(1)
+            
+        repos = scan_repos(repo_folder)
+        if repos:
+            if config.get('output') == 'emoji':
+                output("🧾 Repo Summary:")
+            else:
+                output("Repo Summary:")
+            for repo in repos:
+                status_emoji = "✅" if repo['today_commits'] > 0 else "❌"
+                if config.get('output') == 'emoji':
+                    output(f"📁 {repo['name']} → {status_emoji} {repo['today_commits']} today | 🧮 {repo['total_commits']} total | 🕒 {repo['last_commit_date']}")
+                else:
+                    output(f"{repo['name']} -> {repo['today_commits']} today | {repo['total_commits']} total | {repo['last_commit_date']}")
+        else:
+            output("❌ No git repositories found.")
+        sys.exit(0)
+    
+    if args.most_active:
+        repo_folder = config.get('repo_folder')
+        if not repo_folder:
+            print("❌ No repo folder configured. Run --setup first.")
+            sys.exit(1)
+            
+        # Determine timeframe
+        timeframe = "day"  # default
+        if args.week:
+            timeframe = "week"
+        elif args.month:
+            timeframe = "month"
+        
+        most_active = get_most_active_repo(repo_folder, timeframe)
+        if most_active and most_active['commits'] > 0:
+            if config.get('output') == 'emoji':
+                output(f"🔥 Most active repo this {timeframe}:")
+                output(f"📁 {most_active['name']} → {most_active['commits']} commits")
+                output(f"📅 Last activity: {most_active['last_activity']}")
+            else:
+                output(f"Most active repo this {timeframe}:")
+                output(f"{most_active['name']} -> {most_active['commits']} commits")
+                output(f"Last activity: {most_active['last_activity']}")
+        else:
+            output(f"❌ No active repositories found this {timeframe}.")
+        sys.exit(0)
 
     # Check GitHub commits
     if config.get('github_username'):

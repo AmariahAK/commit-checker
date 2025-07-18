@@ -28,7 +28,16 @@ def load_config():
     # Handle backward compatibility
     if "local_path" in config and "local_paths" not in config:
         config["local_paths"] = [config["local_path"]]
-        save_config(config)
+    
+    # Add missing new config fields with defaults
+    if "repo_folder" not in config:
+        config["repo_folder"] = config.get("local_paths", [None])[0]
+    
+    if "output" not in config:
+        config["output"] = "emoji"
+    
+    # Save updated config if any changes were made
+    save_config(config)
     
     return config
 
@@ -75,10 +84,27 @@ def prompt_config():
     else:
         paths = [os.path.expanduser(local_path)]
 
+    # Ask about output mode
+    print("\n🎨 Choose output style:")
+    print("   1. Emoji mode (default - colorful with emojis)")
+    print("   2. Plain mode (simple text only)")
+    output_choice = input("📝 Enter 1 or 2 (default: 1): ").strip()
+    output_mode = "plain" if output_choice == "2" else "emoji"
+    
+    # Ask about repo folder for scanning
+    print(f"\n🔍 Set repo scanning folder (where to look for git repos):")
+    print(f"   Default: {paths[0] if paths else default_path}")
+    repo_folder = input("📁 Repo folder (or press Enter for default): ").strip()
+    if not repo_folder:
+        repo_folder = paths[0] if paths else default_path
+    repo_folder = os.path.expanduser(repo_folder)
+
     config = {
         "github_username": username,
         "github_token": token if token else None,
-        "local_paths": paths  # Changed from local_path to local_paths for multiple paths
+        "local_paths": paths,
+        "repo_folder": repo_folder,
+        "output": output_mode
     }
 
     save_config(config)
@@ -114,7 +140,9 @@ def get_auto_config():
         config = {
             "github_username": None,
             "github_token": None,
-            "local_paths": detected_paths
+            "local_paths": detected_paths,
+            "repo_folder": detected_paths[0] if detected_paths else None,
+            "output": "emoji"
         }
         
         return config

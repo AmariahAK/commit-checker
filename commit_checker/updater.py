@@ -2,7 +2,7 @@ import requests
 from packaging import version
 import subprocess
 
-LOCAL_VERSION = "0.1.0"
+LOCAL_VERSION = "0.4.1"
 REPO = "AmariahAK/commit-checker"
 
 def check_for_updates():

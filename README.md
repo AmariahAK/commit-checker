@@ -11,6 +11,10 @@ Automatically checks your daily commits — both **public (GitHub)** and **local
 - ✅ **Cross-platform** support (macOS, Linux, Windows)
 - ✅ **Multiple development folders** monitoring
 - ✅ **GitHub public & private** commits tracking
+- ✅ **Repository scanning** and commit analysis
+- ✅ **Most active repo detection** (daily, weekly, monthly)
+- ✅ **Configurable output modes** (emoji or plain text)
+- ✅ **Complete repo summaries** with commit stats
 - ✅ **No pip installation issues** - works with any Python setup
 - ✅ **One-line installation** with curl/bash
 - ✅ **Auto-updates** files from GitHub
@@ -78,7 +82,13 @@ commit-checker
 **All available commands:**
 - `commit-checker` - Check today's commits
 - `commit-checker --setup` - Reconfigure settings
+- `commit-checker --scan` - Scan repo folder for all git repositories  
+- `commit-checker --repos-summary` - Show full summary of all repos
+- `commit-checker --most-active` - Show most active repository today
+- `commit-checker --most-active --week` - Show most active repo this week
+- `commit-checker --most-active --month` - Show most active repo this month
 - `commit-checker --uninstall` - Remove completely
+- `commit-checker --uninstall --force` - Remove without confirmation
 - `commit-checker --support` - Show support info
 - `commit-checker --silent` - Minimal output
 - `commit-checker --nocolor` - Disable emojis/colors
@@ -138,7 +148,48 @@ Licensed under the [MIT License](LICENSE.md).
 
 ---
 
+## 🔥 New Features in Action
+
+### Repository Scanning
+```bash
+$ commit-checker --scan
+🔍 Scanning /Users/you/Documents/GitHub for git repositories...
+
+📁 Scanned 6 repos:
+
+commit-checker → ✅ 2 today | 🧮 41 total | 🕒 Today
+blog-api → ❌ 0 today | 🧮 89 total | 🕒 Jul 17
+my-website → ✅ 1 today | 🧮 156 total | 🕒 Today
+```
+
+### Most Active Repository
+```bash
+$ commit-checker --most-active --week
+🔥 Most active repo this week:
+📁 my-website → 12 commits
+📅 Last activity: Today
+```
+
+### Repository Summary
+```bash
+$ commit-checker --repos-summary
+🧾 Repo Summary:
+📁 commit-checker → ✅ 2 today | 🧮 41 total | 🕒 Today
+📁 my-website → ✅ 4 today | 🧮 163 total | 🕒 Today
+📁 old-project → ❌ 0 today | 🧮 12 total | 🕒 Jul 10
+```
+
+---
+
 ## 🎉 Recent Updates
+
+### v0.4.1 - Advanced Repository Analytics
+- 🔍 **Repository scanning** with `--scan` flag
+- 📊 **Complete repo summaries** with commit statistics  
+- 🔥 **Most active repo detection** (daily, weekly, monthly)
+- 🎨 **Configurable output modes** (emoji or plain text)
+- 🗑️ **Enhanced uninstall** with `--force` option
+- ⚙️ **Persistent configuration** with repo folder settings
 
 ### v0.2.0 - Smart Detection & Standalone Support
 - 🔍 **Smart auto-detection** of git repositories
