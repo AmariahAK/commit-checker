@@ -7,7 +7,7 @@ import importlib.util
 try:
     from .checker import check_github_commits, check_local_commits, scan_repos, get_most_active_repo
     from .config import config_exists, load_config, prompt_config, get_auto_config, save_config, delete_config
-    from .updater import check_for_updates
+    from .updater import check_for_updates, check_pending_update_on_startup, manual_update_check
     from .bootstrap import bootstrap
 except ImportError:
     # Standalone mode - load modules directly
@@ -35,6 +35,8 @@ except ImportError:
         save_config = config.save_config
         delete_config = config.delete_config
         check_for_updates = updater.check_for_updates
+        check_pending_update_on_startup = updater.check_pending_update_on_startup
+        manual_update_check = updater.manual_update_check
         
         # Simple bootstrap function
         def bootstrap():
@@ -105,6 +107,7 @@ def main():
     if not early_args.check_only:
         try:
             bootstrap()
+            check_pending_update_on_startup()  # Check for pending updates first
             check_for_updates()
         except:
             pass  # Continue even if bootstrap/update fails
@@ -166,7 +169,7 @@ def main():
 
     if args.update:
         try:
-            check_for_updates()
+            manual_update_check()
         except:
             print("⚠️  Update check failed")
         sys.exit(0)

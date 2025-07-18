@@ -183,6 +183,12 @@ $ commit-checker --repos-summary
 
 ## 🎉 Recent Updates
 
+### v0.4.2 - Enhanced Update System
+- 🔄 **Intelligent Update Scheduling** - Install updates now or on next terminal restart
+- 📋 **Release Notes Preview** - See what's new before updating
+- 🔧 **Robust Update Methods** - Multiple fallback installation approaches
+- 📅 **Pending Update Management** - Automatic installation of scheduled updates
+
 ### v0.4.1 - Advanced Repository Analytics
 - 🔍 **Repository scanning** with `--scan` flag
 - 📊 **Complete repo summaries** with commit statistics  

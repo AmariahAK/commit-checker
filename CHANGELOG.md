@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.2] - 2025-07-18
+
+### 🔄 Enhanced Update System
+- **Intelligent Update Scheduling**: Added option to install updates on next terminal restart
+- **Enhanced Update Flow**: Three-option update system (now, later, skip)
+- **Automatic Pending Updates**: System automatically installs scheduled updates on startup
+- **Better Update Feedback**: Shows release notes preview during update check
+- **Robust Update Methods**: Multiple fallback installation methods for better compatibility
+- **Improved --update Flag**: Enhanced manual update checking with detailed feedback
+
+### 🛠️ Technical Improvements
+- Enhanced update marker system with persistent storage
+- Better error handling during update processes
+- Improved cross-platform update compatibility
+- Cleaner startup flow with pending update detection
+
+### 🔧 User Experience
+- More informative update prompts with changelog snippets
+- Non-intrusive update scheduling for busy workflows
+- Better feedback during update installation process
+- Simplified update decision making
+
 ## [0.4.1] - 2025-07-18
 
 ### 🔥 New Features
