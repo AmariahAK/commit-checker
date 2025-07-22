@@ -9,6 +9,7 @@ try:
     from .config import config_exists, load_config, prompt_config, get_auto_config, save_config, delete_config
     from .updater import check_for_updates, check_pending_update_on_startup, manual_update_check
     from .bootstrap import bootstrap
+    from .til import add_til_entry, view_til, edit_til, reset_til, delete_til, get_til_stats
 except ImportError:
     # Standalone mode - load modules directly
     current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -23,6 +24,7 @@ except ImportError:
         checker = load_module("checker", os.path.join(current_dir, "checker.py"))
         config = load_module("config", os.path.join(current_dir, "config.py"))
         updater = load_module("updater", os.path.join(current_dir, "updater.py"))
+        til = load_module("til", os.path.join(current_dir, "til.py"))
         
         check_github_commits = checker.check_github_commits
         check_local_commits = checker.check_local_commits
@@ -37,6 +39,12 @@ except ImportError:
         check_for_updates = updater.check_for_updates
         check_pending_update_on_startup = updater.check_pending_update_on_startup
         manual_update_check = updater.manual_update_check
+        add_til_entry = til.add_til_entry
+        view_til = til.view_til
+        edit_til = til.edit_til
+        reset_til = til.reset_til
+        delete_til = til.delete_til
+        get_til_stats = til.get_til_stats
         
         # Simple bootstrap function
         def bootstrap():
@@ -76,6 +84,19 @@ def uninstall_package():
         
         # Remove config directory
         print("🗑️  Removing configuration files...")
+        
+        # Ask about TIL log deletion
+        try:
+            til_stats = get_til_stats()
+            if til_stats and til_stats['entries'] > 0:
+                til_confirm = input(f"📝 You have {til_stats['entries']} TIL entries. Delete your TIL log as well? [y/N]: ").lower()
+                if til_confirm in ["y", "yes"]:
+                    delete_til()
+                else:
+                    print(f"📝 TIL log preserved at: {til_stats['path']}")
+        except:
+            pass  # Continue if TIL check fails
+        
         delete_config()
         
         # Try to remove binary from common locations
@@ -138,6 +159,13 @@ def main():
     parser.add_argument("--check-only", action="store_true", help="Run check without startup actions")
     parser.add_argument("--update", action="store_true", help="Manually check for new GitHub version")
     
+    # TIL (Today I Learned) functionality
+    parser.add_argument("til", nargs="?", help="Add a 'Today I Learned' entry")
+    parser.add_argument("--view-til", action="store_true", help="View your TIL log")
+    parser.add_argument("--edit-til", action="store_true", help="Edit your TIL log in default editor")
+    parser.add_argument("--reset-til", action="store_true", help="Clear your TIL log")
+    parser.add_argument("--no-date", action="store_true", help="Add TIL entry without date header")
+    
     # New feature flags
     parser.add_argument("--scan", action="store_true", help="Scan repo folder for all git repositories")
     parser.add_argument("--repos-summary", action="store_true", help="Show full summary of all local repos")
@@ -176,6 +204,35 @@ def main():
 
     if args.setup:
         config = prompt_config()
+    
+    # Handle TIL commands
+    if args.view_til:
+        success, result = view_til(config)
+        if success:
+            print(result)
+        else:
+            print(result)
+        sys.exit(0)
+    
+    if args.edit_til:
+        success, result = edit_til(config)
+        print(result)
+        sys.exit(0)
+    
+    if args.reset_til:
+        confirm = input("⚠️  This will clear all your TIL entries. Continue? [y/N]: ").lower()
+        if confirm in ["y", "yes"]:
+            success, result = reset_til(config)
+            print(result)
+        else:
+            print("❌ Reset cancelled.")
+        sys.exit(0)
+    
+    if args.til:
+        include_date = not args.no_date
+        success, result = add_til_entry(args.til, config, include_date)
+        print(result)
+        sys.exit(0)
 
     # Handle output formatting based on flags and config
     def format_output(text, emoji="", color=True):

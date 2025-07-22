@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.3] - 2025-07-22
+
+### 📝 New TIL (Today I Learned) Feature
+- **TIL Command**: Added `commit-checker til "message"` to log daily learnings
+- **Local Storage**: TIL entries saved to `~/.commit-checker/til.md` with markdown formatting
+- **Date Organization**: Entries automatically grouped by date with smart date headers
+- **View TIL Log**: Added `--view-til` flag to display current TIL entries
+- **Edit TIL Log**: Added `--edit-til` flag to open TIL file in default editor ($EDITOR)
+- **Reset TIL Log**: Added `--reset-til` flag to clear all TIL entries with confirmation
+- **Minimalist Mode**: Added `--no-date` flag for entries without date headers
+- **Custom Path Support**: TIL path configurable via `til_path` in config.json
+- **Uninstall Integration**: Prompts to delete TIL log during uninstall process
+- **Statistics Tracking**: Internal tracking of TIL entries, dates, and file size
+
+### 🛠️ Technical Improvements
+- New `til.py` module with comprehensive TIL management functions
+- Enhanced configuration system to support TIL path customization
+- Updated both package and standalone versions with TIL functionality
+- Improved uninstall process with smart TIL log preservation option
+- Added proper error handling and fallback editor detection
+
+### 📁 File Structure Updates
+- Enhanced markdown formatting with automatic date grouping
+- Smart entry insertion maintaining chronological order
+- UTF-8 encoding support for international characters
+- Fallback editor chain (EDITOR -> nano -> vim -> vi -> code -> notepad)
+
 ## [0.4.2] - 2025-07-18
 
 ### 🔄 Enhanced Update System

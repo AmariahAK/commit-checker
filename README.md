@@ -19,6 +19,9 @@ Automatically checks your daily commits — both **public (GitHub)** and **local
 - ✅ **One-line installation** with curl/bash
 - ✅ **Auto-updates** files from GitHub
 - ✅ **Complete uninstall** functionality
+- ✅ **TIL (Today I Learned)** logging with local markdown storage
+- ✅ **Smart date organization** for daily learning entries
+- ✅ **Integrated editor support** for TIL log management
 
 ---
 
@@ -80,6 +83,8 @@ commit-checker
 ```
 
 **All available commands:**
+
+**Core functionality:**
 - `commit-checker` - Check today's commits
 - `commit-checker --setup` - Reconfigure settings
 - `commit-checker --scan` - Scan repo folder for all git repositories  
@@ -87,6 +92,15 @@ commit-checker
 - `commit-checker --most-active` - Show most active repository today
 - `commit-checker --most-active --week` - Show most active repo this week
 - `commit-checker --most-active --month` - Show most active repo this month
+
+**TIL (Today I Learned) commands:**
+- `commit-checker til "Your learning today"` - Add a TIL entry
+- `commit-checker --view-til` - View your TIL log
+- `commit-checker --edit-til` - Edit TIL log in your default editor
+- `commit-checker --reset-til` - Clear all TIL entries (with confirmation)
+- `commit-checker til "Entry" --no-date` - Add entry without date header
+
+**System commands:**
 - `commit-checker --uninstall` - Remove completely
 - `commit-checker --uninstall --force` - Remove without confirmation
 - `commit-checker --support` - Show support info
@@ -148,6 +162,49 @@ Licensed under the [MIT License](LICENSE.md).
 
 ---
 
+## 📝 TIL (Today I Learned) Feature
+
+Track your daily learnings with commit-checker's built-in TIL functionality:
+
+### Basic Usage
+```bash
+# Add a learning entry
+commit-checker til "Learned how to use async/await in Python"
+
+# View your TIL log
+commit-checker --view-til
+
+# Edit in your preferred editor
+commit-checker --edit-til
+```
+
+### Example TIL Log
+```markdown
+# Today I Learned
+
+## July 22, 2025
+- Learned how to use async/await in Python
+- Discovered that Git hooks can automate code quality checks
+- Found out about the --no-ff flag in Git merge
+
+## July 21, 2025
+- Learned about CSS Grid layout properties
+- Discovered Docker multi-stage builds for smaller images
+```
+
+### Advanced Options
+```bash
+# Add entry without date grouping
+commit-checker til "Quick tip" --no-date
+
+# Reset all entries (with confirmation)
+commit-checker --reset-til
+```
+
+**TIL Storage:** Entries are saved to `~/.commit-checker/til.md` and persist between sessions unless manually deleted.
+
+---
+
 ## 🔥 New Features in Action
 
 ### Repository Scanning
@@ -182,6 +239,13 @@ $ commit-checker --repos-summary
 ---
 
 ## 🎉 Recent Updates
+
+### v0.4.3 - TIL (Today I Learned) Feature
+- 📝 **New TIL Command** - Log daily learnings with `commit-checker til "message"`
+- 📁 **Local Storage** - Entries saved to `~/.commit-checker/til.md` with smart date organization
+- 🖊️ **Editor Integration** - `--edit-til` opens your TIL log in default editor
+- 👀 **View & Reset** - `--view-til` and `--reset-til` for easy management
+- 🔧 **Customizable** - Configure TIL path via config.json
 
 ### v0.4.2 - Enhanced Update System
 - 🔄 **Intelligent Update Scheduling** - Install updates now or on next terminal restart

@@ -4,7 +4,7 @@ import subprocess
 import os
 import sys
 
-LOCAL_VERSION = "0.4.2"
+LOCAL_VERSION = "0.4.3"
 REPO = "AmariahAK/commit-checker"
 UPDATE_MARKER_FILE = os.path.expanduser("~/.commit-checker/pending_update")
 

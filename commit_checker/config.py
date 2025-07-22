@@ -36,6 +36,9 @@ def load_config():
     if "output" not in config:
         config["output"] = "emoji"
     
+    if "til_path" not in config:
+        config["til_path"] = None  # Will use default path
+    
     # Save updated config if any changes were made
     save_config(config)
     
@@ -104,7 +107,8 @@ def prompt_config():
         "github_token": token if token else None,
         "local_paths": paths,
         "repo_folder": repo_folder,
-        "output": output_mode
+        "output": output_mode,
+        "til_path": None  # Use default path
     }
 
     save_config(config)
@@ -142,7 +146,8 @@ def get_auto_config():
             "github_token": None,
             "local_paths": detected_paths,
             "repo_folder": detected_paths[0] if detected_paths else None,
-            "output": "emoji"
+            "output": "emoji",
+            "til_path": None  # Use default path
         }
         
         return config

@@ -29,6 +29,7 @@ download_if_needed "checker.py" "$REPO_URL/commit_checker/checker.py"
 download_if_needed "config.py" "$REPO_URL/commit_checker/config.py"
 download_if_needed "path_detector.py" "$REPO_URL/commit_checker/path_detector.py"
 download_if_needed "updater.py" "$REPO_URL/commit_checker/updater.py"
+download_if_needed "til.py" "$REPO_URL/commit_checker/til.py"
 
 # Create a simple Python runner
 cat > "$SCRIPT_DIR/run_commit_checker.py" << 'EOF'
@@ -83,6 +84,7 @@ try:
     checker = load_module("checker", os.path.join(script_dir, "checker.py"))
     config = load_module("config", os.path.join(script_dir, "config.py"))
     path_detector = load_module("path_detector", os.path.join(script_dir, "path_detector.py"))
+    til = load_module("til", os.path.join(script_dir, "til.py"))
     
     # Get functions from modules
     check_github_commits = checker.check_github_commits
@@ -93,6 +95,12 @@ try:
     get_auto_config = config.get_auto_config
     save_config = config.save_config
     get_current_git_repo = path_detector.get_current_git_repo
+    add_til_entry = til.add_til_entry
+    view_til = til.view_til
+    edit_til = til.edit_til
+    reset_til = til.reset_til
+    delete_til = til.delete_til
+    get_til_stats = til.get_til_stats
     
 except Exception as e:
     print(f"❌ Error importing modules: {e}")
@@ -105,6 +113,14 @@ def main():
     parser.add_argument("--support", action="store_true", help="Show donation link")
     parser.add_argument("--silent", action="store_true", help="Minimal output")
     parser.add_argument("--nocolor", action="store_true", help="Disable emojis and colors")
+    
+    # TIL functionality
+    parser.add_argument("til", nargs="?", help="Add a 'Today I Learned' entry")
+    parser.add_argument("--view-til", action="store_true", help="View your TIL log")
+    parser.add_argument("--edit-til", action="store_true", help="Edit your TIL log in default editor")
+    parser.add_argument("--reset-til", action="store_true", help="Clear your TIL log")
+    parser.add_argument("--no-date", action="store_true", help="Add TIL entry without date header")
+    
     args = parser.parse_args()
 
     if args.uninstall:
@@ -138,6 +154,35 @@ def main():
 
     if args.setup:
         config = prompt_config()
+    
+    # Handle TIL commands
+    if args.view_til:
+        success, result = view_til(config)
+        if success:
+            print(result)
+        else:
+            print(result)
+        sys.exit(0)
+    
+    if args.edit_til:
+        success, result = edit_til(config)
+        print(result)
+        sys.exit(0)
+    
+    if args.reset_til:
+        confirm = input("⚠️  This will clear all your TIL entries. Continue? [y/N]: ").lower()
+        if confirm in ["y", "yes"]:
+            success, result = reset_til(config)
+            print(result)
+        else:
+            print("❌ Reset cancelled.")
+        sys.exit(0)
+    
+    if args.til:
+        include_date = not args.no_date
+        success, result = add_til_entry(args.til, config, include_date)
+        print(result)
+        sys.exit(0)
 
     # Output functions
     def format_output(text):
