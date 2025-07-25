@@ -30,6 +30,7 @@ download_if_needed "config.py" "$REPO_URL/commit_checker/config.py"
 download_if_needed "path_detector.py" "$REPO_URL/commit_checker/path_detector.py"
 download_if_needed "updater.py" "$REPO_URL/commit_checker/updater.py"
 download_if_needed "til.py" "$REPO_URL/commit_checker/til.py"
+download_if_needed "wizard.py" "$REPO_URL/commit_checker/wizard.py"
 
 # Create a simple Python runner
 cat > "$SCRIPT_DIR/run_commit_checker.py" << 'EOF'
@@ -85,6 +86,7 @@ try:
     config = load_module("config", os.path.join(script_dir, "config.py"))
     path_detector = load_module("path_detector", os.path.join(script_dir, "path_detector.py"))
     til = load_module("til", os.path.join(script_dir, "til.py"))
+    wizard = load_module("wizard", os.path.join(script_dir, "wizard.py"))
     
     # Get functions from modules
     check_github_commits = checker.check_github_commits
@@ -101,6 +103,11 @@ try:
     reset_til = til.reset_til
     delete_til = til.delete_til
     get_til_stats = til.get_til_stats
+    filter_til_by_tag = til.filter_til_by_tag
+    export_til = til.export_til
+    interactive_setup_wizard = wizard.interactive_setup_wizard
+    show_commit_stats = wizard.show_commit_stats
+    run_diagnostics = wizard.run_diagnostics
     
 except Exception as e:
     print(f"❌ Error importing modules: {e}")
@@ -109,10 +116,13 @@ except Exception as e:
 def main():
     parser = argparse.ArgumentParser(description="Check today's GitHub + local commits.")
     parser.add_argument("--setup", action="store_true", help="Reset your config")
+    parser.add_argument("--init", action="store_true", help="Interactive setup wizard")
     parser.add_argument("--uninstall", action="store_true", help="Remove commit-checker")
     parser.add_argument("--support", action="store_true", help="Show donation link")
     parser.add_argument("--silent", action="store_true", help="Minimal output")
     parser.add_argument("--nocolor", action="store_true", help="Disable emojis and colors")
+    parser.add_argument("--stats", action="store_true", help="Show ASCII commit trend charts")
+    parser.add_argument("--diagnose", action="store_true", help="Run system diagnostics")
     
     # TIL functionality
     parser.add_argument("til", nargs="?", help="Add a 'Today I Learned' entry")
@@ -120,6 +130,9 @@ def main():
     parser.add_argument("--edit-til", action="store_true", help="Edit your TIL log in default editor")
     parser.add_argument("--reset-til", action="store_true", help="Clear your TIL log")
     parser.add_argument("--no-date", action="store_true", help="Add TIL entry without date header")
+    parser.add_argument("--tag", type=str, help="Add tag to TIL entry")
+    parser.add_argument("--export", choices=["md", "json"], help="Export TIL entries to format")
+    parser.add_argument("--filter-tag", type=str, help="Filter TIL entries by tag")
     
     args = parser.parse_args()
 
@@ -155,13 +168,39 @@ def main():
     if args.setup:
         config = prompt_config()
     
+    if args.init:
+        if interactive_setup_wizard():
+            config = load_config()  # Reload config after wizard
+        sys.exit(0)
+    
+    if args.diagnose:
+        run_diagnostics()
+        sys.exit(0)
+    
+    if args.stats:
+        local_paths = config.get('local_paths', [])
+        if not local_paths:
+            print("❌ No local paths configured. Run --init or --setup first.")
+            sys.exit(1)
+        show_commit_stats(local_paths)
+        sys.exit(0)
+    
     # Handle TIL commands
     if args.view_til:
-        success, result = view_til(config)
+        if args.filter_tag:
+            success, result = filter_til_by_tag(config, args.filter_tag)
+        else:
+            success, result = view_til(config)
+        
         if success:
             print(result)
         else:
             print(result)
+        sys.exit(0)
+    
+    if args.export:
+        success, result = export_til(config, args.export)
+        print(result)
         sys.exit(0)
     
     if args.edit_til:
@@ -180,7 +219,7 @@ def main():
     
     if args.til:
         include_date = not args.no_date
-        success, result = add_til_entry(args.til, config, include_date)
+        success, result = add_til_entry(args.til, config, include_date, args.tag)
         print(result)
         sys.exit(0)
 

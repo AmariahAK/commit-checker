@@ -3,10 +3,59 @@ from packaging import version
 import subprocess
 import os
 import sys
+import json
+import time
 
-LOCAL_VERSION = "0.4.3"
+LOCAL_VERSION = "0.5.0"
 REPO = "AmariahAK/commit-checker"
 UPDATE_MARKER_FILE = os.path.expanduser("~/.commit-checker/pending_update")
+VERSION_CACHE_FILE = os.path.expanduser("~/.commit-checker/version_cache.json")
+UPDATE_CHECK_INTERVAL = 86400  # 24 hours in seconds
+
+def get_installed_version():
+    """Get the actual installed version of commit-checker"""
+    try:
+        # Try to get version from installed package
+        import pkg_resources
+        try:
+            installed_version = pkg_resources.get_distribution("commit-checker").version
+            return installed_version
+        except pkg_resources.DistributionNotFound:
+            pass
+    except ImportError:
+        pass
+    
+    # Fallback to LOCAL_VERSION constant
+    return LOCAL_VERSION
+
+def get_version_cache():
+    """Get cached version check data"""
+    if not os.path.exists(VERSION_CACHE_FILE):
+        return None
+    
+    try:
+        with open(VERSION_CACHE_FILE, 'r') as f:
+            return json.load(f)
+    except Exception:
+        return None
+
+def save_version_cache(data):
+    """Save version check data to cache"""
+    try:
+        os.makedirs(os.path.dirname(VERSION_CACHE_FILE), exist_ok=True)
+        with open(VERSION_CACHE_FILE, 'w') as f:
+            json.dump(data, f)
+    except Exception:
+        pass
+
+def should_check_for_updates():
+    """Check if we should perform an update check based on interval"""
+    cache = get_version_cache()
+    if not cache:
+        return True
+    
+    last_check = cache.get('last_check_time', 0)
+    return (time.time() - last_check) > UPDATE_CHECK_INTERVAL
 
 def get_latest_version():
     """Get the latest version from GitHub releases"""
@@ -15,8 +64,22 @@ def get_latest_version():
         if response.status_code == 404:
             return None
         response.raise_for_status()
-        return response.json()["tag_name"].lstrip("v")
+        latest_version = response.json()["tag_name"].lstrip("v")
+        
+        # Cache the result
+        cache_data = {
+            'latest_version': latest_version,
+            'last_check_time': time.time(),
+            'current_version': get_installed_version()
+        }
+        save_version_cache(cache_data)
+        
+        return latest_version
     except Exception:
+        # Try to use cached version if network fails
+        cache = get_version_cache()
+        if cache:
+            return cache.get('latest_version')
         return None
 
 def mark_pending_update(version_str):
@@ -88,14 +151,20 @@ def check_pending_update_on_startup():
 def check_for_updates(force_check=False):
     """Check for updates with user interaction"""
     try:
+        # Skip update check if not forced and within interval
+        if not force_check and not should_check_for_updates():
+            return False
+            
+        current_version = get_installed_version()
         latest = get_latest_version()
+        
         if not latest:
             if force_check:
                 print("⚠️  Could not check for updates (no releases found)")
             return False
             
-        if version.parse(latest) > version.parse(LOCAL_VERSION):
-            print(f"\n🔔 New version available: v{latest} (you have v{LOCAL_VERSION})")
+        if version.parse(latest) > version.parse(current_version):
+            print(f"\n🔔 New version available: v{latest} (you have v{current_version})")
             
             # Show changelog if available
             try:
@@ -122,7 +191,16 @@ def check_for_updates(force_check=False):
             choice = input("❓ Choose option (1/2/3) [1]: ").strip()
             
             if choice in ["", "1"]:
-                return perform_update(latest)
+                success = perform_update(latest)
+                if success:
+                    # Update cache to reflect new version
+                    cache_data = {
+                        'latest_version': latest,
+                        'last_check_time': time.time(),
+                        'current_version': latest
+                    }
+                    save_version_cache(cache_data)
+                return success
             elif choice == "2":
                 mark_pending_update(latest)
                 print(f"📅 Update to v{latest} scheduled for next terminal restart")
@@ -132,7 +210,7 @@ def check_for_updates(force_check=False):
                 return False
         else:
             if force_check:
-                print(f"✅ You're running the latest version (v{LOCAL_VERSION})")
+                print(f"✅ You're running the latest version (v{current_version})")
             return False
             
     except Exception as e:

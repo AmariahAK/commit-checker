@@ -9,7 +9,8 @@ try:
     from .config import config_exists, load_config, prompt_config, get_auto_config, save_config, delete_config
     from .updater import check_for_updates, check_pending_update_on_startup, manual_update_check
     from .bootstrap import bootstrap
-    from .til import add_til_entry, view_til, edit_til, reset_til, delete_til, get_til_stats
+    from .til import add_til_entry, view_til, edit_til, reset_til, delete_til, get_til_stats, filter_til_by_tag, export_til
+    from .wizard import interactive_setup_wizard, show_commit_stats, run_diagnostics
 except ImportError:
     # Standalone mode - load modules directly
     current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -25,6 +26,7 @@ except ImportError:
         config = load_module("config", os.path.join(current_dir, "config.py"))
         updater = load_module("updater", os.path.join(current_dir, "updater.py"))
         til = load_module("til", os.path.join(current_dir, "til.py"))
+        wizard = load_module("wizard", os.path.join(current_dir, "wizard.py"))
         
         check_github_commits = checker.check_github_commits
         check_local_commits = checker.check_local_commits
@@ -45,6 +47,11 @@ except ImportError:
         reset_til = til.reset_til
         delete_til = til.delete_til
         get_til_stats = til.get_til_stats
+        filter_til_by_tag = til.filter_til_by_tag
+        export_til = til.export_til
+        interactive_setup_wizard = wizard.interactive_setup_wizard
+        show_commit_stats = wizard.show_commit_stats
+        run_diagnostics = wizard.run_diagnostics
         
         # Simple bootstrap function
         def bootstrap():
@@ -73,16 +80,88 @@ except ImportError:
         print(f"❌ Error loading modules: {e}")
         sys.exit(1)
 
+def detect_install_method():
+    """Detect how commit-checker was installed"""
+    import subprocess
+    try:
+        # Check if installed via pipx
+        pipx_result = subprocess.run([sys.executable, "-m", "pipx", "list"], 
+                                   capture_output=True, text=True)
+        if pipx_result.returncode == 0 and "commit-checker" in pipx_result.stdout:
+            return "pipx"
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        pass
+    
+    try:
+        # Check if installed as regular pip package
+        import pkg_resources
+        pkg_resources.get_distribution("commit-checker")
+        return "pip"
+    except (pkg_resources.DistributionNotFound, ImportError):
+        pass
+    
+    # Check if running as standalone script
+    if os.path.exists(os.path.expanduser("~/.local/bin/commit-checker")):
+        return "standalone"
+    
+    return "unknown"
+
 def uninstall_package():
-    """Remove the commit-checker package via pip and clean up config"""
+    """Remove the commit-checker package via appropriate method and clean up config"""
     import subprocess
     import shutil
+    
+    install_method = detect_install_method()
+    print(f"🔍 Detected installation method: {install_method}")
+    
     try:
-        print("🗑️  Uninstalling commit-checker package...")
-        subprocess.check_call([sys.executable, "-m", "pip", "uninstall", "commit-checker", "-y"])
-        print("✅ Package uninstalled successfully")
+        if install_method == "pipx":
+            print("🗑️  Uninstalling commit-checker via pipx...")
+            subprocess.check_call([sys.executable, "-m", "pipx", "uninstall", "commit-checker"])
+            print("✅ Package uninstalled successfully via pipx")
+            
+        elif install_method == "standalone":
+            print("🗑️  Removing standalone installation...")
+            binary_path = os.path.expanduser("~/.local/bin/commit-checker")
+            if os.path.exists(binary_path):
+                os.remove(binary_path)
+                print(f"🗑️  Removed {binary_path}")
+            
+            # Remove standalone cache directory
+            standalone_dir = os.path.expanduser("~/.commit-checker-standalone")
+            if os.path.exists(standalone_dir):
+                shutil.rmtree(standalone_dir)
+                print(f"🗑️  Removed {standalone_dir}")
+            print("✅ Standalone installation removed successfully")
+            
+        else:
+            # Try standard pip uninstall with fallbacks for PEP 668
+            print("🗑️  Uninstalling commit-checker package...")
+            uninstall_commands = [
+                [sys.executable, "-m", "pip", "uninstall", "commit-checker", "-y"],
+                [sys.executable, "-m", "pip", "uninstall", "commit-checker", "-y", "--break-system-packages"],
+                ["pipx", "uninstall", "commit-checker"]
+            ]
+            
+            success = False
+            for cmd in uninstall_commands:
+                try:
+                    subprocess.check_call(cmd, stderr=subprocess.DEVNULL)
+                    print("✅ Package uninstalled successfully")
+                    success = True
+                    break
+                except (subprocess.CalledProcessError, FileNotFoundError):
+                    continue
+            
+            if not success:
+                print("⚠️  Could not uninstall via pip. This might be due to PEP 668 (externally managed environment).")
+                print("💡 Try one of these alternatives:")
+                print("   - If installed with pipx: pipx uninstall commit-checker")
+                print("   - If system-managed: python3 -m pip uninstall commit-checker --break-system-packages")
+                print("   - Manual removal: Delete ~/.local/bin/commit-checker if it exists")
+                print("\n🗑️  Proceeding to clean up configuration files...")
         
-        # Remove config directory
+        # Remove config directory and files
         print("🗑️  Removing configuration files...")
         
         # Ask about TIL log deletion
@@ -115,8 +194,11 @@ def uninstall_package():
         
         print("✅ Commit Checker has been fully removed.")
         return True
-    except subprocess.CalledProcessError as e:
-        print(f"⚠️  Could not uninstall package: {e}")
+        
+    except Exception as e:
+        print(f"⚠️  Error during uninstall: {e}")
+        print("🗑️  Proceeding to clean up configuration files...")
+        delete_config()
         return False
 
 def main():
@@ -152,12 +234,15 @@ def main():
 
     parser = argparse.ArgumentParser(description="Check today's GitHub + local commits.")
     parser.add_argument("--setup", action="store_true", help="Reset your config")
+    parser.add_argument("--init", action="store_true", help="Interactive setup wizard")
     parser.add_argument("--uninstall", action="store_true", help="Completely remove commit-checker from your system")
     parser.add_argument("--support", action="store_true", help="Show donation link to support dev")
     parser.add_argument("--silent", action="store_true", help="Minimal output (clean log mode)")
     parser.add_argument("--nocolor", action="store_true", help="Disable emojis and colors in output")
     parser.add_argument("--check-only", action="store_true", help="Run check without startup actions")
     parser.add_argument("--update", action="store_true", help="Manually check for new GitHub version")
+    parser.add_argument("--stats", action="store_true", help="Show ASCII commit trend charts")
+    parser.add_argument("--diagnose", action="store_true", help="Run system diagnostics")
     
     # TIL (Today I Learned) functionality
     parser.add_argument("til", nargs="?", help="Add a 'Today I Learned' entry")
@@ -165,6 +250,9 @@ def main():
     parser.add_argument("--edit-til", action="store_true", help="Edit your TIL log in default editor")
     parser.add_argument("--reset-til", action="store_true", help="Clear your TIL log")
     parser.add_argument("--no-date", action="store_true", help="Add TIL entry without date header")
+    parser.add_argument("--tag", type=str, help="Add tag to TIL entry")
+    parser.add_argument("--export", choices=["md", "json"], help="Export TIL entries to format")
+    parser.add_argument("--filter-tag", type=str, help="Filter TIL entries by tag")
     
     # New feature flags
     parser.add_argument("--scan", action="store_true", help="Scan repo folder for all git repositories")
@@ -205,13 +293,39 @@ def main():
     if args.setup:
         config = prompt_config()
     
+    if args.init:
+        if interactive_setup_wizard():
+            config = load_config()  # Reload config after wizard
+        sys.exit(0)
+    
+    if args.diagnose:
+        run_diagnostics()
+        sys.exit(0)
+    
+    if args.stats:
+        local_paths = config.get('local_paths', [])
+        if not local_paths:
+            print("❌ No local paths configured. Run --init or --setup first.")
+            sys.exit(1)
+        show_commit_stats(local_paths)
+        sys.exit(0)
+    
     # Handle TIL commands
     if args.view_til:
-        success, result = view_til(config)
+        if args.filter_tag:
+            success, result = filter_til_by_tag(config, args.filter_tag)
+        else:
+            success, result = view_til(config)
+        
         if success:
             print(result)
         else:
             print(result)
+        sys.exit(0)
+    
+    if args.export:
+        success, result = export_til(config, args.export)
+        print(result)
         sys.exit(0)
     
     if args.edit_til:
@@ -230,7 +344,7 @@ def main():
     
     if args.til:
         include_date = not args.no_date
-        success, result = add_til_entry(args.til, config, include_date)
+        success, result = add_til_entry(args.til, config, include_date, args.tag)
         print(result)
         sys.exit(0)
 

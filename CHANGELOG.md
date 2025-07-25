@@ -2,6 +2,59 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.0] - 2025-07-25
+
+### 🔧 Critical Bug Fixes
+- **Fixed Update Loop**: Resolved infinite update prompt issue by implementing proper version detection and caching
+- **Fixed PEP 668 Uninstall**: Enhanced `--uninstall` to handle externally managed environments with intelligent fallbacks
+- **Smart Install Detection**: Added automatic detection of pip, pipx, and standalone installation methods
+
+### 🧙‍♂️ Interactive Setup Wizard
+- **New `--init` Command**: Complete interactive setup wizard for first-time configuration
+- **Smart Path Detection**: Automatically detects and suggests development folders
+- **Theme Selection**: Choose from tech, kawaii, anime, horror, or default themes
+- **Commit Rules Configuration**: Setup custom regex patterns for commit message validation
+- **Pre-commit Hook Setup**: Optional Git hook installation during setup
+
+### 📊 ASCII Statistics & Analytics
+- **New `--stats` Command**: ASCII commit trend charts showing 30-day activity patterns
+- **Visual Repository Analysis**: Bar charts using Unicode blocks (▁▂▃▄▅▆▇█)
+- **Multi-Repository Stats**: Analyze commit patterns across all local repositories
+- **Recent Activity Summary**: Quick view of last 7 days with commit counts
+
+### 📚 Enhanced TIL (Today I Learned) System
+- **Tag Support**: Add tags to TIL entries with `--tag` flag (e.g., `#python`, `#react`)
+- **Smart Filtering**: Filter TIL entries by tag using `--filter-tag` command
+- **Export Functionality**: Export TIL data to Markdown or JSON format with `--export`
+- **Enhanced Statistics**: Tag counting and comprehensive TIL analytics
+- **Improved Entry Format**: Better markdown structure with tag integration
+
+### 🔍 System Diagnostics
+- **New `--diagnose` Command**: Comprehensive system health check
+- **Installation Method Detection**: Identifies pip, pipx, venv, or standalone installation
+- **Dependency Verification**: Checks for required packages and their availability
+- **Configuration Validation**: Verifies config file integrity and settings
+- **Environment Analysis**: Detects virtual environments and Python context
+
+### 🛠️ Technical Improvements
+- **Version Caching**: Intelligent update checking with 24-hour intervals
+- **Enhanced Error Handling**: Better fallback mechanisms for failed operations
+- **Cross-Platform Compatibility**: Improved support for macOS, Linux, and Windows
+- **Memory Optimization**: Reduced startup time with lazy loading
+- **Config Migration**: Automatic migration of old configuration formats
+
+### 📁 Repository Management
+- **Intelligent Scanning**: Enhanced repository detection with better performance
+- **Commit Statistics**: Detailed analysis of commit patterns and trends
+- **Activity Monitoring**: Track repository activity across different timeframes
+- **Smart Grouping**: Better organization of multi-repository environments
+
+### 🔄 Update System Improvements
+- **Pending Update Management**: Schedule updates for next terminal restart
+- **Release Notes Preview**: See what's new before updating
+- **Multiple Install Methods**: Robust update handling for different installation types
+- **Update Verification**: Confirm successful updates with version validation
+
 ## [0.4.3] - 2025-07-22
 
 ### 📝 New TIL (Today I Learned) Feature
