@@ -2,15 +2,18 @@
 
 ## Git Hooks
 
-This repository includes a developer-friendly pre-commit hook that integrates with commit-checker.
+This repository includes developer-friendly git hooks that integrate with commit-checker:
 
-### What the pre-commit hook does:
+- **pre-commit**: Optional TIL entry prompts (never blocks commits)
+- **post-commit**: Background XP/achievement updates after successful commits
 
-✅ **Never blocks commits** - Always exits successfully  
-✅ **Updates your XP/achievements** in the background  
-✅ **Optional TIL prompts** with timeout (10 seconds)  
-✅ **Auto-detects** commit-checker installation  
-✅ **Skips in CI environments**  
+### What the hooks do
+
+✅ **Never block commits** - Always exit successfully  
+✅ **Update your XP/achievements** in the background (post-commit)  
+✅ **Optional TIL prompts** with timeout (pre-commit)  
+✅ **Auto-detect** commit-checker installation  
+✅ **Skip in CI environments**  
 
 ### Easy opt-out options:
 
