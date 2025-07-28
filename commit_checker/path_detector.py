@@ -24,7 +24,7 @@ def get_common_dev_paths():
     home = Path.home()
     system = platform.system().lower()
     
-    common_paths = []
+    common_paths = set()  # Use set to avoid duplicates
     
     # Cross-platform common paths
     common_names = [
@@ -37,7 +37,9 @@ def get_common_dev_paths():
     for name in common_names:
         path = home / name
         if path.exists() and path.is_dir():
-            common_paths.append(str(path))
+            # Resolve to absolute path to avoid duplicates
+            resolved_path = str(path.resolve())
+            common_paths.add(resolved_path)
     
     # Platform-specific paths
     if system == 'darwin':  # macOS
@@ -50,7 +52,8 @@ def get_common_dev_paths():
         ]
         for path in mac_paths:
             if path.exists() and path.is_dir():
-                common_paths.append(str(path))
+                resolved_path = str(path.resolve())
+                common_paths.add(resolved_path)
                 
     elif system == 'linux':
         linux_paths = [
@@ -62,7 +65,8 @@ def get_common_dev_paths():
         ]
         for path in linux_paths:
             if path.exists() and path.is_dir():
-                common_paths.append(str(path))
+                resolved_path = str(path.resolve())
+                common_paths.add(resolved_path)
                 
     elif system == 'windows':
         windows_paths = [
@@ -76,9 +80,10 @@ def get_common_dev_paths():
         ]
         for path in windows_paths:
             if path.exists() and path.is_dir():
-                common_paths.append(str(path))
+                resolved_path = str(path.resolve())
+                common_paths.add(resolved_path)
     
-    return common_paths
+    return sorted(list(common_paths))  # Return sorted list
 
 def find_git_repos_in_path(base_path, max_depth=2):
     """Find git repositories in a given path"""

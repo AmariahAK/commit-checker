@@ -59,14 +59,22 @@ def interactive_setup_wizard():
         print("      Or enter a custom path")
         print(f"      (Default: {default_path})")
         
-        choice = input("\n   📂 Enter number (1-5), custom path, or press Enter for default: ").strip()
-        
-        if choice == "":
-            local_path = default_path
-        elif choice.isdigit() and 1 <= int(choice) <= len(suggestions):
-            local_path = suggestions[int(choice) - 1].split(':')[1].strip() if ':' in suggestions[int(choice) - 1] else suggestions[int(choice) - 1].split('(')[0].strip()
-        else:
-            local_path = choice
+        while True:
+            choice = input("\n   📂 Enter number (1-5), custom path, or press Enter for default: ").strip()
+            
+            if choice == "":
+                local_path = default_path
+                break
+            elif choice.isdigit() and 1 <= int(choice) <= min(5, len(suggestions)):
+                local_path = suggestions[int(choice) - 1].split(':')[1].strip() if ':' in suggestions[int(choice) - 1] else suggestions[int(choice) - 1].split('(')[0].strip()
+                break
+            elif not choice.isdigit():
+                # Custom path entered
+                local_path = choice
+                break
+            else:
+                print(f"   ❌ Invalid choice. Please enter 1-{min(5, len(suggestions))}, a custom path, or press Enter for default.")
+                continue
     else:
         local_path = input(f"   📁 Local dev folder path (default: {default_path}): ").strip()
         if not local_path:
@@ -92,20 +100,31 @@ def interactive_setup_wizard():
     print("\n🎨 Output Style Configuration")
     print("   1. 🎉 Emoji mode (colorful with emojis)")
     print("   2. 📝 Plain mode (simple text only)")
-    output_choice = input("   📝 Enter 1 or 2 (default: 1): ").strip()
-    config['output'] = "plain" if output_choice == "2" else "emoji"
+    while True:
+        output_choice = input("   📝 Enter 1 or 2 (default: 1): ").strip()
+        if output_choice in ["", "1", "2"]:
+            config['output'] = "plain" if output_choice == "2" else "emoji"
+            break
+        else:
+            print("   ❌ Invalid choice. Please enter 1 or 2.")
+            continue
     
     # TIL Configuration
     print("\n📚 TIL (Today I Learned) Configuration")
     print("   1. 📝 Use default path (~/.commit-checker/til.md)")
     print("   2. 📁 Custom path")
-    til_choice = input("   📝 Enter 1 or 2 (default: 1): ").strip()
-    
-    if til_choice == "2":
-        til_path = input("   📁 Custom TIL file path: ").strip()
-        config['til_path'] = os.path.expanduser(til_path) if til_path else None
-    else:
-        config['til_path'] = None
+    while True:
+        til_choice = input("   📝 Enter 1 or 2 (default: 1): ").strip()
+        if til_choice in ["", "1", "2"]:
+            if til_choice == "2":
+                til_path = input("   📁 Custom TIL file path: ").strip()
+                config['til_path'] = os.path.expanduser(til_path) if til_path else None
+            else:
+                config['til_path'] = None
+            break
+        else:
+            print("   ❌ Invalid choice. Please enter 1 or 2.")
+            continue
     
     # Commit Rules Configuration
     print("\n📝 Commit Message Rules (Optional)")
@@ -147,9 +166,16 @@ def interactive_setup_wizard():
         print("      4. 🧛 horror (dark red, unsettling)")
         print("      5. 🎨 default (balanced colors)")
         
-        theme_choice = input("   🎨 Enter 1-5 (default: 5): ").strip()
         themes = {"1": "tech", "2": "kawaii", "3": "anime", "4": "horror", "5": "default"}
-        config['theme'] = themes.get(theme_choice, "default")
+        while True:
+            theme_choice = input("   🎨 Enter 1-5 (default: 5): ").strip()
+            if theme_choice in ["", "1", "2", "3", "4", "5"]:
+                config['theme'] = themes.get(theme_choice, "default")
+                print(f"   ✨ Theme set to: {config['theme']}")
+                break
+            else:
+                print("   ❌ Invalid choice. Please enter 1, 2, 3, 4, or 5.")
+                continue
     else:
         config['theme'] = "default"
     
@@ -170,19 +196,24 @@ def interactive_setup_wizard():
     print(f"   🎨 Theme: {config['theme']}")
     print(f"   🔗 Pre-commit hooks: {'Enabled' if config['install_hooks'] else 'Disabled'}")
     
-    confirm = input("\n✅ Save this configuration? [Y/n]: ").strip().lower()
-    if confirm not in ["n", "no"]:
-        save_config(config)
-        print(f"\n🎉 Configuration saved to {CONFIG_PATH}")
-        
-        # Install hooks if requested
-        if config['install_hooks']:
-            install_git_hooks()
-        
-        return True
-    else:
-        print("❌ Configuration cancelled.")
-        return False
+    while True:
+        confirm = input("\n✅ Save this configuration? [Y/n]: ").strip().lower()
+        if confirm in ["", "y", "yes", "n", "no"]:
+            if confirm not in ["n", "no"]:
+                save_config(config)
+                print(f"\n🎉 Configuration saved to {CONFIG_PATH}")
+                
+                # Install hooks if requested
+                if config['install_hooks']:
+                    install_git_hooks()
+                
+                return True
+            else:
+                print("❌ Configuration cancelled.")
+                return False
+        else:
+            print("❌ Invalid choice. Please enter 'y' for yes or 'n' for no.")
+            continue
 
 
 def get_commit_stats(repo_path, days=30):

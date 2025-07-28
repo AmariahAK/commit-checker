@@ -211,6 +211,49 @@ def uninstall_package():
         
         delete_config()
         
+        # Remove shell startup commands
+        print("🗑️  Removing shell startup commands...")
+        shell_files = [
+            os.path.expanduser("~/.bashrc"),
+            os.path.expanduser("~/.zshrc"),
+            os.path.expanduser("~/.bash_profile"),
+            os.path.expanduser("~/.profile"),
+            os.path.expanduser("~/.config/fish/config.fish")
+        ]
+        
+        for shell_file in shell_files:
+            if os.path.exists(shell_file):
+                try:
+                    with open(shell_file, 'r') as f:
+                        content = f.read()
+                    
+                    # Remove commit-checker auto-run lines
+                    lines = content.split('\n')
+                    cleaned_lines = []
+                    skip_next = False
+                    
+                    for i, line in enumerate(lines):
+                        # Skip lines containing commit-checker
+                        if 'commit-checker' in line:
+                            continue
+                        # Skip comment lines that mention commit-checker
+                        if line.strip().startswith('#') and 'commit-checker' in line.lower():
+                            continue
+                        # Skip empty lines that come after commit-checker blocks
+                        if line.strip() == '' and i > 0 and 'commit-checker' in lines[i-1]:
+                            continue
+                        cleaned_lines.append(line)
+                    
+                    # Write back cleaned content
+                    cleaned_content = '\n'.join(cleaned_lines)
+                    if cleaned_content != content:
+                        with open(shell_file, 'w') as f:
+                            f.write(cleaned_content)
+                        print(f"🗑️  Cleaned startup commands from {shell_file}")
+                
+                except Exception as e:
+                    print(f"⚠️  Could not clean {shell_file}: {e}")
+        
         # Try to remove binary from common locations
         binary_paths = [
             "/usr/local/bin/commit-checker",
