@@ -180,12 +180,13 @@ commit-checker/
 
 ---
 
-## 💖 Support This Project
+## ☕ Support
 
-If this tool helps you stay on track, show some love 💚
+If this tool helps you stay consistent, focused, or productive — consider supporting development!
 
-**Donate via PayPal:**  
-📬 amariah.abish@gmail.com
+[![Buy Me A Coffee](https://img.shields.io/badge/☕-Support%20me%20on%20Buy%20Me%20A%20Coffee-orange)](https://www.buymeacoffee.com/amariahak)
+
+Or visit: https://buymeacoffee.com/amariahak
 
 ---
 

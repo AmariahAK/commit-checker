@@ -1,0 +1,15 @@
+# Placeholder WAV file
+# This would be a real WAV audio file in production
+# For now, this serves as a placeholder to show the sound system structure
+
+# Sound files would be stored here:
+# - commit.wav (commit notification sound)
+# - level-up.wav (level up celebration sound)  
+# - achievement.wav (achievement unlock sound)
+# - error.wav (error notification sound)
+
+# To implement:
+# 1. Use pydub to play audio files
+# 2. Support multiple formats: .wav, .mp3, .ogg
+# 3. Volume control in config
+# 4. Platform-specific audio backends

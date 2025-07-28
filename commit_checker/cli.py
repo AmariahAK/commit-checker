@@ -2,6 +2,7 @@ import argparse
 import os
 import sys
 import importlib.util
+from datetime import datetime
 
 # Handle imports for both standalone and package modes
 try:
@@ -11,6 +12,12 @@ try:
     from .bootstrap import bootstrap
     from .til import add_til_entry, view_til, edit_til, reset_til, delete_til, get_til_stats, filter_til_by_tag, export_til
     from .wizard import interactive_setup_wizard, show_commit_stats, run_diagnostics
+    from .gamification import (display_achievements, display_xp_status, process_commits_for_gamification, 
+                              create_default_templates, ensure_gamification_files)
+    from .analytics import (get_commit_heatmap_data, render_ascii_heatmap, get_language_stats, 
+                           render_language_pie_chart, get_mood_commit_line, export_heatmap_svg)
+    from .til_vault import (create_til_from_template, search_til_vault, display_search_results,
+                           create_til_from_latest_commit, display_vault_summary, list_templates)
 except ImportError:
     # Standalone mode - load modules directly
     current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -27,6 +34,9 @@ except ImportError:
         updater = load_module("updater", os.path.join(current_dir, "updater.py"))
         til = load_module("til", os.path.join(current_dir, "til.py"))
         wizard = load_module("wizard", os.path.join(current_dir, "wizard.py"))
+        gamification = load_module("gamification", os.path.join(current_dir, "gamification.py"))
+        analytics = load_module("analytics", os.path.join(current_dir, "analytics.py"))
+        til_vault = load_module("til_vault", os.path.join(current_dir, "til_vault.py"))
         
         check_github_commits = checker.check_github_commits
         check_local_commits = checker.check_local_commits
@@ -52,6 +62,29 @@ except ImportError:
         interactive_setup_wizard = wizard.interactive_setup_wizard
         show_commit_stats = wizard.show_commit_stats
         run_diagnostics = wizard.run_diagnostics
+        
+        # Gamification imports
+        display_achievements = gamification.display_achievements
+        display_xp_status = gamification.display_xp_status
+        process_commits_for_gamification = gamification.process_commits_for_gamification
+        ensure_gamification_files = gamification.ensure_gamification_files
+        
+        # Analytics imports
+        get_commit_heatmap_data = analytics.get_commit_heatmap_data
+        render_ascii_heatmap = analytics.render_ascii_heatmap
+        get_language_stats = analytics.get_language_stats
+        render_language_pie_chart = analytics.render_language_pie_chart
+        get_mood_commit_line = analytics.get_mood_commit_line
+        export_heatmap_svg = analytics.export_heatmap_svg
+        
+        # TIL Vault imports
+        create_til_from_template = til_vault.create_til_from_template
+        search_til_vault = til_vault.search_til_vault
+        display_search_results = til_vault.display_search_results
+        create_til_from_latest_commit = til_vault.create_til_from_latest_commit
+        display_vault_summary = til_vault.display_vault_summary
+        list_templates = til_vault.list_templates
+        create_default_templates = til_vault.create_default_templates
         
         # Simple bootstrap function
         def bootstrap():
@@ -244,8 +277,25 @@ def main():
     parser.add_argument("--stats", action="store_true", help="Show ASCII commit trend charts")
     parser.add_argument("--diagnose", action="store_true", help="Run system diagnostics")
     
+    # Gamification features
+    parser.add_argument("--achievements", action="store_true", help="Display achievement gallery")
+    parser.add_argument("--xp", action="store_true", help="Show current XP and level status")
+    
+    # Analytics features
+    parser.add_argument("--heatmap", action="store_true", help="Display ASCII commit heatmap")
+    parser.add_argument("--heatmap-days", type=int, default=365, help="Days to include in heatmap (default: 365)")
+    parser.add_argument("--heatmap-export", choices=["svg"], help="Export heatmap to SVG file")
+    parser.add_argument("--stats-lang", action="store_true", help="Show programming language breakdown")
+    
+    # Enhanced TIL features
+    parser.add_argument("--search-til", type=str, help="Fuzzy search TIL entries")
+    parser.add_argument("--til-vault", action="store_true", help="Show TIL vault summary")
+    parser.add_argument("--til-from-diff", action="store_true", help="Create TIL from latest commit diff")
+    parser.add_argument("--template", type=str, help="Use template for TIL entry")
+    parser.add_argument("--list-templates", action="store_true", help="List available TIL templates")
+    
     # TIL (Today I Learned) functionality
-    parser.add_argument("til", nargs="?", help="Add a 'Today I Learned' entry")
+    parser.add_argument("til", nargs="*", help="Add a 'Today I Learned' entry")
     parser.add_argument("--view-til", action="store_true", help="View your TIL log")
     parser.add_argument("--edit-til", action="store_true", help="Edit your TIL log in default editor")
     parser.add_argument("--reset-til", action="store_true", help="Clear your TIL log")
@@ -277,7 +327,7 @@ def main():
 
     if args.support:
         print("💖 Support commit-checker development!")
-        print("📬 PayPal: amariah.abish@gmail.com")
+        print("☕ Buy Me A Coffee: https://buymeacoffee.com/amariahak")
         print("🌐 GitHub: https://github.com/AmariahAK")
         print("📱 Portfolio: https://portfolio-pied-five-61.vercel.app")
         print("\nEven small support helps keep the streak alive for devs worldwide 🌍")
@@ -308,6 +358,79 @@ def main():
             print("❌ No local paths configured. Run --init or --setup first.")
             sys.exit(1)
         show_commit_stats(local_paths)
+        sys.exit(0)
+    
+    # Initialize gamification on first run
+    ensure_gamification_files()
+    create_default_templates()
+    
+    # Handle new gamification commands
+    if args.achievements:
+        print(display_achievements())
+        sys.exit(0)
+    
+    if args.xp:
+        print(display_xp_status())
+        sys.exit(0)
+    
+    # Handle analytics commands
+    if args.heatmap:
+        local_paths = config.get('local_paths', [])
+        if not local_paths:
+            print("❌ No local paths configured. Run --init or --setup first.")
+            sys.exit(1)
+        
+        commit_data = get_commit_heatmap_data(local_paths, args.heatmap_days)
+        print(render_ascii_heatmap(commit_data, args.heatmap_days))
+        
+        if args.heatmap_export == "svg":
+            output_path = os.path.expanduser(f"~/commit-heatmap-{datetime.now().strftime('%Y%m%d')}.svg")
+            success, message = export_heatmap_svg(commit_data, output_path, args.heatmap_days)
+            print(message)
+        
+        sys.exit(0)
+    
+    if args.stats_lang:
+        local_paths = config.get('local_paths', [])
+        if not local_paths:
+            print("❌ No local paths configured. Run --init or --setup first.")
+            sys.exit(1)
+        
+        language_stats = get_language_stats(local_paths)
+        print(render_language_pie_chart(language_stats))
+        sys.exit(0)
+    
+    # Handle enhanced TIL commands
+    if args.search_til:
+        results = search_til_vault(args.search_til, config)
+        print(display_search_results(results))
+        sys.exit(0)
+    
+    if args.til_vault:
+        print(display_vault_summary(config))
+        sys.exit(0)
+    
+    if args.til_from_diff:
+        local_paths = config.get('local_paths', [])
+        if not local_paths:
+            print("❌ No local paths configured. Run --init or --setup first.")
+            sys.exit(1)
+        
+        success, result = create_til_from_latest_commit(local_paths, config)
+        print(result)
+        sys.exit(0)
+    
+    if args.list_templates:
+        templates = list_templates()
+        if templates:
+            print("📚 Available TIL templates:")
+            for template in templates:
+                print(f"  • {template}")
+            print(f"\nUsage: commit-checker til \"Title\" --template {templates[0]}")
+        else:
+            print("📚 No templates found. Creating default templates...")
+            create_default_templates()
+            print("✅ Default templates created!")
         sys.exit(0)
     
     # Handle TIL commands
@@ -343,9 +466,18 @@ def main():
         sys.exit(0)
     
     if args.til:
-        include_date = not args.no_date
-        success, result = add_til_entry(args.til, config, include_date, args.tag)
-        print(result)
+        # Join the list of words to form the complete TIL title
+        til_title = " ".join(args.til)
+        
+        if args.template:
+            # Use template for TIL vault
+            success, result = create_til_from_template(til_title, args.template, config)
+            print(result)
+        else:
+            # Use original TIL system
+            include_date = not args.no_date
+            success, result = add_til_entry(til_title, config, include_date, args.tag)
+            print(result)
         sys.exit(0)
 
     # Handle output formatting based on flags and config
@@ -461,6 +593,9 @@ def main():
     # Handle both old and new config formats
     local_paths = config.get('local_paths', [config.get('local_path', '')]) if config.get('local_path') else config.get('local_paths', [])
     
+    # Process commits for gamification
+    gamification_data = process_commits_for_gamification(local_paths, config)
+    
     if local_paths:
         output(f"\n🗂️  Scanning {len(local_paths)} local path(s):")
         for path in local_paths:
@@ -482,6 +617,31 @@ def main():
                 silent_output(f"{repo_name}: {count} commit(s)")
     except Exception as e:
         output(f"⚠️  Local check failed: {e}")
+    
+    # Display gamification results
+    if gamification_data["xp_gained"] > 0 or gamification_data["commits_today"] > 0:
+        mood_line = get_mood_commit_line(
+            gamification_data["xp_gained"],
+            gamification_data["commits_today"],
+            gamification_data["current_streak"]
+        )
+        output(f"\n{mood_line}")
+        
+        if gamification_data["xp_gained"] > 0:
+            output(f"💫 +{gamification_data['xp_gained']} XP earned today!")
+        
+        if gamification_data["level_up"]:
+            output(f"🎉 LEVEL UP! You're now level {gamification_data['new_level']}!")
+        
+        if gamification_data["achievements"]:
+            output("🏆 New achievements unlocked:")
+            for achievement_id in gamification_data["achievements"]:
+                from .gamification import ACHIEVEMENTS
+                achievement = ACHIEVEMENTS.get(achievement_id, {})
+                output(f"   {achievement.get('emoji', '🏆')} {achievement.get('name', achievement_id)}")
+        
+        if gamification_data["current_streak"] > 0:
+            output(f"🔥 Current streak: {gamification_data['current_streak']} days")
 
 if __name__ == "__main__":
     main()

@@ -6,7 +6,7 @@ import sys
 import json
 import time
 
-LOCAL_VERSION = "0.5.0"
+LOCAL_VERSION = "0.6.0"
 REPO = "AmariahAK/commit-checker"
 UPDATE_MARKER_FILE = os.path.expanduser("~/.commit-checker/pending_update")
 VERSION_CACHE_FILE = os.path.expanduser("~/.commit-checker/version_cache.json")

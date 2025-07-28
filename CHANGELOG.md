@@ -2,6 +2,57 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.0] - 2025-07-28
+
+### 🎮 Gamification & Developer Progress
+- **NEW: Achievement System**: Unlock badges with ASCII art based on commit streaks and milestones
+  - 🟩 Common (3-day streak): Getting Started, Week Warrior
+  - 🟦 Rare (14 days): Fortnight Fighter, Century Club  
+  - 🟨 Epic (30 days): Monthly Master, Code Tsunami
+  - 🟥 Legendary (90+ days): Legendary Coder, Commit Overlord
+  - 🟪 Mythic (365 days): Code Deity
+- **NEW: XP & Level System**: Earn XP based on lines changed, project weight, and commit complexity
+  - 10 levels from Novice Coder to Programming Deity
+  - Visual progress bars and level-up celebrations
+  - Configurable XP weights per project
+
+### 📊 Analytics & Visualizations  
+- **NEW: ASCII Commit Heatmap**: GitHub-style heatmap with 365-day history (`--heatmap`)
+- **NEW: Language Breakdown**: Analyze coding languages across repositories (`--stats-lang`)
+- **NEW: SVG Export**: Export heatmaps to SVG format (`--heatmap --export svg`)
+- **NEW: Mood Commit Line**: Dynamic status messages based on activity level
+- **Enhanced Commit Trends**: Weekly patterns and activity analysis
+
+### 📚 TIL Vault System
+- **NEW: TIL Templates**: Markdown templates for structured learning entries
+  - Bugfix, Feature, Concept, Tool, Algorithm templates included
+  - Custom template creation with variable substitution
+- **NEW: TIL Vault Mode**: Individual markdown files instead of single log
+- **NEW: Fuzzy Search**: Search TIL entries with highlighted matches (`--search-til`)
+- **NEW: TIL from Diff**: Auto-generate TIL entries from git commits (`--til-from-diff`)
+- **Enhanced TIL Commands**: `--til-vault`, `--list-templates`, template support
+
+### 🔧 Performance & Usability
+- **Offline-First Architecture**: Zero dependencies on external APIs or AI services
+- **Enhanced Error Handling**: Better fallbacks and graceful degradation
+- **Improved Startup Performance**: Lazy loading and optimized initialization
+- **Cross-Platform Compatibility**: Enhanced support for macOS, Linux, Windows
+
+### 🎨 Foundation for Customization
+- **Theme System Structure**: JSON-based theme configuration (cyberpunk theme included)
+- **Sound System Framework**: Audio notification system with placeholder files
+- **Plugin System Base**: Hooks for extending functionality (JSON logger plugin included)
+
+### 🛠️ Technical Improvements
+- **New Dependencies**: Added textual, plotext, pydub for enhanced features
+- **Modular Architecture**: Separated gamification, analytics, and TIL vault into dedicated modules
+- **Enhanced CLI**: 15+ new command-line options for comprehensive functionality
+- **Automatic Setup**: Default templates and gamification files created on first run
+
+### 💰 Support Updates
+- **Updated Support Links**: Moved from PayPal to Buy Me A Coffee
+- **Enhanced Documentation**: Comprehensive roadmap and feature documentation
+
 ## [0.5.0] - 2025-07-25
 
 ### 🔧 Critical Bug Fixes
