@@ -11,10 +11,14 @@ All notable changes to this project will be documented in this file.
   - 🟨 Epic (30 days): Monthly Master, Code Tsunami
   - 🟥 Legendary (90+ days): Legendary Coder, Commit Overlord
   - 🟪 Mythic (365 days): Code Deity
+  - Commands: `--achievements` to display gallery
 - **NEW: XP & Level System**: Earn XP based on lines changed, project weight, and commit complexity
   - 10 levels from Novice Coder to Programming Deity
   - Visual progress bars and level-up celebrations
   - Configurable XP weights per project
+  - Commands: `--xp` to show current status
+- **NEW: Automatic Integration**: Gamification data automatically shown in main commit check
+- **NEW: Streak Tracking**: Daily commit streaks with smart detection across repositories
 
 ### 📊 Analytics & Visualizations  
 - **NEW: ASCII Commit Heatmap**: GitHub-style heatmap with 365-day history (`--heatmap`)
@@ -27,10 +31,18 @@ All notable changes to this project will be documented in this file.
 - **NEW: TIL Templates**: Markdown templates for structured learning entries
   - Bugfix, Feature, Concept, Tool, Algorithm templates included
   - Custom template creation with variable substitution
+  - Command: `--list-templates` to show available templates
+  - Usage: `commit-checker til "Title" --template bugfix`
 - **NEW: TIL Vault Mode**: Individual markdown files instead of single log
+  - Each entry saved as separate file in `~/.commit-checker/tils/`
+  - Automatic date-based naming and organization
 - **NEW: Fuzzy Search**: Search TIL entries with highlighted matches (`--search-til`)
+  - Score-based ranking with highlighted matches
+  - Search across titles, content, and tags
 - **NEW: TIL from Diff**: Auto-generate TIL entries from git commits (`--til-from-diff`)
-- **Enhanced TIL Commands**: `--til-vault`, `--list-templates`, template support
+  - Parses git diffs for files changed, function names, statistics
+  - No AI required - pure git analysis
+- **Enhanced TIL Commands**: `--til-vault` (summary), `--list-templates`, template support
 
 ### 🔧 Performance & Usability
 - **Offline-First Architecture**: Zero dependencies on external APIs or AI services
@@ -44,10 +56,17 @@ All notable changes to this project will be documented in this file.
 - **Plugin System Base**: Hooks for extending functionality (JSON logger plugin included)
 
 ### 🛠️ Technical Improvements
-- **New Dependencies**: Added textual, plotext, pydub for enhanced features
+- **New Dependencies**: Added textual, plotext for enhanced features (pydub deferred)
 - **Modular Architecture**: Separated gamification, analytics, and TIL vault into dedicated modules
 - **Enhanced CLI**: 15+ new command-line options for comprehensive functionality
 - **Automatic Setup**: Default templates and gamification files created on first run
+
+### 🎯 New CLI Commands (15+ Added)
+- **Gamification**: `--achievements`, `--xp`
+- **Analytics**: `--heatmap`, `--heatmap-days N`, `--heatmap-export svg`, `--stats-lang`
+- **TIL Vault**: `--search-til "query"`, `--til-vault`, `--til-from-diff`, `--template NAME`, `--list-templates`
+- **Enhanced Integration**: All features automatically integrate with main `commit-checker` command
+- **Backwards Compatibility**: All existing commands continue to work unchanged
 
 ### 💰 Support Updates
 - **Updated Support Links**: Moved from PayPal to Buy Me A Coffee

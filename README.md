@@ -7,6 +7,32 @@ Automatically checks your daily commits — both **public (GitHub)** and **local
 
 ## ✨ Features
 
+### 🎮 **NEW: Gamification & Developer Progress (v0.6.0)**
+
+- ✅ **Achievement System** - Unlock badges with ASCII art (Common to Mythic rarity)
+- ✅ **XP & Level System** - Earn XP from commits, progress through 10 levels
+- ✅ **Streak Tracking** - Daily commit streaks with automatic achievement unlocking
+- ✅ **Visual Progress** - Unicode progress bars and level-up celebrations
+- ✅ **Smart XP Calculation** - Based on lines changed, deletions, and project weights
+- ✅ **Configurable Weights** - Set different XP multipliers per project
+
+### 📊 **NEW: Advanced Analytics & Visualizations (v0.6.0)**
+
+- ✅ **ASCII Commit Heatmap** - GitHub-style activity visualization (365 days)
+- ✅ **Language Breakdown** - Analyze coding languages across repositories
+- ✅ **SVG Export** - Export heatmaps for sharing and documentation
+- ✅ **Dynamic Mood System** - Smart status messages based on activity
+- ✅ **Visual Charts** - Unicode bar charts and activity indicators
+
+### 📚 **NEW: TIL Vault System (v0.6.0)**
+
+- ✅ **Template System** - 5 built-in templates (bugfix, feature, concept, tool, algorithm)
+- ✅ **Individual Files** - Each TIL entry as separate markdown file
+- ✅ **Fuzzy Search** - Search entries with highlighted matches and scoring
+- ✅ **Auto-generation** - Generate TIL entries from git commit diffs
+- ✅ **Tag Organization** - Automatic tag extraction and filtering
+- ✅ **Vault Management** - Comprehensive statistics and organization
+
 ### 🔧 Core Functionality
 
 - ✅ **Smart auto-detection** of git repositories
@@ -24,20 +50,13 @@ Automatically checks your daily commits — both **public (GitHub)** and **local
 - ✅ **Custom Commit Rules** - regex patterns for commit message validation
 - ✅ **Pre-commit Hook Installation** - optional Git hook setup
 
-### 📊 Statistics & Analytics
+### 📊 Enhanced Statistics & Repository Analysis
 
 - ✅ **ASCII Commit Charts** (`--stats`) showing 30-day trends
 - ✅ **Visual Repository Analysis** with Unicode bar charts (▁▂▃▄▅▆▇█)
 - ✅ **Multi-Repository Stats** across all local repositories
 - ✅ **Recent Activity Summary** with detailed commit breakdowns
-
-### 📚 Enhanced TIL (Today I Learned) System
-
-- ✅ **Tag Support** - organize entries with `#tags`
-- ✅ **Smart Filtering** - filter by tag with `--filter-tag`
-- ✅ **Export Functionality** - export to Markdown or JSON
-- ✅ **Enhanced Statistics** - tag counting and comprehensive analytics
-- ✅ **Integrated Editor Support** for TIL log management
+- ✅ **Repository Scanning** (`--scan`) with commit analysis
 
 ### 🔍 System Diagnostics & Health
 
@@ -121,7 +140,7 @@ commit-checker
 - `commit-checker --diagnose` - Run system diagnostics
 
 **Core functionality:**
-- `commit-checker` - Check today's commits
+- `commit-checker` - Check today's commits with gamification
 - `commit-checker --scan` - Scan repo folder for all git repositories  
 - `commit-checker --repos-summary` - Show full summary of all repos
 - `commit-checker --most-active` - Show most active repository today
@@ -129,9 +148,25 @@ commit-checker
 - `commit-checker --most-active --month` - Show most active repo this month
 - `commit-checker --stats` - Show ASCII commit trend charts (30 days)
 
-**Enhanced TIL (Today I Learned) commands:**
-- `commit-checker til "Your learning today"` - Add a TIL entry
-- `commit-checker til "Python async" --tag python` - Add TIL entry with tag
+**🎮 Gamification & Progress:**
+- `commit-checker --achievements` - Display achievement gallery with ASCII art
+- `commit-checker --xp` - Show current XP, level, and progress to next level
+- Automatic streak tracking and achievement unlocking
+- XP earned from commits based on lines changed and project weights
+
+**📊 Analytics & Visualizations:**
+- `commit-checker --heatmap` - Display ASCII commit heatmap (365 days)
+- `commit-checker --heatmap --days 90` - Custom timeframe heatmap
+- `commit-checker --heatmap-export svg` - Export heatmap to SVG file
+- `commit-checker --stats-lang` - Programming language breakdown with charts
+
+**📚 Enhanced TIL (Today I Learned) Vault System:**
+- `commit-checker til "Your learning today"` - Add a TIL entry to log
+- `commit-checker til "Fixed bug" --template bugfix` - Use template for vault entry
+- `commit-checker --list-templates` - Show available TIL templates
+- `commit-checker --til-vault` - Show TIL vault summary with stats
+- `commit-checker --search-til "async"` - Fuzzy search TIL entries
+- `commit-checker --til-from-diff` - Generate TIL from latest commit changes
 - `commit-checker --view-til` - View your complete TIL log
 - `commit-checker --view-til --filter-tag python` - View TIL entries by tag
 - `commit-checker --edit-til` - Edit TIL log in your default editor
@@ -249,6 +284,123 @@ commit-checker --reset-til
 
 ## 🔥 New Features in Action
 
+### 🎮 Gamification System
+```bash
+$ commit-checker
+🌐 GitHub: @AmariahAK
+😢 No public commits found today.
+
+🗂️  Scanning 1 local path(s):
+   📁 /Users/you/Documents/GitHub
+
+🟩 Local Commits:
+📁 Repository: commit-checker
+   📍 Path: /Users/you/Documents/GitHub/commit-checker
+   📊 3 commit(s) today:
+   e05feb7 feat: implement v0.6.0 - Offline Gamified Power Mode
+
+⚡ 3 commits today | +2305 XP | 1🔥 streak | 🚀 Coding machine!
+💫 +2305 XP earned today!
+🎉 LEVEL UP! You're now level 7!
+🏆 New achievements unlocked:
+   🟩 Hello World
+   🟨 Code Tsunami
+🔥 Current streak: 1 days
+
+$ commit-checker --xp
+⚡ Level 7: Framework Knight
+💫 Total XP: 4,499
+📊 Progress: [██░░░░░░░░░░░░░░░░░░] 12.5%
+🎯 Next Level: 3,501 XP needed
+📈 Commits Tracked: 2
+
+$ commit-checker --achievements
+🏆 Achievement Gallery
+==================================================
+
+🟩 COMMON BADGES
+   🟩 Hello World
+   Made your first tracked commit
+
+🟨 EPIC BADGES
+   🟨 Code Tsunami
+   Single commit with 500+ line changes
+```
+
+### 📊 Advanced Analytics
+```bash
+$ commit-checker --heatmap
+📅 Commit Heatmap (Last 365 days)
+==================================================
+
+01/28: ░ ░ ░ ░ ░ ░ ░
+02/04: ░ ░ ░ ░ ░ ░ ░
+...
+07/20: ░ ▓ ▒ ▒ ▒ ▒ ░
+07/27: ▓ █ ▓ ▒ ░ ░ ░
+
+Legend: ░ None  ▒ Low  ▓ Medium  █ High
+Max commits in a day: 5
+Last 7 days: 12 commits
+
+$ commit-checker --stats-lang
+📊 Programming Language Breakdown
+==================================================
+
+Python          [████████████████░░░░░░░░░░░░░░]  54.1% (3,274 lines, 47 files)
+JavaScript      [███████░░░░░░░░░░░░░░░░░░░░░░░]  23.2% (1,405 lines, 23 files)
+TypeScript      [████░░░░░░░░░░░░░░░░░░░░░░░░░░]  13.1% (793 lines, 12 files)
+CSS             [██░░░░░░░░░░░░░░░░░░░░░░░░░░░░]   6.8% (412 lines, 8 files)
+Markdown        [█░░░░░░░░░░░░░░░░░░░░░░░░░░░░░]   2.8% (169 lines, 5 files)
+
+📈 Total: 6,053 lines across 95 files
+```
+
+### 📚 TIL Vault System
+```bash
+$ commit-checker --list-templates
+📚 Available TIL templates:
+  • algorithm
+  • bugfix
+  • concept
+  • feature
+  • tool
+
+Usage: commit-checker til "Title" --template algorithm
+
+$ commit-checker til "Fixed async race condition" --template bugfix
+TIL created: /Users/you/.commit-checker/tils/2025-07-28-fixed-async-race-condition.md
+
+$ commit-checker --til-vault
+📚 TIL Vault Summary
+==================================================
+📁 Location: /Users/you/.commit-checker/tils/
+📄 Total entries: 5
+
+📝 Recent entries:
+  • 2025-07-28: Fixed async race condition #bugfix #async
+  • 2025-07-27: Implemented new caching layer #feature #performance
+  • 2025-07-26: Understanding Docker volumes #concept #docker
+
+🏷️  Popular tags:
+  #bugfix (2)
+  #feature (1)
+  #concept (1)
+
+$ commit-checker --search-til "async"
+🔍 Found 2 TIL entries:
+==================================================
+
+1. 📝 Fixed async race condition
+   📅 2025-07-28 | Score: 10
+   L1: # Fixed async race condition
+   L15: - Used asyncio.Lock() to prevent race conditions
+
+2. 📝 Understanding async patterns
+   📅 2025-07-26 | Score: 5
+   L8: - async/await syntax in Python
+```
+
 ### Interactive Setup Wizard
 ```bash
 $ commit-checker --init
@@ -336,7 +488,15 @@ my-website → ✅ 1 today | 🧮 156 total | 🕒 Today
 
 ## 🎉 Recent Updates
 
-### v0.5.0 - Interactive Wizards & Enhanced Analytics (Latest)
+### v0.6.0 - Offline Gamified Power Mode (Latest)
+- 🎮 **Complete Gamification** - Achievement system with ASCII art, XP levels, streak tracking
+- 📊 **Advanced Analytics** - ASCII heatmaps, language breakdown, SVG export, mood system
+- 📚 **TIL Vault System** - Templates, fuzzy search, auto-generation from diffs, individual files
+- ⚡ **Offline-First Architecture** - Zero external dependencies, pure git-powered analytics
+- 🔧 **Developer-Friendly Hooks** - Non-blocking git hooks for seamless integration
+- 🛠️ **15+ New Commands** - Comprehensive CLI with gamification, analytics, and vault features
+
+### v0.5.0 - Interactive Wizards & Enhanced Analytics
 - 🧙‍♂️ **Interactive Setup Wizard** - Complete guided configuration with `--init`
 - 📊 **ASCII Statistics** - Visual commit trends and repository analytics
 - 📚 **Enhanced TIL System** - Tags, filtering, and export functionality
