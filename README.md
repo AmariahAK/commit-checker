@@ -77,6 +77,8 @@ Automatically checks your daily commits — both **public (GitHub)** and **local
 
 ## 🚀 Quick Install (Recommended)
 
+> **v0.6.1 Update**: If you're experiencing uninstall issues or missing commands from v0.6.0, the latest version fixes all known issues including complete cleanup and standalone feature parity.
+
 ### **Method 1: Safe Installation** (Recommended - avoids encoding issues)
 ```bash
 curl -s https://raw.githubusercontent.com/AmariahAK/commit-checker/main/scripts/install-safe.sh | bash
@@ -297,7 +299,7 @@ $ commit-checker
 📁 Repository: commit-checker
    📍 Path: /Users/you/Documents/GitHub/commit-checker
    📊 3 commit(s) today:
-   e05feb7 feat: implement v0.6.0 - Offline Gamified Power Mode
+   e05feb7 feat: implement v0.6.1 - Critical Fixes & Enhanced Reliability
 
 ⚡ 3 commits today | +2305 XP | 1🔥 streak | 🚀 Coding machine!
 💫 +2305 XP earned today!
@@ -488,7 +490,14 @@ my-website → ✅ 1 today | 🧮 156 total | 🕒 Today
 
 ## 🎉 Recent Updates
 
-### v0.6.0 - Offline Gamified Power Mode (Latest)
+### v0.6.1 - Critical Fixes & Enhanced Reliability (Latest)
+- 🚨 **Complete Uninstallation** - Fixed `--uninstall` leaving shell startup commands, now removes ALL traces
+- 🛡️ **Bulletproof Wizard** - Enhanced `--init` validation prevents invalid input choices with clear error messages
+- 🔍 **Improved Detection** - Fixed duplicate repository paths and enhanced counting accuracy in setup
+- ⚡ **Standalone Completeness** - Added ALL missing commands (`--achievements`, `--xp`, `--heatmap`, etc.) to curl version
+- ✨ **Better UX** - Instant theme feedback, robust input validation, and enhanced error handling
+
+### v0.6.0 - Offline Gamified Power Mode
 - 🎮 **Complete Gamification** - Achievement system with ASCII art, XP levels, streak tracking
 - 📊 **Advanced Analytics** - ASCII heatmaps, language breakdown, SVG export, mood system
 - 📚 **TIL Vault System** - Templates, fuzzy search, auto-generation from diffs, individual files

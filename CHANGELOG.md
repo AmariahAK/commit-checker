@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.1] - 2025-07-28
+
+### 🚨 Critical Fixes
+- **Fixed complete uninstallation**: `--uninstall` now properly removes ALL traces including shell startup commands
+- **Enhanced wizard validation**: Fixed ability to enter invalid choices (letters, out-of-range numbers) in `--init` wizard
+- **Repository detection improvements**: Fixed duplicate path detection and improved repo counting accuracy
+- **Standalone script completeness**: Added ALL missing commands (`--achievements`, `--xp`, `--heatmap`, etc.) to standalone version
+
+### 🛠️ Technical Improvements
+- **Shell cleanup**: Automatically removes auto-run commands from `~/.zshrc`, `~/.bashrc`, `~/.bash_profile`, `~/.profile`, Fish config
+- **Input validation framework**: Consistent validation patterns with clear error messages across all user inputs
+- **Path resolution**: Smart handling of symlinks and path variations to eliminate false duplicates
+- **Enhanced module loading**: Auto-download missing modules for standalone installations
+
+### 🎯 User Experience
+- **Instant theme feedback**: Theme selection now shows immediate confirmation ("✨ Theme set to: tech")
+- **Better error messages**: Clear, actionable error messages throughout the wizard
+- **Support link update**: Updated from PayPal to Buy Me A Coffee
+- **Standalone feature parity**: All v0.6.0 features now available in curl-installed version
+
+### 🐛 Bug Fixes
+- Fixed wizard accepting invalid input choices and crashing
+- Fixed incomplete cleanup leaving commit-checker auto-run commands after uninstall
+- Fixed duplicate repository entries in setup wizard
+- Fixed missing gamification and analytics commands in standalone script
+- Fixed incorrect repository counting in path detection
+- Fixed missing validation on final confirmation prompt
+
 ## [0.6.0] - 2025-07-28
 
 ### 🎮 Gamification & Developer Progress
