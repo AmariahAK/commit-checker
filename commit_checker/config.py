@@ -39,6 +39,14 @@ def load_config():
     if "til_path" not in config:
         config["til_path"] = None  # Will use default path
     
+    if "streak_milestones" not in config:
+        config["streak_milestones"] = {
+            5: "🎉 Streak Milestone Reached: 5 days! 🚀\nKeep it up, Coding Wizard!",
+            10: "🔥 Double Digits! 10-day streak! 💪\nYou're on fire!",
+            30: "🌟 Monthly Mastery! 30 days! 👑\nLegendary dedication!",
+            100: "💎 Century of Code! 100 days! 🏆\nYou are unstoppable!"
+        }
+    
     # Save updated config if any changes were made
     save_config(config)
     

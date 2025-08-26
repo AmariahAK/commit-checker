@@ -410,3 +410,214 @@ def render_commit_trend(weekly_stats):
         output.append(f"{week_label}: [{bar}] {week['commits']} commits")
     
     return "\n".join(output)
+
+
+def analyze_commit_message(message):
+    """Analyze commit message and provide feedback"""
+    suggestions = []
+    
+    # Rule 1: Should start with a verb
+    verbs = ['add', 'fix', 'update', 'remove', 'refactor', 'improve', 'create', 'delete', 
+            'implement', 'enhance', 'optimize', 'clean', 'merge', 'bump', 'revert']
+    
+    if not any(message.lower().startswith(verb) for verb in verbs):
+        suggestions.append("Consider starting with an action verb (Add/Fix/Update/etc.)")
+    
+    # Rule 2: Check for vague messages
+    vague_patterns = ['update code', 'fix stuff', 'changes', 'misc', 'wip', 'temp', 'test']
+    if any(pattern in message.lower() for pattern in vague_patterns):
+        suggestions.append("Message is too vague. Be more specific about what changed")
+    
+    # Rule 3: Check length
+    if len(message) < 10:
+        suggestions.append("Message is too short. Add more detail about the change")
+    elif len(message) > 72:
+        suggestions.append("Message is quite long. Consider keeping first line under 72 characters")
+    
+    # Rule 4: Check for proper capitalization
+    if message and not message[0].isupper():
+        suggestions.append("Consider starting with a capital letter")
+    
+    # Rule 5: Check for ending period
+    if message.endswith('.'):
+        suggestions.append("Avoid ending commit messages with a period")
+    
+    return suggestions
+
+
+def get_commit_time_stats(local_paths, days=30):
+    """Analyze commit timing patterns"""
+    if not local_paths:
+        return {}
+    
+    time_buckets = {
+        "morning": 0,    # 6 AM - 12 PM
+        "afternoon": 0,  # 12 PM - 6 PM  
+        "evening": 0,    # 6 PM - 12 AM
+        "night": 0       # 12 AM - 6 AM
+    }
+    
+    since_date = (datetime.now() - timedelta(days=days)).strftime('%Y-%m-%d')
+    
+    for path in local_paths:
+        if not path or not os.path.exists(path):
+            continue
+            
+        for root, dirs, files in os.walk(path):
+            if '.git' in dirs:
+                try:
+                    # Get commit timestamps
+                    log_output = subprocess.check_output([
+                        "git", "--git-dir", os.path.join(root, ".git"),
+                        "--work-tree", root,
+                        "log", f"--since={since_date}", "--format=%at"
+                    ], stderr=subprocess.DEVNULL).decode("utf-8").strip()
+                    
+                    if log_output:
+                        for timestamp in log_output.split('\n'):
+                            if timestamp.strip():
+                                # Convert timestamp to hour
+                                dt = datetime.fromtimestamp(int(timestamp))
+                                hour = dt.hour
+                                
+                                if 6 <= hour < 12:
+                                    time_buckets["morning"] += 1
+                                elif 12 <= hour < 18:
+                                    time_buckets["afternoon"] += 1
+                                elif 18 <= hour < 24:
+                                    time_buckets["evening"] += 1
+                                else:  # 0 <= hour < 6
+                                    time_buckets["night"] += 1
+                    
+                except Exception:
+                    continue
+                dirs.clear()
+    
+    return time_buckets
+
+
+def render_time_stats(time_buckets):
+    """Render ASCII chart of commit time statistics"""
+    if not time_buckets or not any(time_buckets.values()):
+        return "⏰ No commit time data available."
+    
+    output = []
+    output.append("⏰ Commit Time Stats (Last 30 Days)")
+    output.append("=" * 40)
+    output.append("")
+    
+    # Calculate max for scaling
+    max_commits = max(time_buckets.values()) if time_buckets.values() else 1
+    
+    time_labels = {
+        "morning": "Morning (6 AM–12 PM)",
+        "afternoon": "Afternoon (12 PM–6 PM)", 
+        "evening": "Evening (6 PM–12 AM)",
+        "night": "Night (12 AM–6 AM)"
+    }
+    
+    for time_period, count in time_buckets.items():
+        # Create bar
+        bar_length = 20
+        if max_commits > 0:
+            filled = int((count / max_commits) * bar_length)
+        else:
+            filled = 0
+        
+        bar = "█" * filled + "░" * (bar_length - filled)
+        label = time_labels.get(time_period, time_period)
+        
+        output.append(f"{label}: [{bar}] {count} commits")
+    
+    return "\n".join(output)
+
+
+def get_dashboard_stats(local_paths, config):
+    """Get quick dashboard statistics"""
+    from .gamification import process_commits_for_gamification, load_xp_data, get_current_streak
+    from .checker import check_local_commits, get_most_active_repo
+    
+    stats = {}
+    
+    # Get today's commits
+    local_commits = check_local_commits(local_paths)
+    stats['commits_today'] = sum(commit[3] for commit in local_commits) if local_commits else 0
+    
+    # Get streak
+    stats['current_streak'] = get_current_streak(local_paths)
+    
+    # Get XP and level data
+    xp_data = load_xp_data()
+    stats['level'] = xp_data.get('level', 1)
+    stats['total_xp'] = xp_data.get('total_xp', 0)
+    
+    # Calculate XP for next level
+    from .gamification import XP_LEVELS
+    if stats['level'] < len(XP_LEVELS):
+        next_level_info = next((l for l in XP_LEVELS if l['level'] == stats['level'] + 1), None)
+        if next_level_info:
+            stats['xp_needed'] = next_level_info['threshold'] - stats['total_xp']
+            current_level_threshold = next((l for l in XP_LEVELS if l['level'] == stats['level']), {})['threshold']
+            stats['xp_progress'] = stats['total_xp'] - current_level_threshold
+            stats['xp_total_needed'] = next_level_info['threshold'] - current_level_threshold
+        else:
+            stats['xp_needed'] = 0
+    else:
+        stats['xp_needed'] = 0
+        
+    # Get most active repo
+    repo_folder = config.get('repo_folder')
+    if repo_folder:
+        most_active = get_most_active_repo(repo_folder, "day")
+        stats['top_repo'] = most_active['name'] if most_active and most_active['commits'] > 0 else None
+        stats['top_repo_commits'] = most_active['commits'] if most_active else 0
+    else:
+        stats['top_repo'] = None
+        stats['top_repo_commits'] = 0
+    
+    return stats
+
+
+def render_dashboard(stats, config):
+    """Render quick stats dashboard"""
+    output = []
+    output.append("📊 Today's Dashboard")
+    output.append("=" * 30)
+    output.append("")
+    
+    # Format based on output mode
+    is_emoji = config.get('output', 'emoji') == 'emoji'
+    
+    if is_emoji:
+        output.append(f"🟩 Commits Today: {stats['commits_today']}")
+        output.append(f"🔥 Streak: {stats['current_streak']} days")
+        
+        # XP Progress bar
+        if stats.get('xp_needed', 0) > 0:
+            progress_pct = int((stats.get('xp_progress', 0) / stats.get('xp_total_needed', 1)) * 100)
+            bar_length = 15
+            filled = int((progress_pct / 100) * bar_length)
+            progress_bar = "█" * filled + "░" * (bar_length - filled)
+            output.append(f"⚡ Level {stats['level']}: [{progress_bar}] {stats['total_xp']}/{stats['total_xp'] + stats['xp_needed']} XP")
+        else:
+            output.append(f"⚡ Level {stats['level']}: MAX LEVEL")
+        
+        if stats.get('top_repo'):
+            output.append(f"📁 Top Repo: {stats['top_repo']} ({stats['top_repo_commits']} commits)")
+        else:
+            output.append("📁 Top Repo: None today")
+    else:
+        output.append(f"Commits Today: {stats['commits_today']}")
+        output.append(f"Streak: {stats['current_streak']} days")
+        
+        if stats.get('xp_needed', 0) > 0:
+            output.append(f"Level {stats['level']}: {stats['total_xp']}/{stats['total_xp'] + stats['xp_needed']} XP")
+        else:
+            output.append(f"Level {stats['level']}: MAX LEVEL")
+        
+        if stats.get('top_repo'):
+            output.append(f"Top Repo: {stats['top_repo']} ({stats['top_repo_commits']} commits)")
+        else:
+            output.append("Top Repo: None today")
+    
+    return "\n".join(output)

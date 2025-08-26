@@ -448,6 +448,34 @@ def display_vault_summary(config=None) -> str:
     return "\n".join(output)
 
 
+def add_custom_template(name, structure):
+    """Add a custom TIL template"""
+    ensure_vault_directories()
+    
+    # Sanitize template name
+    safe_name = re.sub(r'[^\w\-_]', '', name.lower())
+    if not safe_name:
+        return False, "Invalid template name. Use only letters, numbers, hyphens, and underscores."
+    
+    template_path = os.path.join(TEMPLATES_PATH, f"{safe_name}.md")
+    
+    # Replace placeholders in structure with proper template variables
+    template_content = structure.replace('{title}', '{{title}}')
+    template_content = template_content.replace('{date}', '{{date}}')
+    template_content = template_content.replace('{timestamp}', '{{timestamp}}')
+    
+    # Add basic template structure if none provided
+    if not template_content.startswith('#'):
+        template_content = f"# {{{{title}}}}\n\n**Date:** {{{{date}}}}\n**Tags:** #{safe_name}\n\n{template_content}"
+    
+    try:
+        with open(template_path, 'w', encoding='utf-8') as f:
+            f.write(template_content)
+        return True, f"Custom template '{safe_name}' added successfully"
+    except Exception as e:
+        return False, f"Failed to create template: {e}"
+
+
 def create_default_templates():
     """Create default TIL templates"""
     ensure_vault_directories()

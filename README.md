@@ -161,11 +161,15 @@ commit-checker
 - `commit-checker --heatmap --days 90` - Custom timeframe heatmap
 - `commit-checker --heatmap-export svg` - Export heatmap to SVG file
 - `commit-checker --stats-lang` - Programming language breakdown with charts
+- `commit-checker --time-stats` - Commit timing analysis (morning/afternoon/evening/night)
+- `commit-checker --dashboard` - Quick stats overview (commits today, streak, XP, top repo)
+- `commit-checker --suggest` - Analyze latest commit message and suggest improvements
 
 **📚 Enhanced TIL (Today I Learned) Vault System:**
 - `commit-checker til "Your learning today"` - Add a TIL entry to log
 - `commit-checker til "Fixed bug" --template bugfix` - Use template for vault entry
 - `commit-checker --list-templates` - Show available TIL templates
+- `commit-checker --add-template NAME "STRUCTURE"` - Create custom TIL templates
 - `commit-checker --til-vault` - Show TIL vault summary with stats
 - `commit-checker --search-til "async"` - Fuzzy search TIL entries
 - `commit-checker --til-from-diff` - Generate TIL from latest commit changes
@@ -490,12 +494,50 @@ my-website → ✅ 1 today | 🧮 156 total | 🕒 Today
 
 ## 🎉 Recent Updates
 
-### v0.6.1 - Critical Fixes & Enhanced Reliability (Latest)
+### v0.6.2 - Enhanced Feedback & Advanced Analytics (Latest)
+- 🔍 **Commit Message Analysis** - New `--suggest` command analyzes and improves commit messages
+- 📊 **Quick Dashboard** - New `--dashboard` command for instant daily overview
+- ⏰ **Time Analytics** - New `--time-stats` command shows coding patterns by time of day
+- 🎉 **Streak Milestones** - Customizable celebrations for 5, 10, 30, 100+ day streaks
+- 📝 **Custom TIL Templates** - Create personalized templates with `--add-template`
+- ⚔️ **XP System Rebalanced** - Fixed inflation with logarithmic scaling and level-based caps
+- 🏆 **New Achievements** - Secret achievements, polyglot badges, and midnight coder rewards
+
+### v0.6.1 - Critical Fixes & Enhanced Reliability
 - 🚨 **Complete Uninstallation** - Fixed `--uninstall` leaving shell startup commands, now removes ALL traces
 - 🛡️ **Bulletproof Wizard** - Enhanced `--init` validation prevents invalid input choices with clear error messages
 - 🔍 **Improved Detection** - Fixed duplicate repository paths and enhanced counting accuracy in setup
 - ⚡ **Standalone Completeness** - Added ALL missing commands (`--achievements`, `--xp`, `--heatmap`, etc.) to curl version
 - ✨ **Better UX** - Instant theme feedback, robust input validation, and enhanced error handling
+
+### New v0.6.2 Features in Action
+```bash
+$ commit-checker --dashboard
+📊 Today's Dashboard
+==============================
+🟩 Commits Today: 3
+🔥 Streak: 12 days
+⚡ Level 5: [████████░░░░░░░] 650/700 XP
+📁 Top Repo: commit-checker (2 commits)
+
+$ commit-checker --suggest
+🔍 Latest commit in my-website: "updated code"
+
+💡 Suggestions:
+  • Consider starting with an action verb (Add/Fix/Update/etc.)
+  • Message is too vague. Be more specific about what changed
+
+$ commit-checker --time-stats
+⏰ Commit Time Stats (Last 30 Days)
+========================================
+Morning (6 AM–12 PM):   [███░░░░░░░░░░░░░░░░░] 15 commits
+Afternoon (12 PM–6 PM): [████████████░░░░░░░░] 32 commits  
+Evening (6 PM–12 AM):   [████████░░░░░░░░░░░░] 21 commits
+Night (12 AM–6 AM):     [█░░░░░░░░░░░░░░░░░░░] 3 commits
+
+$ commit-checker --add-template learning "What I learned: {description}\nWhy it matters: {impact}"
+Custom template 'learning' added successfully
+```
 
 ### v0.6.0 - Offline Gamified Power Mode
 - 🎮 **Complete Gamification** - Achievement system with ASCII art, XP levels, streak tracking

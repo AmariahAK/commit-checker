@@ -2,6 +2,75 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.2] - 2025-08-26
+
+### 🔍 **Enhanced Commit Message Feedback**
+- **NEW: `--suggest` command** - Analyzes latest commit messages with rule-based checks
+- **Smart suggestions** for verb usage, vague messages, length, and capitalization
+- **Context-aware feedback** respects emoji/plain output mode preference
+- **Repository detection** automatically finds and analyzes most recent commit across all monitored repos
+
+### 📊 **Quick Stats Dashboard**
+- **NEW: `--dashboard` command** - Concise overview of today's coding activity
+- **Real-time metrics**: commits today, current streak, XP progress, most active repo
+- **Visual progress bars** for level advancement with Unicode blocks
+- **Consistent theming** respects user's emoji/plain text preference
+- **Lightweight design** for quick daily status checks
+
+### ⏰ **Lightweight Commit Time Analysis**
+- **NEW: `--time-stats` command** - Commit timing patterns over last 30 days
+- **Time buckets**: Morning (6AM-12PM), Afternoon (12PM-6PM), Evening (6PM-12AM), Night (12AM-6AM)
+- **ASCII bar charts** showing commit distribution by time of day
+- **Pattern insights** for optimizing coding schedules and productivity
+
+### 🎉 **Customizable Streak Notifications**
+- **Milestone celebrations** with ASCII art for 5, 10, 30, and 100-day streaks
+- **Configurable messages** stored in config.json for personalization
+- **Contextual display** only shows when streak milestones are reached
+- **Motivational messaging** to encourage consistency
+
+### 📝 **TIL Template Customization**
+- **NEW: `--add-template` command** - Create custom TIL templates
+- **Variable substitution** supports {{title}}, {{date}}, {{timestamp}} placeholders
+- **Smart structure** automatically adds proper markdown headers if missing
+- **Template validation** with sanitized naming and error handling
+
+### ⚔️ **XP & Leveling System Overhaul**
+- **🔧 Fixed XP inflation** - Logarithmic scaling prevents massive XP jumps (was +7569, now capped at ~50)
+- **Exponential level curve** - Soulslike progression (easy early levels, very difficult later)
+- **Diminishing returns formula** - `final_XP = raw_XP / (1 + (level / 10))`
+- **Repo weighting system** - Small repos give proportionally less XP at higher levels
+- **Dynamic bonuses**: +10 XP for first commit of day, +5 XP for weekend commits
+- **Level-based XP caps** - Maximum XP per commit scales with current level
+- **Improved XP calculation** - Better parsing of git diff stats with files changed bonus
+
+### 🏆 **Achievements System Expansion**
+- **NEW achievements**: Consistency King (5-day), Double Digits (10 commits), Centennial Coder (100-day streak)
+- **Secret achievements**: Midnight Coder (2-4 AM commits), Code Polyglot (5+ languages), Weekend Warrior
+- **Enhanced ASCII art** - Multi-line display with full terminal width utilization
+- **Rarity system expansion** - Better distribution across Common, Rare, Epic, Legendary, Mythic
+- **Special conditions** - Time-based and language-based achievement triggers
+- **Improved unlock detection** - More reliable achievement progression tracking
+
+### 🛠️ **Technical Improvements**
+- **Anti-inflation architecture** - Logarithmic XP scaling with level-based penalties
+- **Smart git parsing** - Enhanced diff analysis with insertions, deletions, and files changed
+- **Performance optimization** - Reduced XP calculation overhead
+- **Config migration** - Automatic addition of new config fields (streak_milestones, xp_weights)
+- **Error handling** - Graceful fallbacks for all new analytics functions
+
+### 🎯 **New CLI Commands**
+- `--suggest` - Commit message analysis and improvement suggestions
+- `--dashboard` - Quick stats overview (commits, streak, XP, top repo)
+- `--time-stats` - Commit timing analysis with visual charts
+- `--add-template NAME "STRUCTURE"` - Create custom TIL templates
+
+### 📈 **User Experience Enhancements**
+- **Milestone celebrations** appear automatically during normal commit checking
+- **Contextual suggestions** provide actionable feedback for commit messages
+- **Unified theming** across all new features respects user preferences
+- **Progressive disclosure** - Advanced features don't clutter basic usage
+
 ## [0.6.1] - 2025-07-28
 
 ### 🚨 Critical Fixes

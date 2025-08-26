@@ -6,18 +6,21 @@ from datetime import datetime
 
 # Handle imports for both standalone and package modes
 try:
-    from .checker import check_github_commits, check_local_commits, scan_repos, get_most_active_repo
+    from .checker import check_github_commits, check_local_commits, scan_repos, get_most_active_repo, get_latest_commit_message
     from .config import config_exists, load_config, prompt_config, get_auto_config, save_config, delete_config
     from .updater import check_for_updates, check_pending_update_on_startup, manual_update_check
     from .bootstrap import bootstrap
     from .til import add_til_entry, view_til, edit_til, reset_til, delete_til, get_til_stats, filter_til_by_tag, export_til
     from .wizard import interactive_setup_wizard, show_commit_stats, run_diagnostics
     from .gamification import (display_achievements, display_xp_status, process_commits_for_gamification, 
-                              create_default_templates, ensure_gamification_files)
+                              create_default_templates, ensure_gamification_files, check_streak_milestone)
     from .analytics import (get_commit_heatmap_data, render_ascii_heatmap, get_language_stats, 
-                           render_language_pie_chart, get_mood_commit_line, export_heatmap_svg)
+                           render_language_pie_chart, get_mood_commit_line, export_heatmap_svg,
+                           analyze_commit_message, get_commit_time_stats, render_time_stats,
+                           get_dashboard_stats, render_dashboard)
     from .til_vault import (create_til_from_template, search_til_vault, display_search_results,
-                           create_til_from_latest_commit, display_vault_summary, list_templates)
+                           create_til_from_latest_commit, display_vault_summary, list_templates,
+                           add_custom_template)
 except ImportError:
     # Standalone mode - load modules directly
     current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -42,6 +45,7 @@ except ImportError:
         check_local_commits = checker.check_local_commits
         scan_repos = checker.scan_repos
         get_most_active_repo = checker.get_most_active_repo
+        get_latest_commit_message = checker.get_latest_commit_message
         config_exists = config.config_exists
         load_config = config.load_config
         prompt_config = config.prompt_config
@@ -68,6 +72,7 @@ except ImportError:
         display_xp_status = gamification.display_xp_status
         process_commits_for_gamification = gamification.process_commits_for_gamification
         ensure_gamification_files = gamification.ensure_gamification_files
+        check_streak_milestone = gamification.check_streak_milestone
         
         # Analytics imports
         get_commit_heatmap_data = analytics.get_commit_heatmap_data
@@ -76,6 +81,11 @@ except ImportError:
         render_language_pie_chart = analytics.render_language_pie_chart
         get_mood_commit_line = analytics.get_mood_commit_line
         export_heatmap_svg = analytics.export_heatmap_svg
+        analyze_commit_message = analytics.analyze_commit_message
+        get_commit_time_stats = analytics.get_commit_time_stats
+        render_time_stats = analytics.render_time_stats
+        get_dashboard_stats = analytics.get_dashboard_stats
+        render_dashboard = analytics.render_dashboard
         
         # TIL Vault imports
         create_til_from_template = til_vault.create_til_from_template
@@ -85,6 +95,7 @@ except ImportError:
         display_vault_summary = til_vault.display_vault_summary
         list_templates = til_vault.list_templates
         create_default_templates = til_vault.create_default_templates
+        add_custom_template = til_vault.add_custom_template
         
         # Simple bootstrap function
         def bootstrap():
@@ -329,6 +340,9 @@ def main():
     parser.add_argument("--heatmap-days", type=int, default=365, help="Days to include in heatmap (default: 365)")
     parser.add_argument("--heatmap-export", choices=["svg"], help="Export heatmap to SVG file")
     parser.add_argument("--stats-lang", action="store_true", help="Show programming language breakdown")
+    parser.add_argument("--time-stats", action="store_true", help="Show commit time analysis")
+    parser.add_argument("--dashboard", action="store_true", help="Show quick stats dashboard")
+    parser.add_argument("--suggest", action="store_true", help="Analyze latest commit message and suggest improvements")
     
     # Enhanced TIL features
     parser.add_argument("--search-til", type=str, help="Fuzzy search TIL entries")
@@ -336,6 +350,7 @@ def main():
     parser.add_argument("--til-from-diff", action="store_true", help="Create TIL from latest commit diff")
     parser.add_argument("--template", type=str, help="Use template for TIL entry")
     parser.add_argument("--list-templates", action="store_true", help="List available TIL templates")
+    parser.add_argument("--add-template", type=str, nargs=2, metavar=('NAME', 'STRUCTURE'), help="Add custom TIL template")
     
     # TIL (Today I Learned) functionality
     parser.add_argument("til", nargs="*", help="Add a 'Today I Learned' entry")
@@ -443,6 +458,63 @@ def main():
         print(render_language_pie_chart(language_stats))
         sys.exit(0)
     
+    # Handle new v0.6.2 analytics commands
+    if args.time_stats:
+        local_paths = config.get('local_paths', [])
+        if not local_paths:
+            print("❌ No local paths configured. Run --init or --setup first.")
+            sys.exit(1)
+        
+        time_buckets = get_commit_time_stats(local_paths)
+        print(render_time_stats(time_buckets))
+        sys.exit(0)
+    
+    if args.dashboard:
+        local_paths = config.get('local_paths', [])
+        if not local_paths:
+            print("❌ No local paths configured. Run --init or --setup first.")
+            sys.exit(1)
+        
+        stats = get_dashboard_stats(local_paths, config)
+        print(render_dashboard(stats, config))
+        sys.exit(0)
+    
+    if args.suggest:
+        local_paths = config.get('local_paths', [])
+        if not local_paths:
+            print("❌ No local paths configured. Run --init or --setup first.")
+            sys.exit(1)
+        
+        latest_commit = get_latest_commit_message(local_paths)
+        if not latest_commit:
+            print("❌ No commits found to analyze.")
+            sys.exit(1)
+        
+        suggestions = analyze_commit_message(latest_commit['message'])
+        
+        # Format output based on config
+        output_mode = config.get('output', 'emoji')
+        if output_mode == 'emoji':
+            print(f"🔍 Latest commit in {latest_commit['repo']}: \"{latest_commit['message']}\"")
+            print()
+            if suggestions:
+                print("💡 Suggestions:")
+                for suggestion in suggestions:
+                    print(f"  • {suggestion}")
+            else:
+                print("✅ Commit message looks good!")
+        else:
+            print(f"Latest commit in {latest_commit['repo']}: \"{latest_commit['message']}\"")
+            print()
+            if suggestions:
+                print("Suggestions:")
+                for suggestion in suggestions:
+                    print(f"  - {suggestion}")
+            else:
+                print("Commit message looks good!")
+        
+        sys.exit(0)
+    
     # Handle enhanced TIL commands
     if args.search_til:
         results = search_til_vault(args.search_til, config)
@@ -474,6 +546,12 @@ def main():
             print("📚 No templates found. Creating default templates...")
             create_default_templates()
             print("✅ Default templates created!")
+        sys.exit(0)
+    
+    if args.add_template:
+        name, structure = args.add_template
+        success, result = add_custom_template(name, structure)
+        print(result)
         sys.exit(0)
     
     # Handle TIL commands
@@ -685,6 +763,11 @@ def main():
         
         if gamification_data["current_streak"] > 0:
             output(f"🔥 Current streak: {gamification_data['current_streak']} days")
+            
+            # Check for streak milestone
+            milestone_message = check_streak_milestone(gamification_data["current_streak"], config)
+            if milestone_message:
+                output(f"\n{milestone_message}")
 
 if __name__ == "__main__":
     main()

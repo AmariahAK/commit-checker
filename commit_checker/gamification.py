@@ -149,21 +149,105 @@ ACHIEVEMENTS = {
             "   ██║   ███████║╚██████╔╝",
             "   ╚═╝   ╚══════╝ ╚═════╝ "
         ]
+    },
+    "streak_5": {
+        "name": "Consistency King",
+        "description": "5-day commit streak",
+        "rarity": "common",
+        "emoji": "🟩",
+        "ascii": [
+            "███████╗",
+            "██╔════╝",
+            "███████╗",
+            "╚════██║",
+            "███████║",
+            "╚══════╝"
+        ]
+    },
+    "streak_100": {
+        "name": "Centennial Coder",
+        "description": "100-day commit streak",
+        "rarity": "mythic",
+        "emoji": "🟪",
+        "ascii": [
+            "  ██╗ ██████╗  ██████╗ ",
+            " ███║██╔═████╗██╔═████╗",
+            " ╚██║██║██╔██║██║██╔██║",
+            "  ██║████╔╝██║████╔╝██║",
+            "  ██║╚██████╔╝╚██████╔╝",
+            "  ╚═╝ ╚═════╝  ╚═════╝ "
+        ]
+    },
+    "commits_10": {
+        "name": "Double Digits",
+        "description": "Made 10 total commits",
+        "rarity": "common",
+        "emoji": "🟩",
+        "ascii": [
+            " ██╗ ██████╗ ",
+            "███║██╔═████╗",
+            "╚██║██║██╔██║",
+            " ██║████╔╝██║",
+            " ██║╚██████╔╝",
+            " ╚═╝ ╚═════╝ "
+        ]
+    },
+    "polyglot": {
+        "name": "Code Polyglot",
+        "description": "Commits in 5+ programming languages",
+        "rarity": "rare",
+        "emoji": "🟦",
+        "ascii": [
+            "██████╗  ██████╗ ██╗   ██╗",
+            "██╔══██╗██╔═████╗██║   ██║",
+            "██████╔╝██║██╔██║██║   ██║",
+            "██╔═══╝ ████╔╝██║██║   ██║",
+            "██║     ╚██████╔╝╚██████╔╝",
+            "╚═╝      ╚═════╝  ╚═════╝ "
+        ]
+    },
+    "midnight_coder": {
+        "name": "Midnight Coder",
+        "description": "Commit between 2 AM and 4 AM",
+        "rarity": "rare",
+        "emoji": "🟦",
+        "ascii": [
+            "███╗   ███╗██╗██████╗ ",
+            "████╗ ████║██║██╔══██╗",
+            "██╔████╔██║██║██║  ██║",
+            "██║╚██╔╝██║██║██║  ██║",
+            "██║ ╚═╝ ██║██║██████╔╝",
+            "╚═╝     ╚═╝╚═╝╚═════╝ "
+        ]
+    },
+    "weekend_warrior": {
+        "name": "Weekend Warrior",
+        "description": "10+ commits on weekends",
+        "rarity": "rare",
+        "emoji": "🟦",
+        "ascii": [
+            "██╗    ██╗██╗    ██╗",
+            "██║    ██║██║    ██║",
+            "██║ █╗ ██║██║ █╗ ██║",
+            "██║███╗██║██║███╗██║",
+            "╚███╔███╔╝╚███╔███╔╝",
+            " ╚══╝╚══╝  ╚══╝╚══╝ "
+        ]
     }
 }
 
-# XP Level thresholds
+# XP Level thresholds - Exponential curve (Soulslike progression)
 XP_LEVELS = [
     {"level": 1, "threshold": 0, "title": "Novice Coder"},
-    {"level": 2, "threshold": 100, "title": "Code Apprentice"},
-    {"level": 3, "threshold": 250, "title": "Script Warrior"},
-    {"level": 4, "threshold": 500, "title": "Function Master"},
-    {"level": 5, "threshold": 1000, "title": "Class Hero"},
-    {"level": 6, "threshold": 2000, "title": "Module Sage"},
-    {"level": 7, "threshold": 4000, "title": "Framework Knight"},
-    {"level": 8, "threshold": 8000, "title": "Architecture Lord"},
-    {"level": 9, "threshold": 15000, "title": "Code Overlord"},
-    {"level": 10, "threshold": 30000, "title": "Programming Deity"}
+    {"level": 2, "threshold": 50, "title": "Code Apprentice"},
+    {"level": 3, "threshold": 150, "title": "Script Warrior"},
+    {"level": 4, "threshold": 350, "title": "Function Master"},
+    {"level": 5, "threshold": 700, "title": "Class Hero"},
+    {"level": 6, "threshold": 1300, "title": "Module Sage"},
+    {"level": 7, "threshold": 2500, "title": "Framework Knight"},
+    {"level": 8, "threshold": 4500, "title": "Architecture Lord"},
+    {"level": 9, "threshold": 8000, "title": "Code Overlord"},
+    {"level": 10, "threshold": 15000, "title": "Programming Deity"}
 ]
 
 
@@ -209,7 +293,7 @@ def save_xp_data(data):
 
 
 def calculate_commit_xp(repo_path, commit_hash, config):
-    """Calculate XP for a specific commit based on diff stats"""
+    """Calculate XP for a specific commit based on diff stats with anti-inflation measures"""
     try:
         # Get diff stats for the commit
         diff_output = subprocess.check_output([
@@ -219,46 +303,110 @@ def calculate_commit_xp(repo_path, commit_hash, config):
         ], stderr=subprocess.DEVNULL).decode("utf-8").strip()
         
         if not diff_output:
-            return 0
+            return get_base_commit_xp(config)
         
         # Parse insertions and deletions
-        insertions = deletions = 0
+        insertions = deletions = files_changed = 0
         for line in diff_output.split('\n'):
-            if 'insertion' in line or 'deletion' in line:
-                parts = line.split()
-                for i, part in enumerate(parts):
+            if 'file' in line and 'changed' in line:
+                # Parse summary line: "X files changed, Y insertions(+), Z deletions(-)"
+                parts = line.split(',')
+                for part in parts:
                     if 'insertion' in part:
-                        insertions = int(parts[i-1]) if parts[i-1].isdigit() else 0
+                        nums = [int(s) for s in part.split() if s.isdigit()]
+                        if nums:
+                            insertions = nums[0]
                     elif 'deletion' in part:
-                        deletions = int(parts[i-1]) if parts[i-1].isdigit() else 0
+                        nums = [int(s) for s in part.split() if s.isdigit()]
+                        if nums:
+                            deletions = nums[0]
+                    elif 'changed' in part:
+                        nums = [int(s) for s in part.split() if s.isdigit()]
+                        if nums:
+                            files_changed = nums[0]
         
-        # Get repo name
+        # Get repo name and current level for scaling
         repo_name = os.path.basename(repo_path)
+        xp_data = load_xp_data()
+        current_level = xp_data.get('level', 1)
         
         # Load XP weights from config
         xp_weights = config.get('xp_weights', {
-            'insertions': 1,
-            'deletions': 0.5,
+            'insertions': 0.5,  # Reduced from 1.0
+            'deletions': 0.3,   # Reduced from 0.5
+            'files': 2.0,       # Bonus for touching multiple files
             'projects': {}
         })
         
-        # Calculate base XP
-        base_xp = (insertions * xp_weights.get('insertions', 1) + 
-                   deletions * xp_weights.get('deletions', 0.5))
+        # Calculate base XP with diminishing returns
+        base_xp = (
+            insertions * xp_weights.get('insertions', 0.5) + 
+            deletions * xp_weights.get('deletions', 0.3) +
+            files_changed * xp_weights.get('files', 2.0)
+        )
+        
+        # Apply logarithmic scaling to prevent inflation
+        if base_xp > 0:
+            import math
+            scaled_xp = math.log(1 + base_xp) * 8  # Logarithmic scaling
+        else:
+            scaled_xp = get_base_commit_xp(config)
+        
+        # Apply level-based diminishing returns
+        level_penalty = 1.0 / (1.0 + (current_level - 1) * 0.1)
+        scaled_xp *= level_penalty
         
         # Apply project multiplier
         project_multiplier = xp_weights.get('projects', {}).get(repo_name, 1.0)
+        final_xp = int(scaled_xp * project_multiplier)
         
-        total_xp = int(base_xp * project_multiplier)
+        # Cap maximum XP per commit based on level
+        max_xp = min(50, 15 + (current_level * 3))
+        final_xp = min(final_xp, max_xp)
         
         # Check for big diff achievement
         if insertions + deletions >= 500:
             unlock_achievement("big_diff")
         
-        return total_xp
+        return max(get_base_commit_xp(config), final_xp)
         
     except Exception:
-        return 0
+        return get_base_commit_xp(config)
+
+
+def get_base_commit_xp(config):
+    """Get base XP for any commit (minimum reward)"""
+    return config.get('base_commit_xp', 3)  # Default 3 XP per commit
+
+
+def get_daily_bonus_xp(config):
+    """Calculate bonus XP for first commit of the day"""
+    from datetime import datetime
+    today = datetime.now().date()
+    
+    # Check if this is the first commit today
+    xp_data = load_xp_data()
+    last_commit_date = xp_data.get('last_commit_date')
+    
+    if last_commit_date != today.isoformat():
+        # First commit today - bonus XP!
+        xp_data['last_commit_date'] = today.isoformat()
+        save_xp_data(xp_data)
+        return config.get('daily_bonus_xp', 10)  # Default 10 bonus XP
+    
+    return 0
+
+
+def get_weekend_bonus_xp():
+    """Calculate bonus XP for weekend commits"""
+    from datetime import datetime
+    today = datetime.now()
+    
+    # Sunday = 6, Saturday = 5 in weekday()
+    if today.weekday() >= 5:  # Saturday or Sunday
+        return 5  # Weekend warrior bonus
+    
+    return 0
 
 
 def add_xp(amount, commit_info=None):
@@ -313,7 +461,7 @@ def check_streak_achievements(streak_days):
     """Check and unlock streak-based achievements"""
     achievements_unlocked = []
     
-    milestones = [3, 7, 14, 30, 90, 365]
+    milestones = [3, 5, 7, 14, 30, 90, 100, 365]
     for milestone in milestones:
         if streak_days >= milestone:
             achievement_id = f"streak_{milestone}"
@@ -331,6 +479,10 @@ def check_total_commits_achievements(total_commits):
         if unlock_achievement("first_commit"):
             achievements_unlocked.append("first_commit")
     
+    if total_commits >= 10:
+        if unlock_achievement("commits_10"):
+            achievements_unlocked.append("commits_10")
+    
     if total_commits >= 100:
         if unlock_achievement("hundred_commits"):
             achievements_unlocked.append("hundred_commits")
@@ -338,6 +490,50 @@ def check_total_commits_achievements(total_commits):
     if total_commits >= 1000:
         if unlock_achievement("thousand_commits"):
             achievements_unlocked.append("thousand_commits")
+    
+    return achievements_unlocked
+
+
+def check_streak_milestone(streak_days, config):
+    """Check if a streak milestone has been reached"""
+    milestones = config.get('streak_milestones', {})
+    
+    # Convert string keys to int if needed
+    int_milestones = {}
+    for k, v in milestones.items():
+        int_milestones[int(k)] = v
+    
+    # Check if we've hit a milestone
+    if streak_days in int_milestones:
+        return int_milestones[streak_days]
+    
+    return None
+
+
+def check_special_achievements(local_paths, config):
+    """Check for special/secret achievements"""
+    achievements_unlocked = []
+    
+    # Check for midnight coder (commits between 2-4 AM)
+    from datetime import datetime
+    now = datetime.now()
+    if 2 <= now.hour < 4:
+        if unlock_achievement("midnight_coder"):
+            achievements_unlocked.append("midnight_coder")
+    
+    # Check for polyglot achievement (5+ languages)
+    from .analytics import get_language_stats
+    language_stats = get_language_stats(local_paths)
+    if len(language_stats) >= 5:
+        if unlock_achievement("polyglot"):
+            achievements_unlocked.append("polyglot")
+    
+    # Check for weekend warrior (this would need tracking weekend commit count)
+    # For now, just check if it's weekend
+    if now.weekday() >= 5:  # Saturday or Sunday
+        # This is a simplified check - in a real implementation, 
+        # you'd track weekend commits over time
+        pass
     
     return achievements_unlocked
 
@@ -481,6 +677,7 @@ def process_commits_for_gamification(local_paths, config):
     all_achievements = []
     level_up_occurred = False
     total_commits_today = 0
+    first_commit_bonus_applied = False
     
     for path in local_paths:
         if not path or not os.path.exists(path):
@@ -503,6 +700,13 @@ def process_commits_for_gamification(local_paths, config):
                         for commit_hash in commit_hashes:
                             xp = calculate_commit_xp(root, commit_hash, config)
                             total_xp_gained += xp
+                            
+                            # Apply daily bonus XP for first commit only
+                            if not first_commit_bonus_applied:
+                                daily_bonus = get_daily_bonus_xp(config)
+                                weekend_bonus = get_weekend_bonus_xp()
+                                total_xp_gained += daily_bonus + weekend_bonus
+                                first_commit_bonus_applied = True
                     
                 except Exception:
                     continue
@@ -521,6 +725,10 @@ def process_commits_for_gamification(local_paths, config):
     xp_data = load_xp_data()
     commit_achievements = check_total_commits_achievements(xp_data['commits_tracked'])
     all_achievements.extend(commit_achievements)
+    
+    # Check special achievements
+    special_achievements = check_special_achievements(local_paths, config)
+    all_achievements.extend(special_achievements)
     
     return {
         "xp_gained": total_xp_gained,

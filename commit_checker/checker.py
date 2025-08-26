@@ -179,6 +179,49 @@ def scan_repos(repo_folder):
     
     return repos_found
 
+def get_latest_commit_message(local_paths):
+    """Get the latest commit message from any repository"""
+    if not local_paths:
+        return None, None
+    
+    latest_commit = None
+    latest_timestamp = 0
+    
+    for path in local_paths:
+        if not path or not os.path.exists(path):
+            continue
+            
+        for root, dirs, files in os.walk(path):
+            if '.git' in dirs:
+                try:
+                    # Get latest commit message and timestamp
+                    commit_info = subprocess.check_output([
+                        "git", "--git-dir", os.path.join(root, ".git"),
+                        "--work-tree", root,
+                        "log", "-1", "--format=%s|%at"
+                    ], stderr=subprocess.DEVNULL).decode("utf-8").strip()
+                    
+                    if commit_info and '|' in commit_info:
+                        message, timestamp_str = commit_info.split('|', 1)
+                        timestamp = int(timestamp_str)
+                        
+                        if timestamp > latest_timestamp:
+                            latest_timestamp = timestamp
+                            repo_name = os.path.basename(root)
+                            latest_commit = {
+                                'message': message,
+                                'repo': repo_name,
+                                'path': root,
+                                'timestamp': timestamp
+                            }
+                    
+                except Exception:
+                    continue
+                dirs.clear()
+    
+    return latest_commit
+
+
 def get_most_active_repo(repo_folder, timeframe="day"):
     """Find the most active repository in a given timeframe"""
     if not repo_folder or not os.path.exists(repo_folder):
