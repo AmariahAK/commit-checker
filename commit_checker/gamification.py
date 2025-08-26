@@ -522,7 +522,14 @@ def check_special_achievements(local_paths, config):
             achievements_unlocked.append("midnight_coder")
     
     # Check for polyglot achievement (5+ languages)
-    from .analytics import get_language_stats
+    try:
+        # Try relative import first (package mode)
+        from .analytics import get_language_stats
+    except ImportError:
+        # Fallback to direct import (standalone mode)
+        import analytics
+        get_language_stats = analytics.get_language_stats
+    
     language_stats = get_language_stats(local_paths)
     if len(language_stats) >= 5:
         if unlock_achievement("polyglot"):

@@ -150,16 +150,122 @@ def detect_install_method():
     
     return "unknown"
 
-def uninstall_package():
-    """Remove the commit-checker package via appropriate method and clean up config"""
+def force_uninstall_everything():
+    """Nuclear option: Remove ALL traces of commit-checker from system"""
     import subprocess
     import shutil
     
-    install_method = detect_install_method()
-    print(f"🔍 Detected installation method: {install_method}")
+    print("🚨 FORCE UNINSTALL: Removing ALL traces of commit-checker...")
+    print("This will completely remove commit-checker from your system.")
+    
+    confirm = input("⚠️  Continue with complete removal? [y/N]: ").lower()
+    if confirm not in ["y", "yes"]:
+        print("❌ Uninstall cancelled.")
+        return
+    
+    removed_items = []
     
     try:
-        if install_method == "pipx":
+        # 1. Remove binary/script files from all possible locations
+        binary_paths = [
+            os.path.expanduser("~/.local/bin/commit-checker"),
+            "/usr/local/bin/commit-checker", 
+            "/usr/bin/commit-checker"
+        ]
+        
+        for binary_path in binary_paths:
+            if os.path.exists(binary_path):
+                try:
+                    os.remove(binary_path)
+                    removed_items.append(f"Binary: {binary_path}")
+                except Exception as e:
+                    print(f"⚠️  Could not remove {binary_path}: {e}")
+        
+        # 2. Remove ALL directories
+        directories_to_remove = [
+            os.path.expanduser("~/.commit-checker"),
+            os.path.expanduser("~/.commit-checker-standalone"),
+            os.path.expanduser("~/.cache/commit-checker"),
+            os.path.expanduser("~/.local/share/commit-checker")
+        ]
+        
+        for directory in directories_to_remove:
+            if os.path.exists(directory):
+                try:
+                    shutil.rmtree(directory)
+                    removed_items.append(f"Directory: {directory}")
+                except Exception as e:
+                    print(f"⚠️  Could not remove {directory}: {e}")
+        
+        # 3. Try ALL pip uninstall methods
+        pip_commands = [
+            [sys.executable, "-m", "pip", "uninstall", "commit-checker", "-y"],
+            [sys.executable, "-m", "pip", "uninstall", "commit-checker", "-y", "--break-system-packages"],
+            [sys.executable, "-m", "pip", "uninstall", "commit-checker", "-y", "--user"],
+            ["pipx", "uninstall", "commit-checker"]
+        ]
+        
+        for cmd in pip_commands:
+            try:
+                subprocess.check_call(cmd, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+                removed_items.append(f"Package: pip/pipx")
+                break  
+            except (subprocess.CalledProcessError, FileNotFoundError):
+                continue
+        
+        # 4. Clean ALL shell files thoroughly - this was the main issue
+        shell_files = [
+            os.path.expanduser("~/.bashrc"),
+            os.path.expanduser("~/.zshrc"),
+            os.path.expanduser("~/.bash_profile"), 
+            os.path.expanduser("~/.profile"),
+            os.path.expanduser("~/.config/fish/config.fish"),
+            os.path.expanduser("~/.zprofile"),
+            os.path.expanduser("~/.bash_login"),
+            os.path.expanduser("~/.zshenv")
+        ]
+        
+        for shell_file in shell_files:
+            if os.path.exists(shell_file):
+                try:
+                    with open(shell_file, 'r') as f:
+                        content = f.read()
+                    
+                    # Remove commit-checker lines
+                    lines = content.split('\n')
+                    cleaned_lines = []
+                    
+                    for line in lines:
+                        # Skip lines mentioning commit-checker
+                        if 'commit-checker' in line.lower():
+                            continue
+                        # Skip auto-run comments  
+                        if line.strip().startswith('#') and ('auto-run' in line.lower() or 'commit-checker' in line.lower()):
+                            continue
+                        cleaned_lines.append(line)
+                    
+                    # Write back if changed
+                    cleaned_content = '\n'.join(cleaned_lines)
+                    if cleaned_content != content:
+                        with open(shell_file, 'w') as f:
+                            f.write(cleaned_content)
+                        removed_items.append(f"Shell: {shell_file}")
+                        
+                except Exception as e:
+                    print(f"⚠️  Could not clean {shell_file}: {e}")
+        
+        # Show what was removed
+        if removed_items:
+            print("\n✅ ENHANCED UNINSTALL COMPLETE!")
+            print("🗑️  Removed:")
+            for item in removed_items:
+                print(f"   • {item}")
+        
+        print("\n💡 Restart your terminal to complete removal")
+        print("🔄 Fresh install: curl -s https://raw.githubusercontent.com/AmariahAK/commit-checker/main/scripts/install-standalone.sh | bash")
+        
+        # Legacy code below - keeping for compatibility but won't execute
+        if False and install_method == "pipx":
             print("🗑️  Uninstalling commit-checker via pipx...")
             subprocess.check_call([sys.executable, "-m", "pipx", "uninstall", "commit-checker"])
             print("✅ Package uninstalled successfully via pipx")
