@@ -12,10 +12,34 @@ UPDATE_MARKER_FILE = os.path.expanduser("~/.commit-checker/pending_update")
 VERSION_CACHE_FILE = os.path.expanduser("~/.commit-checker/version_cache.json")
 UPDATE_CHECK_INTERVAL = 86400  # 24 hours in seconds
 
+def detect_installation_type():
+    """Detect how commit-checker is installed"""
+    # Check if running as standalone
+    if os.path.exists(os.path.expanduser("~/.commit-checker-standalone")):
+        return "standalone"
+    
+    # Check for pip installation
+    try:
+        import pkg_resources
+        try:
+            pkg_resources.get_distribution("commit-checker")
+            return "pip"
+        except pkg_resources.DistributionNotFound:
+            pass
+    except ImportError:
+        pass
+    
+    return "unknown"
+
+
 def get_installed_version():
     """Get the actual installed version of commit-checker"""
+    # For standalone, always use LOCAL_VERSION
+    if detect_installation_type() == "standalone":
+        return LOCAL_VERSION
+    
     try:
-        # Try to get version from installed package
+        # Try to get version from installed package (pip installations)
         import pkg_resources
         try:
             installed_version = pkg_resources.get_distribution("commit-checker").version
@@ -109,13 +133,63 @@ def clear_pending_update():
 def perform_update(target_version):
     """Perform the actual update"""
     try:
+        installation_type = detect_installation_type()
         print(f"⬆️  Updating commit-checker to v{target_version}...")
         
-        # Try different update methods
+        if installation_type == "standalone":
+            return update_standalone(target_version)
+        else:
+            return update_pip_installation(target_version)
+        
+    except Exception as e:
+        print(f"❌ Update failed: {e}")
+        return False
+
+
+def update_standalone(target_version):
+    """Update standalone installation"""
+    try:
+        print("🔄 Updating standalone installation...")
+        
+        # Download the latest standalone script
+        standalone_url = f"https://raw.githubusercontent.com/{REPO}/main/scripts/commit-checker-standalone.sh"
+        
+        import urllib.request
+        binary_path = os.path.expanduser("~/.local/bin/commit-checker")
+        temp_path = binary_path + ".tmp"
+        
+        print(f"📥 Downloading latest standalone script...")
+        urllib.request.urlretrieve(standalone_url, temp_path)
+        
+        # Make it executable and replace old version
+        import stat
+        os.chmod(temp_path, stat.S_IRWXU | stat.S_IRGRP | stat.S_IROTH)
+        
+        if os.path.exists(binary_path):
+            os.remove(binary_path)
+        os.rename(temp_path, binary_path)
+        
+        print(f"✅ Successfully updated standalone installation!")
+        print("🔄 The update will take effect on next run.")
+        return True
+        
+    except Exception as e:
+        print(f"❌ Standalone update failed: {e}")
+        print("💡 Try reinstalling with:")
+        print("   curl -s https://raw.githubusercontent.com/AmariahAK/commit-checker/main/scripts/install-standalone.sh | bash")
+        return False
+
+
+def update_pip_installation(target_version):
+    """Update pip installation"""
+    try:
+        print("🔄 Updating pip installation...")
+        
+        # Note: For pip installations, we update to main branch since tags might not exist yet
         update_commands = [
-            f"pip install --upgrade git+https://github.com/{REPO}.git@v{target_version}",
-            f"pip install --upgrade git+https://github.com/{REPO}.git@v{target_version} --break-system-packages",
-            f"pip install --upgrade git+https://github.com/{REPO}.git@v{target_version} --user"
+            f"pip install --upgrade git+https://github.com/{REPO}.git",
+            f"pip install --upgrade git+https://github.com/{REPO}.git --break-system-packages",  
+            f"pip install --upgrade git+https://github.com/{REPO}.git --user"
         ]
         
         for cmd in update_commands:
@@ -123,17 +197,17 @@ def perform_update(target_version):
                 print(f"🔄 Running: {cmd}")
                 result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
                 if result.returncode == 0:
-                    print(f"✅ Successfully updated to v{target_version}!")
+                    print(f"✅ Successfully updated to latest version!")
                     return True
             except Exception:
                 continue
                 
         print("❌ Update failed. Please try manually:")
-        print(f"   pip install --upgrade git+https://github.com/{REPO}.git@v{target_version}")
+        print(f"   pip install --upgrade git+https://github.com/{REPO}.git")
         return False
         
     except Exception as e:
-        print(f"❌ Update failed: {e}")
+        print(f"❌ Pip update failed: {e}")
         return False
 
 def check_pending_update_on_startup():
@@ -157,6 +231,7 @@ def check_for_updates(force_check=False):
             
         current_version = get_installed_version()
         latest = get_latest_version()
+        installation_type = detect_installation_type()
         
         if not latest:
             if force_check:
@@ -165,6 +240,12 @@ def check_for_updates(force_check=False):
             
         if version.parse(latest) > version.parse(current_version):
             print(f"\n🔔 New version available: v{latest} (you have v{current_version})")
+            
+            # Show installation type info
+            if installation_type == "standalone":
+                print(f"📦 Installation: Standalone (curl/bash)")
+            elif installation_type == "pip":
+                print(f"📦 Installation: pip package")
             
             # Show changelog if available
             try:
@@ -183,9 +264,16 @@ def check_for_updates(force_check=False):
             except Exception:
                 pass
             
+            # Show VS Code extension teaser for v0.7+
+            if version.parse(latest) >= version.parse("0.7.0"):
+                print("\n🎉 Coming in v0.7: VS Code Extension!")
+                print("   📈 Dashboard panel in VS Code")
+                print("   🔄 Auto TIL sync from editor")
+                print("   🏆 Achievement notifications")
+            
             print("\n📦 Update options:")
             print("   1. Install now")
-            print("   2. Install on next terminal restart")
+            print("   2. Install on next terminal restart")  
             print("   3. Skip this update")
             
             choice = input("❓ Choose option (1/2/3) [1]: ").strip()
@@ -210,7 +298,14 @@ def check_for_updates(force_check=False):
                 return False
         else:
             if force_check:
-                print(f"✅ You're running the latest version (v{current_version})")
+                install_msg = f" ({installation_type} installation)" if installation_type != "unknown" else ""
+                print(f"✅ You're running the latest version (v{current_version}){install_msg}")
+                
+                # Show upcoming VS Code extension info
+                print("\n💡 Looking forward to v0.7:")
+                print("   🔮 VS Code Extension with dashboard panel")
+                print("   📊 Real-time stats in your editor")
+                print("   🚀 Seamless TIL integration")
             return False
             
     except Exception as e:

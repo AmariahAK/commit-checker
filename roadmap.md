@@ -8,10 +8,16 @@
 - ✅ Offline-first architecture with no API dependencies
 - ✅ Template system for structured TIL entries
 - ✅ Commit diff analysis for automated learning insights
-- 🔄 Plugin system with local hooks (coming soon)
-- 🔄 Full-text TUI dashboard with textual
-- 🔄 Sound packs & custom themes
-- 🔄 Config backups + crash logging
+
+## ✅ v0.6.2 – Enhanced Feedback & Advanced Analytics
+- ✅ Smart commit message analysis with `--suggest` command
+- ✅ Quick stats dashboard with `--dashboard` command  
+- ✅ Commit time analytics with `--time-stats` command
+- ✅ Customizable streak milestone celebrations
+- ✅ Custom TIL templates with `--add-template` command
+- ✅ XP system overhaul - fixed inflation with logarithmic scaling
+- ✅ Expanded achievements system with secret badges
+- ✅ Standalone update system fixes for curl/bash installations
 
 ## 🧠 v0.7.0 – AI Smart Mode
 - AI-powered commit message suggestions (Ollama + OpenRouter)
@@ -22,14 +28,22 @@
 - Automated learning path recommendations
 - Code complexity analysis and suggestions
 
-## 🧪 v0.8.0 – VS Code & Online Integrations  
-- VS Code extension (dashboard panel)
-- Auto sync with TIL vault from editor
-- Export badges/stats to social images
+## 🧪 v0.7.0 – VS Code Extension & AI Integration
+- **VS Code Extension** - Dashboard panel with real-time stats
+- **Editor Integration** - Auto TIL sync from code comments and commits  
+- **AI-Powered Features** - Smart commit message suggestions with Ollama
+- **Achievement Notifications** - Toast notifications for unlocked badges
+- **Live Statistics** - XP, streak, and progress tracking in status bar
+- **TIL Quick Entry** - Command palette integration for fast learning logs
+- **Theme Sync** - VS Code theme integration with commit-checker themes
+
+## 🧪 v0.8.0 – Team & Social Features
+- Export badges/stats to social images for sharing
 - GitHub Action with team stats + webhook posting
-- Slack/Discord integration for team productivity
-- Web dashboard for team analytics
+- Slack/Discord integration for team productivity tracking
+- Web dashboard for team analytics and leaderboards
 - Cross-platform sync with cloud storage
+- Team achievements and collaborative goals
 
 ## 🚀 v0.9.0 – Team & Enterprise Features
 - Multi-user analytics and leaderboards

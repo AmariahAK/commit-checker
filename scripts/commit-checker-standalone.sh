@@ -142,8 +142,9 @@ try:
     list_templates = til_vault.list_templates
     create_default_templates = til_vault.create_default_templates
     
-    # Updater functions
+    # Updater functions  
     manual_update_check = updater.manual_update_check
+    detect_installation_type = updater.detect_installation_type
     
 except Exception as e:
     print(f"❌ Error importing modules: {e}")
