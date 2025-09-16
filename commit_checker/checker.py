@@ -83,7 +83,20 @@ def check_github_commits(username, token=None):
         response = requests.get(url, headers=headers)
         response.raise_for_status()
     except requests.RequestException as e:
-        return f"❌ GitHub API error: {e}", []
+        # Enhanced error handling for common GitHub API issues
+        error_msg = str(e)
+        
+        if "401" in error_msg:
+            if not token:
+                return "⚠️  GitHub API requires authentication. Run --setup to add a GitHub token for private repos, or skip GitHub checks", []
+            else:
+                return "❌ GitHub token expired or invalid. Run --setup to update your token", []
+        elif "403" in error_msg:
+            return "⚠️  GitHub API rate limit exceeded. Try again later or add a token via --setup", []
+        elif "404" in error_msg:
+            return f"❌ GitHub user '{username}' not found", []
+        else:
+            return f"❌ GitHub API error: {e}", []
 
     today = get_today_date()
     events = response.json()

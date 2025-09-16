@@ -47,6 +47,9 @@ def load_config():
             100: "💎 Century of Code! 100 days! 🏆\nYou are unstoppable!"
         }
     
+    if "skip_github" not in config:
+        config["skip_github"] = False  # Default to checking GitHub
+    
     # Save updated config if any changes were made
     save_config(config)
     
@@ -60,8 +63,21 @@ def save_config(data):
 def prompt_config():
     print("🛠️  First-time setup: Let's configure your commit-checker!\n")
 
-    username = input("👤 GitHub username: ").strip()
-    token = input("🔑 GitHub personal token (optional - hit Enter to skip): ").strip()
+    print("🌐 GitHub Configuration:")
+    print("   1. Track GitHub commits (requires username)")
+    print("   2. Skip GitHub checks (local commits only)")
+    
+    github_choice = input("📝 Enter 1 or 2 (default: 1): ").strip()
+    
+    if github_choice == "2":
+        username = None
+        token = None
+        skip_github = True
+        print("✅ GitHub checks disabled - focusing on local commits only")
+    else:
+        username = input("👤 GitHub username: ").strip()
+        token = input("🔑 GitHub personal token (optional - hit Enter to skip): ").strip()
+        skip_github = False
     
     # Smart path detection
     print("\n📁 Setting up local development folder...")
@@ -113,6 +129,7 @@ def prompt_config():
     config = {
         "github_username": username,
         "github_token": token if token else None,
+        "skip_github": skip_github,
         "local_paths": paths,
         "repo_folder": repo_folder,
         "output": output_mode,
