@@ -19,7 +19,14 @@
 - ✅ Expanded achievements system with secret badges
 - ✅ Standalone update system fixes for curl/bash installations
 
-## ✅ v0.7.1 – Smart Profile System (Latest)
+## ✅ v0.7.2 – Standalone Script Fixes (Latest)
+- ✅ Fixed standalone profile commands: --build-profile, --insights, --coach now work properly
+- ✅ Added --version flag for version information
+- ✅ Enhanced standalone compatibility with profile functions and fallbacks
+- ✅ Fixed update system infinite loops in standalone mode
+- ✅ Improved command routing for all Smart Profile System features
+
+## ✅ v0.7.1 – Smart Profile System
 - ✅ Critical bug fixes: Fixed sys import error causing command failures
 - ✅ Enhanced stability: All commands now exit cleanly without errors
 - ✅ Improved install script with better error handling

@@ -456,6 +456,7 @@ def main():
     parser.add_argument("--update", action="store_true", help="Manually check for new GitHub version")
     parser.add_argument("--stats", action="store_true", help="Show ASCII commit trend charts")
     parser.add_argument("--diagnose", action="store_true", help="Run system diagnostics")
+    parser.add_argument("--version", action="store_true", help="Show version information")
     
     # Smart Profile System flags
     parser.add_argument("--build-profile", action="store_true", help="Build or rebuild your coding profile")
@@ -522,6 +523,12 @@ def main():
         print("🌐 GitHub: https://github.com/AmariahAK")
         print("📱 Portfolio: https://portfolio-pied-five-61.vercel.app")
         print("\nEven small support helps keep the streak alive for devs worldwide 🌍")
+        sys.exit(0)
+
+    if args.version:
+        print("🚀 commit-checker v0.7.2")
+        print("📅 Smart Profile System")
+        print("🔗 https://github.com/AmariahAK/commit-checker")
         sys.exit(0)
 
     if args.update:

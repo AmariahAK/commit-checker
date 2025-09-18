@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="commit-checker",
-    version="0.7.1",
+    version="0.7.2",
     description="CLI tool to check your daily GitHub and local commits with smart profile system, advanced analytics, TIL logging, and interactive coaching",
     author="Amariah Kamau",
     packages=find_packages(),

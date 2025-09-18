@@ -573,7 +573,14 @@ $ commit-checker --coach "refactor everything"
 
 ## 🎉 Recent Updates
 
-### v0.7.1 - Smart Profile System (Latest)
+### v0.7.2 - Standalone Script Fixes (Latest)
+- 🔧 **Fixed Standalone Profile Commands** - `--build-profile`, `--insights`, `--coach` now work in standalone mode
+- 📱 **Added `--version` Flag** - Show version information and project details  
+- 🛡️ **Enhanced Standalone Compatibility** - Profile functions now work for curl/bash installations
+- 🔄 **Fixed Update System** - Resolved infinite update loops in standalone mode
+- 📦 **Improved Command Routing** - All Smart Profile System commands now properly execute
+
+### v0.7.1 - Smart Profile System  
 - 🐛 **Critical Bug Fixes** - Fixed sys import error causing command failures
 - ⚡ **Enhanced Stability** - All commands now exit cleanly without errors
 - 🛡️ **Improved Install Script** - Better error handling during installation
