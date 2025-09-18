@@ -2,8 +2,8 @@ from setuptools import setup, find_packages
 
 setup(
     name="commit-checker",
-    version="0.6.2.2",
-    description="CLI tool to check your daily GitHub and local commits with advanced repository analytics, TIL logging, and interactive wizards",
+    version="0.7.0",
+    description="CLI tool to check your daily GitHub and local commits with smart profile system, advanced analytics, TIL logging, and interactive coaching",
     author="Amariah Kamau",
     packages=find_packages(),
     install_requires=["requests", "colorama", "packaging", "textual", "plotext"],

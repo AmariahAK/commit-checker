@@ -7,7 +7,10 @@ from datetime import datetime
 # Handle imports for both standalone and package modes
 try:
     from .checker import check_github_commits, check_local_commits, scan_repos, get_most_active_repo, get_latest_commit_message
-    from .config import config_exists, load_config, prompt_config, get_auto_config, save_config, delete_config
+    from .config import (config_exists, load_config, prompt_config, get_auto_config, save_config, delete_config,
+                        load_profile, save_profile, is_profile_enabled, needs_profile_rebuild, enable_profile)
+    from .profile import (build_profile, suggest_commit_message, get_stack_suggestions, get_structure_suggestions, 
+                         play_sound, run_git, get_commit_size_suggestions, get_til_tag_suggestions, update_freeform_feedback)
     from .updater import check_for_updates, check_pending_update_on_startup, manual_update_check
     from .bootstrap import bootstrap
     from .til import add_til_entry, view_til, edit_til, reset_til, delete_til, get_til_stats, filter_til_by_tag, export_til
@@ -34,6 +37,7 @@ except ImportError:
     try:
         checker = load_module("checker", os.path.join(current_dir, "checker.py"))
         config = load_module("config", os.path.join(current_dir, "config.py"))
+        profile = load_module("profile", os.path.join(current_dir, "profile.py"))
         updater = load_module("updater", os.path.join(current_dir, "updater.py"))
         til = load_module("til", os.path.join(current_dir, "til.py"))
         wizard = load_module("wizard", os.path.join(current_dir, "wizard.py"))
@@ -52,6 +56,20 @@ except ImportError:
         get_auto_config = config.get_auto_config
         save_config = config.save_config
         delete_config = config.delete_config
+        load_profile = config.load_profile
+        save_profile = config.save_profile
+        is_profile_enabled = config.is_profile_enabled
+        needs_profile_rebuild = config.needs_profile_rebuild
+        enable_profile = config.enable_profile
+        build_profile = profile.build_profile
+        suggest_commit_message = profile.suggest_commit_message
+        get_stack_suggestions = profile.get_stack_suggestions
+        get_structure_suggestions = profile.get_structure_suggestions
+        get_commit_size_suggestions = profile.get_commit_size_suggestions
+        get_til_tag_suggestions = profile.get_til_tag_suggestions
+        update_freeform_feedback = profile.update_freeform_feedback
+        play_sound = profile.play_sound
+        run_git = profile.run_git
         check_for_updates = updater.check_for_updates
         check_pending_update_on_startup = updater.check_pending_update_on_startup
         manual_update_check = updater.manual_update_check
@@ -437,6 +455,13 @@ def main():
     parser.add_argument("--stats", action="store_true", help="Show ASCII commit trend charts")
     parser.add_argument("--diagnose", action="store_true", help="Run system diagnostics")
     
+    # Smart Profile System flags
+    parser.add_argument("--build-profile", action="store_true", help="Build or rebuild your coding profile")
+    parser.add_argument("--coach", type=str, nargs='?', const='', help="Get commit message coaching suggestions")
+    parser.add_argument("--insights", action="store_true", help="Show personalized coding insights")
+    parser.add_argument("--no-profile", action="store_true", help="Skip profile-based suggestions")
+    parser.add_argument("--feedback", choices=["good", "bad"], help="Give feedback on coaching suggestions")
+    
     # Gamification features
     parser.add_argument("--achievements", action="store_true", help="Display achievement gallery")
     parser.add_argument("--xp", action="store_true", help="Show current XP and level status")
@@ -480,11 +505,11 @@ def main():
 
     if args.uninstall:
         if args.force:
-            uninstall_package()
+            force_uninstall_everything()
         else:
             confirm = input("⚠️  This will completely remove commit-checker from your system. Continue? [y/N]: ").lower()
             if confirm in ["y", "yes"]:
-                uninstall_package()
+                force_uninstall_everything()
             else:
                 print("❌ Uninstall cancelled.")
         sys.exit(0)
@@ -522,6 +547,180 @@ def main():
             print("❌ No local paths configured. Run --init or --setup first.")
             sys.exit(1)
         show_commit_stats(local_paths)
+        sys.exit(0)
+    
+    # Handle Smart Profile System commands
+    if args.build_profile:
+        local_paths = config.get('local_paths', [])
+        if not local_paths:
+            print("❌ No local paths configured. Run --init or --setup first.")
+            sys.exit(1)
+        
+        print("🧙 Building your smart coding profile...")
+        print("   📊 Analyzing commit history patterns...")
+        print("   🔍 Detecting project tech stacks...")
+        print("   📁 Scanning project structures...")
+        
+        try:
+            profile = build_profile(local_paths)
+            if save_profile(profile):
+                repo_count = len(profile.get("repos", {}))
+                print(f"\n✅ Profile built successfully!")
+                print(f"   📈 Analyzed {repo_count} repositories")
+                print(f"   💡 Smart suggestions now enabled")
+                
+                # Ask to enable profile if not already enabled
+                if not is_profile_enabled():
+                    enable_choice = input("\n🧙 Enable profile-based suggestions? [Y/n]: ").strip().lower()
+                    if enable_choice != 'n':
+                        enable_profile(True)
+                        print("✅ Smart profile system activated!")
+                        play_sound("notify.wav")
+                    else:
+                        print("💡 You can enable suggestions later with --build-profile")
+                else:
+                    play_sound("notify.wav")
+            else:
+                print("❌ Failed to save profile. Check file permissions.")
+        except Exception as e:
+            print(f"❌ Profile building failed: {e}")
+        
+        sys.exit(0)
+    
+    if args.coach:
+        if not is_profile_enabled():
+            print("🧙 Smart profile system is disabled.")
+            print("💡 Run --build-profile to enable coaching suggestions.")
+            sys.exit(1)
+        
+        profile = load_profile()
+        if not profile:
+            print("🧙 No profile found. Run --build-profile first.")
+            sys.exit(1)
+        
+        # Get commit message to analyze
+        commit_message = args.coach.strip()
+        if not commit_message:
+            # Try to get from stdin or prompt
+            try:
+                import sys
+                if not sys.stdin.isatty():
+                    commit_message = sys.stdin.read().strip()
+            except:
+                pass
+            
+            if not commit_message:
+                commit_message = input("💬 Enter commit message to analyze: ").strip()
+        
+        if not commit_message:
+            print("❌ No commit message provided.")
+            sys.exit(1)
+        
+        # Find current repo
+        import os
+        current_dir = os.getcwd()
+        repo_path = current_dir
+        
+        # Walk up to find .git directory
+        while repo_path and repo_path != '/':
+            if os.path.exists(os.path.join(repo_path, '.git')):
+                break
+            repo_path = os.path.dirname(repo_path)
+        else:
+            repo_path = current_dir  # Fallback to current directory
+        
+        print(f"🔍 Analyzing: \"{commit_message}\"")
+        suggestions = suggest_commit_message(repo_path, profile, commit_message)
+        
+        # Add commit size suggestions
+        size_suggestions = get_commit_size_suggestions(repo_path)
+        suggestions.extend(size_suggestions)
+        
+        if suggestions:
+            print("\n💡 Suggestions:")
+            for suggestion in suggestions:
+                print(f"  {suggestion}")
+            play_sound("suggest.wav")
+        else:
+            print("\n✅ Commit message looks great!")
+        
+        # Handle feedback
+        if args.feedback:
+            updated_profile = update_freeform_feedback(profile, repo_path, args.feedback)
+            if save_profile(updated_profile):
+                feedback_msg = "Thanks! Tuned your preferences." if args.feedback == "good" else "Got it! Less prefix suggestions."
+                print(f"\n👍 {feedback_msg}")
+                play_sound("notify.wav")
+        
+        sys.exit(0)
+    
+    if args.insights:
+        if not is_profile_enabled():
+            print("🧙 Smart profile system is disabled.")
+            print("💡 Run --build-profile to enable insights.")
+            sys.exit(1)
+        
+        profile = load_profile()
+        if not profile:
+            print("🧙 No profile found. Run --build-profile first.")
+            sys.exit(1)
+        
+        local_paths = config.get('local_paths', [])
+        if not local_paths:
+            print("❌ No local paths configured.")
+            sys.exit(1)
+        
+        print("🧠 Personal Coding Insights")
+        print("=" * 50)
+        
+        global_profile = profile.get("global", {})
+        repos = profile.get("repos", {})
+        
+        # Global insights
+        print(f"📊 Overall Style:")
+        print(f"   • Average commit length: {global_profile.get('avg_length', 0)} words")
+        print(f"   • Preferred mood: {global_profile.get('mood', 'unknown').title()}")
+        print(f"   • Uses emojis: {'Yes' if global_profile.get('uses_emoji', False) else 'No'}")
+        
+        # Repository insights
+        if repos:
+            print(f"\n📁 Repository Analysis ({len(repos)} repos):")
+            
+            # Count tech stacks
+            tech_stacks = {}
+            for repo_data in repos.values():
+                for tech in repo_data.get("tech_stack", []):
+                    tech_stacks[tech] = tech_stacks.get(tech, 0) + 1
+            
+            if tech_stacks:
+                print("   🔧 Tech Stack Distribution:")
+                for tech, count in sorted(tech_stacks.items(), key=lambda x: x[1], reverse=True):
+                    percentage = (count / len(repos)) * 100
+                    print(f"     • {tech.title()}: {count} repos ({percentage:.0f}%)")
+            
+            # Commit style breakdown
+            style_counts = {}
+            for repo_data in repos.values():
+                style = repo_data.get("commit_style", {}).get("case_style", "unknown")
+                style_counts[style] = style_counts.get(style, 0) + 1
+            
+            if style_counts:
+                print("   📝 Commit Style Breakdown:")
+                for style, count in sorted(style_counts.items(), key=lambda x: x[1], reverse=True):
+                    percentage = (count / len(repos)) * 100
+                    print(f"     • {style.title()}: {count} repos ({percentage:.0f}%)")
+        
+        last_scan = profile.get("last_scan", "")
+        if last_scan:
+            from datetime import datetime
+            try:
+                scan_date = datetime.fromisoformat(last_scan.replace('Z', '+00:00'))
+                print(f"\n🕒 Profile last updated: {scan_date.strftime('%Y-%m-%d %H:%M')}")
+            except:
+                pass
+        
+        print("\n💡 Run --build-profile to refresh your profile data")
+        play_sound("notify.wav")
         sys.exit(0)
     
     # Initialize gamification on first run
@@ -695,6 +894,31 @@ def main():
     if args.til:
         # Join the list of words to form the complete TIL title
         til_title = " ".join(args.til)
+        
+        # Add TIL tag suggestions if profile is enabled and no tag specified
+        if not args.tag and is_profile_enabled():
+            try:
+                profile = load_profile()
+                if profile:
+                    current_dir = os.getcwd()
+                    repo_path = current_dir
+                    
+                    # Walk up to find .git directory
+                    while repo_path and repo_path != '/':
+                        if os.path.exists(os.path.join(repo_path, '.git')):
+                            break
+                        repo_path = os.path.dirname(repo_path)
+                    
+                    if os.path.exists(os.path.join(repo_path, '.git')):
+                        tag_suggestions = get_til_tag_suggestions(repo_path, profile, til_title)
+                        if tag_suggestions:
+                            print("💡 TIL Tag Suggestions:")
+                            for suggestion in tag_suggestions:
+                                print(f"  {suggestion}")
+                            play_sound("suggest.wav")
+                            print()  # Add space before TIL result
+            except Exception:
+                pass  # Don't break TIL creation if suggestions fail
         
         if args.template:
             # Use template for TIL vault
@@ -879,6 +1103,44 @@ def main():
             milestone_message = check_streak_milestone(gamification_data["current_streak"], config)
             if milestone_message:
                 output(f"\n{milestone_message}")
+    
+    # Smart Profile System suggestions (non-disruptive)
+    if not args.no_profile and is_profile_enabled() and local_paths:
+        try:
+            profile = load_profile()
+            if profile:
+                # Get current working directory to find active repo
+                current_dir = os.getcwd()
+                repo_path = current_dir
+                
+                # Walk up to find .git directory
+                while repo_path and repo_path != '/':
+                    if os.path.exists(os.path.join(repo_path, '.git')):
+                        break
+                    repo_path = os.path.dirname(repo_path)
+                
+                if os.path.exists(os.path.join(repo_path, '.git')):
+                    # Generate stack and structure suggestions
+                    stack_suggestions = get_stack_suggestions(repo_path, profile)
+                    structure_suggestions = get_structure_suggestions(repo_path, profile)
+                    
+                    all_suggestions = stack_suggestions + structure_suggestions
+                    if all_suggestions:
+                        output("\n🧙 Smart Suggestions:")
+                        for suggestion in all_suggestions[:3]:  # Limit to 3 suggestions
+                            output(f"  {suggestion}")
+                        play_sound("suggest.wav")
+                        
+        except Exception:
+            # Don't break the main flow if profile suggestions fail
+            pass
+    
+    # Profile system onboarding (suggest building profile if enabled but missing)
+    if not args.no_profile and is_profile_enabled() and needs_profile_rebuild():
+        if local_paths:
+            output("\n🧙 Smart Profile: No profile found!")
+            output("💡 Run --build-profile to enable personalized suggestions")
+            play_sound("suggest.wav")
 
 if __name__ == "__main__":
     main()

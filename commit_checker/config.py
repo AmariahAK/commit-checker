@@ -2,6 +2,8 @@ import os
 import json
 import sys
 import importlib.util
+from datetime import datetime, timezone
+from typing import Dict, Any, Optional
 
 # Handle imports for both standalone and package modes
 try:
@@ -49,6 +51,13 @@ def load_config():
     
     if "skip_github" not in config:
         config["skip_github"] = False  # Default to checking GitHub
+    
+    # Add smart profile settings with defaults
+    if "enable_profile" not in config:
+        config["enable_profile"] = False  # Default disabled, enabled during setup
+    
+    if "profile" not in config:
+        config["profile"] = {}  # Empty profile initially
     
     # Save updated config if any changes were made
     save_config(config)
@@ -133,11 +142,28 @@ def prompt_config():
         "local_paths": paths,
         "repo_folder": repo_folder,
         "output": output_mode,
-        "til_path": None  # Use default path
+        "til_path": None,  # Use default path
+        "enable_profile": False  # Default disabled
     }
 
     save_config(config)
     print(f"\n✅ Config saved! Monitoring {len(paths)} path(s).")
+    
+    # Ask about smart profile system
+    print(f"\n🧙 Smart Profile System:")
+    print(f"   💡 Learn your coding patterns and get personalized suggestions")
+    print(f"   📊 Analyze commit styles, tech stacks, and project structures")
+    print(f"   🚀 No AI dependencies - uses lightweight pattern matching")
+    
+    profile_choice = input("📝 Enable smart profile system? [Y/n]: ").strip().lower()
+    if profile_choice != 'n':
+        config["enable_profile"] = True
+        save_config(config)
+        print("✅ Smart profile system enabled!")
+        print("💡 Run 'commit-checker --build-profile' later to create your profile")
+    else:
+        print("💡 You can enable it later with 'commit-checker --build-profile'")
+    
     return config
 
 def delete_config():
@@ -178,3 +204,93 @@ def get_auto_config():
         return config
     
     return None
+
+def load_profile() -> Optional[Dict[str, Any]]:
+    """Load user profile from config, return None if not found or disabled"""
+    try:
+        if not config_exists():
+            return None
+        
+        config = load_config()
+        if not config.get("enable_profile", False):
+            return None
+            
+        profile = config.get("profile", {})
+        if not profile:
+            return None
+            
+        # Check if profile needs refresh (older than 7 days)
+        last_scan = profile.get("last_scan")
+        if last_scan:
+            try:
+                scan_date = datetime.fromisoformat(last_scan.replace('Z', '+00:00'))
+                days_old = (datetime.now(timezone.utc) - scan_date).days
+                if days_old > 7:
+                    # Profile is stale, should be rebuilt
+                    return None
+            except (ValueError, TypeError):
+                # Invalid date format, treat as stale
+                return None
+                
+        return profile
+        
+    except (json.JSONDecodeError, OSError):
+        # Config file corrupted or inaccessible
+        return None
+
+def save_profile(profile_data: Dict[str, Any]) -> bool:
+    """Save user profile to config, return success status"""
+    try:
+        if not config_exists():
+            # No config file - create basic one first
+            config = {
+                "github_username": None,
+                "github_token": None,
+                "skip_github": False,
+                "local_paths": [],
+                "repo_folder": None,
+                "output": "emoji",
+                "til_path": None,
+                "enable_profile": True,
+                "profile": profile_data
+            }
+        else:
+            config = load_config()
+            config["profile"] = profile_data
+            config["enable_profile"] = True  # Auto-enable when saving profile
+        
+        save_config(config)
+        return True
+        
+    except (json.JSONDecodeError, OSError):
+        # Failed to save profile
+        return False
+
+def is_profile_enabled() -> bool:
+    """Check if smart profile system is enabled"""
+    try:
+        if not config_exists():
+            return False
+        config = load_config()
+        return config.get("enable_profile", False)
+    except Exception:
+        return False
+
+def needs_profile_rebuild() -> bool:
+    """Check if profile needs to be rebuilt (missing, stale, or disabled)"""
+    profile = load_profile()
+    return profile is None
+
+def enable_profile(enabled: bool = True) -> bool:
+    """Enable or disable the smart profile system"""
+    try:
+        if not config_exists():
+            return False
+        
+        config = load_config()
+        config["enable_profile"] = enabled
+        save_config(config)
+        return True
+        
+    except Exception:
+        return False

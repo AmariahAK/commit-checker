@@ -7,7 +7,18 @@ Automatically checks your daily commits — both **public (GitHub)** and **local
 
 ## ✨ Features
 
-### 🎮 **NEW: Gamification & Developer Progress (v0.6.0)**
+### 🧠 **NEW: Smart Profile System (v0.7.0)**
+
+- ✅ **AI-like Personalization** - Learns your coding patterns without ML dependencies
+- ✅ **Commit Message Coaching** (`--coach`) - Suggests improvements based on your style
+- ✅ **Tech Stack Detection** - Auto-detects Python, JS/React, Rust, Java, etc.
+- ✅ **Project Structure Analysis** - Suggests tests, documentation updates
+- ✅ **Stack-aware Suggestions** - Django migrations, npm installs, cargo checks
+- ✅ **Personal Insights** (`--insights`) - Analyze your coding habits and trends
+- ✅ **Non-disruptive** - Suggestions only, never blocks your workflow
+- ✅ **Sound Notifications** - Audio feedback for completion and suggestions
+
+### 🎮 **Gamification & Developer Progress (v0.6.0)**
 
 - ✅ **Achievement System** - Unlock badges with ASCII art (Common to Mythic rarity)
 - ✅ **XP & Level System** - Earn XP from commits, progress through 10 levels
@@ -140,6 +151,13 @@ commit-checker
 - `commit-checker --init` - Interactive setup wizard (recommended for first-time users)
 - `commit-checker --setup` - Quick reconfigure settings
 - `commit-checker --diagnose` - Run system diagnostics
+
+**🧠 Smart Profile System (v0.7.0):**
+- `commit-checker --build-profile` - Build/rebuild your personalized coding profile
+- `commit-checker --coach "fix user auth"` - Get commit message coaching suggestions
+- `commit-checker --feedback good/bad` - Give feedback on coaching suggestions to tune preferences
+- `commit-checker --insights` - Show personalized coding insights and habits
+- `commit-checker --no-profile` - Skip profile-based suggestions for this run
 
 **Core functionality:**
 - `commit-checker` - Check today's commits with gamification
@@ -490,11 +508,83 @@ blog-api → ❌ 0 today | 🧮 89 total | 🕒 Jul 17
 my-website → ✅ 1 today | 🧮 156 total | 🕒 Today
 ```
 
+### Smart Profile System (v0.7.0)
+```bash
+$ commit-checker --build-profile
+🧙 Building your smart coding profile...
+   📊 Analyzing commit history patterns...
+   🔍 Detecting project tech stacks...
+   📁 Scanning project structures...
+
+✅ Profile built successfully!
+   📈 Analyzed 6 repositories
+   💡 Smart suggestions now enabled
+
+$ commit-checker --coach "fixed stuff"
+🔍 Analyzing: "fixed stuff"
+
+💡 Suggestions:
+  💡 Casual style detected—add detail? E.g., fixed stuff → fixed login crash
+  💡 'stuff' is vague—what specifically? E.g., 'fixed login stuff' → 'fixed login validation'
+
+$ commit-checker --coach "fix auth bug" --feedback good
+🔍 Analyzing: "fix auth bug"
+
+💡 Suggestions:
+  💡 Your 'blog-api' uses 'feat:'—try 'feat: fix auth bug'?
+
+👍 Thanks! Tuned your preferences.
+
+$ commit-checker --insights
+🧠 Personal Coding Insights
+==================================================
+📊 Overall Style:
+   • Average commit length: 7.5 words
+   • Preferred mood: Imperative
+   • Uses emojis: No
+
+📁 Repository Analysis (6 repos):
+   🔧 Tech Stack Distribution:
+     • Python: 4 repos (67%)
+     • Javascript: 2 repos (33%)
+     • Cli: 1 repos (17%)
+   📝 Commit Style Breakdown:
+     • Imperative: 4 repos (67%)
+     • Lowercase: 2 repos (33%)
+
+🕒 Profile last updated: 2025-09-18 12:10
+
+$ commit-checker til "Learned async patterns"
+💡 TIL Tag Suggestions:
+  💡 Add --tag python? (detected Python repo)
+  💡 Add --tag async? (detected 'async' context)
+
+✅ TIL entry added
+
+$ commit-checker --coach "refactor everything"
+🔍 Analyzing: "refactor everything"
+
+💡 Suggestions:
+  💡 Large commit (150+ lines, 12 files)—split into smaller commits?
+  💡 Casual style detected—add detail? E.g., refactor everything → refactored user auth module
+```
+
 ---
 
 ## 🎉 Recent Updates
 
-### v0.6.2 - Enhanced Feedback & Advanced Analytics (Latest)
+### v0.7.0 - Smart Profile System (Latest)
+- 🧠 **Adaptive Coaching** - Suggests clarity for freeform styles (e.g., "fixed stuff → fixed login crash")
+- 📚 **Expanded Tech Detection** - Added PHP, Swift, Kotlin, Elixir, Scala, Haskell, TypeScript
+- 💡 **New Suggestions** - Commit size nudges, TIL tag recommendations
+- 👍 **--feedback good/bad** - Tune coaching preferences
+- 🔧 **Stack-aware Suggestions** - Django migrations, npm installs, cargo checks, etc.
+- 📊 **Personal Coding Insights** - Analyze your habits, tech stack distribution, and style evolution
+- 📁 **Project Structure Analysis** - Suggests tests, documentation, and maintenance tasks
+- 🎵 **Sound Notifications** - Audio feedback for completions and suggestions
+- 🧙 **New Commands**: `--build-profile`, `--coach`, `--insights`, `--no-profile`, `--feedback`
+
+### v0.6.2 - Enhanced Feedback & Advanced Analytics
 - 🔍 **Commit Message Analysis** - New `--suggest` command analyzes and improves commit messages
 - 📊 **Quick Dashboard** - New `--dashboard` command for instant daily overview
 - ⏰ **Time Analytics** - New `--time-stats` command shows coding patterns by time of day

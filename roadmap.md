@@ -19,16 +19,17 @@
 - ✅ Expanded achievements system with secret badges
 - ✅ Standalone update system fixes for curl/bash installations
 
-## 🧠 v0.7.0 – AI Smart Mode
-- AI-powered commit message suggestions (Ollama + OpenRouter)
-- AI-generated TILs from code diffs with context understanding
-- Persona-based output (e.g., tsundere, cyberpunk GPT)
-- GitHub API sync for cross-device commit stats
-- Smart commit categorization and tagging
-- Automated learning path recommendations
-- Code complexity analysis and suggestions
+## ✅ v0.7.0 – Smart Profile System
+- ✅ Adaptive commit message coaching with freeform style detection
+- ✅ Expanded tech stack detection (PHP, Swift, Kotlin, Elixir, Scala, Haskell, TypeScript)
+- ✅ Smart commit size nudges (large/tiny commit suggestions)
+- ✅ TIL tag suggestions based on repo context and commit keywords
+- ✅ User feedback system (`--feedback good/bad`) to tune coaching preferences
+- ✅ Enhanced stack-aware suggestions for 13+ languages/frameworks
+- ✅ Lightweight pattern analysis (no AI dependencies for speed)
+- ✅ Sound notifications for suggestion feedback
 
-## 🧪 v0.7.0 – VS Code Extension & AI Integration
+## 🧪 v0.8.0 – VS Code Extension & AI Integration
 - **VS Code Extension** - Dashboard panel with real-time stats
 - **Editor Integration** - Auto TIL sync from code comments and commits  
 - **AI-Powered Features** - Smart commit message suggestions with Ollama
@@ -37,7 +38,7 @@
 - **TIL Quick Entry** - Command palette integration for fast learning logs
 - **Theme Sync** - VS Code theme integration with commit-checker themes
 
-## 🧪 v0.8.0 – Team & Social Features
+## 🧪 v0.9.0 – Team & Social Features
 - Export badges/stats to social images for sharing
 - GitHub Action with team stats + webhook posting
 - Slack/Discord integration for team productivity tracking
@@ -45,7 +46,7 @@
 - Cross-platform sync with cloud storage
 - Team achievements and collaborative goals
 
-## 🚀 v0.9.0 – Team & Enterprise Features
+## 🚀 v1.0.0 – Team & Enterprise Features
 - Multi-user analytics and leaderboards
 - Team achievements and collaborative goals
 - Code review integration with XP rewards
@@ -54,7 +55,7 @@
 - Custom achievement creation tools
 - Advanced plugin marketplace
 
-## 🎯 v1.0.0 – The Ultimate Developer Productivity Suite
+## 🎯 v1.1.0 – The Ultimate Developer Productivity Suite
 - Complete feature set consolidation
 - Performance optimizations and stability
 - Comprehensive documentation and tutorials  

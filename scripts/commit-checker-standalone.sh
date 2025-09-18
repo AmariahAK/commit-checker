@@ -27,6 +27,7 @@ download_if_needed() {
 # Download required Python files
 download_if_needed "checker.py" "$REPO_URL/commit_checker/checker.py"
 download_if_needed "config.py" "$REPO_URL/commit_checker/config.py"
+download_if_needed "profile.py" "$REPO_URL/commit_checker/profile.py"
 download_if_needed "path_detector.py" "$REPO_URL/commit_checker/path_detector.py"
 download_if_needed "updater.py" "$REPO_URL/commit_checker/updater.py"
 download_if_needed "til.py" "$REPO_URL/commit_checker/til.py"
@@ -88,6 +89,7 @@ try:
     # Load modules
     checker = load_module("checker", os.path.join(script_dir, "checker.py"))
     config = load_module("config", os.path.join(script_dir, "config.py"))
+    profile = load_module("profile", os.path.join(script_dir, "profile.py"))
     path_detector = load_module("path_detector", os.path.join(script_dir, "path_detector.py"))
     til = load_module("til", os.path.join(script_dir, "til.py"))
     wizard = load_module("wizard", os.path.join(script_dir, "wizard.py"))
@@ -106,6 +108,16 @@ try:
     prompt_config = config.prompt_config
     get_auto_config = config.get_auto_config
     save_config = config.save_config
+    load_profile = config.load_profile
+    save_profile = config.save_profile
+    is_profile_enabled = config.is_profile_enabled
+    needs_profile_rebuild = config.needs_profile_rebuild
+    enable_profile = config.enable_profile
+    build_profile = profile.build_profile
+    suggest_commit_message = profile.suggest_commit_message
+    get_stack_suggestions = profile.get_stack_suggestions
+    get_structure_suggestions = profile.get_structure_suggestions
+    play_sound = profile.play_sound
     get_current_git_repo = path_detector.get_current_git_repo
     add_til_entry = til.add_til_entry
     view_til = til.view_til
@@ -161,6 +173,12 @@ def main():
     parser.add_argument("--stats", action="store_true", help="Show ASCII commit trend charts")
     parser.add_argument("--diagnose", action="store_true", help="Run system diagnostics")
     parser.add_argument("--update", action="store_true", help="Check for updates")
+    
+    # Smart Profile System flags (v0.7.0)
+    parser.add_argument("--build-profile", action="store_true", help="Build or rebuild your coding profile")
+    parser.add_argument("--coach", type=str, nargs='?', const='', help="Get commit message coaching suggestions")
+    parser.add_argument("--insights", action="store_true", help="Show personalized coding insights")
+    parser.add_argument("--no-profile", action="store_true", help="Skip profile-based suggestions")
     
     # Repository management
     parser.add_argument("--scan", action="store_true", help="Scan repo folder for git repositories")
