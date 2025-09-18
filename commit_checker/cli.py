@@ -422,7 +422,9 @@ def main():
         try:
             bootstrap()
             check_pending_update_on_startup()  # Check for pending updates first
-            check_for_updates()
+            # Skip update checks for profile commands to avoid interruption
+            if '--build-profile' not in ' '.join(sys.argv) and '--coach' not in ' '.join(sys.argv) and '--insights' not in ' '.join(sys.argv):
+                check_for_updates()
         except:
             pass  # Continue even if bootstrap/update fails
 
@@ -603,7 +605,6 @@ def main():
         if not commit_message:
             # Try to get from stdin or prompt
             try:
-                import sys
                 if not sys.stdin.isatty():
                     commit_message = sys.stdin.read().strip()
             except:

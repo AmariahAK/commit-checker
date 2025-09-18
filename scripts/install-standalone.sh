@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Ensure proper script execution
+set -e
+
 echo "🚀 Installing commit-checker (standalone version)..."
 
 # Create local bin directory if it doesn't exist

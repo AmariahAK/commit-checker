@@ -573,7 +573,14 @@ $ commit-checker --coach "refactor everything"
 
 ## 🎉 Recent Updates
 
-### v0.7.0 - Smart Profile System (Latest)
+### v0.7.1 - Smart Profile System (Latest)
+- 🐛 **Critical Bug Fixes** - Fixed sys import error causing command failures
+- ⚡ **Enhanced Stability** - All commands now exit cleanly without errors
+- 🛡️ **Improved Install Script** - Better error handling during installation
+- 🔧 **Refined Coaching** - More accurate freeform style detection
+- 📊 **Performance Optimizations** - Faster profile building and analysis
+
+### v0.7.0 - Smart Profile System
 - 🧠 **Adaptive Coaching** - Suggests clarity for freeform styles (e.g., "fixed stuff → fixed login crash")
 - 📚 **Expanded Tech Detection** - Added PHP, Swift, Kotlin, Elixir, Scala, Haskell, TypeScript
 - 💡 **New Suggestions** - Commit size nudges, TIL tag recommendations

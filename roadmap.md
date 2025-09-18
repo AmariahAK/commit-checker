@@ -19,6 +19,13 @@
 - ✅ Expanded achievements system with secret badges
 - ✅ Standalone update system fixes for curl/bash installations
 
+## ✅ v0.7.1 – Smart Profile System (Latest)
+- ✅ Critical bug fixes: Fixed sys import error causing command failures
+- ✅ Enhanced stability: All commands now exit cleanly without errors
+- ✅ Improved install script with better error handling
+- ✅ Refined coaching with more accurate freeform style detection
+- ✅ Performance optimizations for faster profile building
+
 ## ✅ v0.7.0 – Smart Profile System
 - ✅ Adaptive commit message coaching with freeform style detection
 - ✅ Expanded tech stack detection (PHP, Swift, Kotlin, Elixir, Scala, Haskell, TypeScript)
