@@ -131,9 +131,12 @@ try:
         get_til_tag_suggestions = profile.get_til_tag_suggestions
         update_freeform_feedback = profile.update_freeform_feedback
         play_sound = profile.play_sound
-    except AttributeError:
-        # Fallback if profile module doesn't exist
-        def build_profile(p): return {}
+    except AttributeError as e:
+        # Fallback if profile module doesn't exist - print debug info
+        print(f"⚠️  Profile functions not available: {e}")
+        def build_profile(p): 
+            print("❌ Profile building not available in standalone mode")
+            return {}
         def suggest_commit_message(r, p, m): return []
         def get_stack_suggestions(r, p): return []
         def get_structure_suggestions(r, p): return []
@@ -314,10 +317,7 @@ def main():
         print("   📁 Scanning project structures...")
         
         try:
-            # Import profile functions
-            profile_module = load_module("profile", os.path.join(script_dir, "profile.py"))
-            build_profile = profile_module.build_profile
-            
+            # Use the imported build_profile function
             profile = build_profile(local_paths)
             
             # Save profile using config functions
