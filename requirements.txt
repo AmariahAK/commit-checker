@@ -3,3 +3,4 @@ colorama
 packaging
 textual
 plotext
+markdown

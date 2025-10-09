@@ -19,7 +19,17 @@
 - ✅ Expanded achievements system with secret badges
 - ✅ Standalone update system fixes for curl/bash installations
 
-## ✅ v0.7.2 – Standalone Script Fixes (Latest)
+## ✅ v0.7.5 – AI Commit Mentor & Wisdom Drop Integration (Latest)
+- ✅ AI commit context extraction with git diff analysis and conventional commit detection
+- ✅ Wisdom Drop integration - daily motivational quotes on every run
+- ✅ Fixed --update command infinite loop with proper version comparison
+- ✅ Fixed "No Public Commits Found" bug with local commit detection priority
+- ✅ Enhanced --suggest with AI-powered suggestions and context summaries
+- ✅ Optional HuggingFace model support (DialoGPT, DistilBERT)
+- ✅ GitHub API caching and improved offline resilience
+- ✅ New commands: --download-models, --refresh-quote, --repair
+
+## ✅ v0.7.2 – Standalone Script Fixes
 - ✅ Fixed standalone profile commands: --build-profile, --insights, --coach now work properly
 - ✅ Added --version flag for version information
 - ✅ Enhanced standalone compatibility with profile functions and fallbacks
