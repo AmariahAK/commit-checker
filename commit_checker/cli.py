@@ -1149,37 +1149,16 @@ def main():
             output(f"❌ No active repositories found this {timeframe}.")
         sys.exit(0)
 
-    # Check GitHub commits (optional)
-    if config.get('github_username') and not config.get('skip_github', False):
-        output(f"🌐 GitHub: @{config['github_username']}")
-        try:
-            error, commits = check_github_commits(config["github_username"], config.get("github_token"))
-            if error:
-                output(error)
-                # If it's an auth error and no token, suggest skipping GitHub checks
-                if "requires authentication" in error and not config.get("github_token"):
-                    output("💡 Run --setup and choose 'Skip GitHub checks' to disable this warning")
-            elif not commits:
-                output("😢 No public commits found today.")
-                silent_output("No GitHub commits today")
-            else:
-                output("\n🟢 GitHub Commits:")
-                for repo, count in commits:
-                    output(f"✅ {repo} — {count} commit(s)")
-                    silent_output(f"{repo}: {count} commit(s)")
-        except Exception as e:
-            output(f"⚠️  GitHub check failed: {e}")
-    elif config.get('skip_github', False):
-        output("🌐 GitHub checks disabled (run --setup to re-enable)")
-
     # Handle both old and new config formats
     local_paths = config.get('local_paths', [config.get('local_path', '')]) if config.get('local_path') else config.get('local_paths', [])
     
     # Process commits for gamification
     gamification_data = process_commits_for_gamification(local_paths, config)
     
+    # Check local commits FIRST
+    local_commits_found = False
     if local_paths:
-        output(f"\n🗂️  Scanning {len(local_paths)} local path(s):")
+        output(f"🗂️  Scanning {len(local_paths)} local path(s):")
         for path in local_paths:
             if path:
                 output(f"   📁 {path}")
@@ -1187,9 +1166,10 @@ def main():
     try:
         local = check_local_commits(local_paths)
         if not local:
-            output("😢 No local commits found today.")
+            output("\n😢 No local commits found today.")
             silent_output("No local commits today")
         else:
+            local_commits_found = True
             output("\n🟩 Local Commits:")
             for repo_name, repo_path, commits, count in local:
                 output(f"📁 Repository: {repo_name}")
@@ -1199,6 +1179,32 @@ def main():
                 silent_output(f"{repo_name}: {count} commit(s)")
     except Exception as e:
         output(f"⚠️  Local check failed: {e}")
+    
+    # Check GitHub commits (show after local, with contextual message)
+    if config.get('github_username') and not config.get('skip_github', False):
+        output(f"\n🌐 GitHub: @{config['github_username']}")
+        try:
+            error, commits = check_github_commits(config["github_username"], config.get("github_token"))
+            if error:
+                output(error)
+                # If it's an auth error and no token, suggest skipping GitHub checks
+                if "requires authentication" in error and not config.get("github_token"):
+                    output("💡 Run --setup and choose 'Skip GitHub checks' to disable this warning")
+            elif not commits:
+                if local_commits_found:
+                    output("ℹ️  No commits pushed to GitHub yet (local commits not yet pushed)")
+                else:
+                    output("😢 No public commits found today.")
+                silent_output("No GitHub commits today")
+            else:
+                output("🟢 GitHub Commits:")
+                for repo, count in commits:
+                    output(f"✅ {repo} — {count} commit(s)")
+                    silent_output(f"{repo}: {count} commit(s)")
+        except Exception as e:
+            output(f"⚠️  GitHub check failed: {e}")
+    elif config.get('skip_github', False):
+        output("\n🌐 GitHub checks disabled (run --setup to re-enable)")
     
     # Display gamification results
     if gamification_data["xp_gained"] > 0 or gamification_data["commits_today"] > 0:
