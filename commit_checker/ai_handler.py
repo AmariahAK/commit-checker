@@ -131,30 +131,105 @@ class CommitAIModel:
         suggestions = []
         
         if not draft:
-            suggestions.append("💡 Add a commit message describing your changes")
-            if context and context.get('summary'):
-                suggestions.append(f"📝 Suggested based on changes: {self._generate_from_context(context)}")
+            if context and context.get('has_changes'):
+                generated = self._generate_from_context(context)
+                suggestions.append(f"💡 Suggested: {generated}")
+                suggestions.append("📝 Based on your staged changes")
+            else:
+                suggestions.append("💡 Add a commit message describing your changes")
             return suggestions
         
-        if len(draft.split()) < 3:
-            suggestions.append("💡 Consider adding more detail to your message")
+        draft_lower = draft.lower().strip()
+        words = draft.split()
+        
+        vague_words = ['stuff', 'things', 'updates', 'changes', 'fixes', 'misc', 'various']
+        has_vague = any(word in draft_lower for word in vague_words)
+        
+        if has_vague:
+            if context and context.get('files'):
+                file_hint = os.path.basename(context['files'][0])
+                suggestions.append(f"💡 '{draft}' is vague - specify what changed (e.g., 'fix {file_hint} validation')")
+            else:
+                suggestions.append(f"💡 Be more specific - what exactly changed?")
+        
+        if len(words) < 3 and not has_vague:
+            if context and context.get('summary'):
+                suggestions.append(f"💡 Add detail: {self._enhance_short_message(draft, context)}")
+            else:
+                suggestions.append("💡 Consider adding more detail to your message")
         
         if context:
             commit_type = self._infer_commit_type(context)
-            if commit_type and not draft.lower().startswith(commit_type):
-                suggestions.append(f"💡 Consider using conventional commit: {commit_type}({self._infer_scope(context)}): {draft}")
+            scope = self._infer_scope(context)
+            
+            is_conventional = any(draft_lower.startswith(ct) for ct in ['feat', 'fix', 'docs', 'test', 'chore', 'refactor', 'style', 'perf'])
+            
+            if not is_conventional and commit_type:
+                if scope:
+                    suggestions.append(f"💡 Conventional format: {commit_type}({scope}): {draft}")
+                else:
+                    suggestions.append(f"💡 Conventional format: {commit_type}: {draft}")
         
-        action_verbs = ['add', 'fix', 'update', 'remove', 'refactor', 'docs', 'test', 'feat', 'chore']
-        if not any(draft.lower().startswith(verb) for verb in action_verbs):
-            suggestions.append("💡 Start with an action verb (add, fix, update, etc.)")
-        
-        if draft[0].isupper() and ':' not in draft[:10]:
-            suggestions.append("💡 Consider using lowercase for consistency (or use conventional commits)")
+        action_verbs = ['add', 'fix', 'update', 'remove', 'refactor', 'docs', 'test', 'feat', 'chore', 'improve', 'optimize']
+        if not any(draft_lower.startswith(verb) for verb in action_verbs):
+            verb_suggestion = self._suggest_verb_from_context(context) if context else 'add'
+            suggestions.append(f"💡 Start with action verb (e.g., '{verb_suggestion}: {draft}')")
         
         if len(draft) > 72:
-            suggestions.append("💡 Consider shortening (recommended: under 72 characters)")
+            shortened = draft[:69] + '...'
+            suggestions.append(f"💡 Shorten to <72 chars: '{shortened}'")
+        
+        if draft[0].isupper() and ':' not in draft[:10] and not draft_lower.startswith('feat'):
+            suggestions.append("💡 Use lowercase for non-conventional commits or add type prefix")
+        
+        if profile:
+            avg_len = profile.get('avg_length', 50)
+            if len(draft) < avg_len * 0.5:
+                suggestions.append(f"💡 Your commits are usually {int(avg_len)} chars - add more context?")
+        
+        typos = {
+            'teh': 'the', 'adn': 'and', 'recieve': 'receive', 
+            'seperate': 'separate', 'definately': 'definitely'
+        }
+        for typo, correct in typos.items():
+            if typo in draft_lower:
+                suggestions.append(f"💡 Typo detected: '{typo}' → '{correct}'")
         
         return suggestions if suggestions else ["✅ Looks good!"]
+    
+    def _enhance_short_message(self, draft, context):
+        if not context or not context.get('files'):
+            return draft
+        
+        files = context.get('files', [])
+        additions = context.get('total_additions', 0)
+        
+        if len(files) == 1:
+            filename = os.path.basename(files[0])
+            return f"{draft} in {filename}"
+        elif additions > 50:
+            return f"{draft} across {len(files)} files"
+        else:
+            return f"{draft} (minor changes)"
+    
+    def _suggest_verb_from_context(self, context):
+        if not context:
+            return 'update'
+        
+        additions = context.get('total_additions', 0)
+        deletions = context.get('total_deletions', 0)
+        files = context.get('files', [])
+        
+        if deletions > additions * 2:
+            return 'remove'
+        if additions > deletions * 3:
+            return 'add'
+        if any('test' in f.lower() for f in files):
+            return 'test'
+        if any('.md' in f.lower() for f in files):
+            return 'docs'
+        
+        return 'update'
     
     def _generate_from_context(self, context):
         if not context or not context.get('has_changes'):

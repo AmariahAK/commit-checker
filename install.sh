@@ -1,6 +1,9 @@
 #!/bin/bash
 
-echo "🌱 Installing commit-checker..."
+echo "🌱 Installing commit-checker v0.7.5..."
+echo "📦 This installs core dependencies (requests, colorama, packaging, markdown)"
+echo "💡 AI models (transformers, torch) are optional - download later with --download-models"
+echo ""
 
 # Clone the repo
 git clone https://github.com/AmariahAK/commit-checker.git
@@ -42,4 +45,7 @@ fi
 cd ..
 rm -rf commit-checker
 
+echo ""
 echo "✅ Installed! Open a new terminal or run: commit-checker"
+echo "💡 First time? Run: commit-checker --init"
+echo "🤖 Want AI features? Run: commit-checker --download-models (optional)"

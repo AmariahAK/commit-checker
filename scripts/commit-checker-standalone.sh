@@ -36,6 +36,9 @@ download_if_needed "gamification.py" "$REPO_URL/commit_checker/gamification.py"
 download_if_needed "analytics.py" "$REPO_URL/commit_checker/analytics.py"
 download_if_needed "til_vault.py" "$REPO_URL/commit_checker/til_vault.py"
 download_if_needed "bootstrap.py" "$REPO_URL/commit_checker/bootstrap.py"
+download_if_needed "wisdom.py" "$REPO_URL/commit_checker/wisdom.py"
+download_if_needed "context.py" "$REPO_URL/commit_checker/context.py"
+download_if_needed "ai_handler.py" "$REPO_URL/commit_checker/ai_handler.py"
 
 # Create a simple Python runner
 cat > "$SCRIPT_DIR/run_commit_checker.py" << 'EOF'

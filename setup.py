@@ -8,7 +8,7 @@ setup(
     packages=find_packages(),
     install_requires=["requests", "colorama", "packaging", "textual", "plotext", "markdown"],
     extras_require={
-        "ai": ["transformers", "torch"]
+        "ai": ["transformers>=4.30.0", "torch>=2.0.0"]
     },
     entry_points={
         "console_scripts": [

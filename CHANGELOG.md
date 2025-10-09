@@ -46,10 +46,11 @@ All notable changes to this project will be documented in this file.
 - **Error resilience** - All new features fail gracefully without breaking main flow
 
 ### 📦 **Dependencies**
-- **NEW: `transformers`** - HuggingFace transformers for AI models (optional)
-- **NEW: `torch`** - PyTorch for model inference (optional, CPU-only)
-- **NEW: `markdown`** - Markdown parsing for Wisdom Drop integration
-- **Python 3.13 requirement** - Updated minimum Python version for AI features
+- **NEW: `markdown`** - Markdown parsing for Wisdom Drop integration (required)
+- **OPTIONAL: `transformers`** - HuggingFace transformers for AI models (install via `--download-models`)
+- **OPTIONAL: `torch`** - PyTorch for model inference (install via `--download-models`)
+- **Smart heuristics by default** - Advanced commit suggestions work WITHOUT downloading AI models
+- **Python 3.13 recommended** - Updated for best compatibility with AI features (3.7+ still works)
 
 ### 🎨 **User Experience**
 - **Quote + Suggestions** - Wisdom Drop quotes shown with --suggest output

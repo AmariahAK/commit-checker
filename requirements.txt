@@ -3,6 +3,4 @@ colorama
 packaging
 textual
 plotext
-transformers
-torch
 markdown
