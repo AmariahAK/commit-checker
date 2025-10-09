@@ -171,7 +171,7 @@ def format_wisdom_quote(quote_data, emoji_mode=True):
         return ""
     
     icon = "💡" if emoji_mode else ">"
-    quote = quote_data['quote']
+    quote = quote_data['quote'].strip('"').strip("'")
     author = quote_data['author']
     category = quote_data['category']
     

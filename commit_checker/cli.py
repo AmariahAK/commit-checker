@@ -503,6 +503,7 @@ def main():
     parser.add_argument("--refresh-quote", action="store_true", help="Refresh Wisdom Drop quote")
     parser.add_argument("--download-models", action="store_true", help="Download AI models for commit suggestions")
     parser.add_argument("--repair", action="store_true", help="Attempt to auto-repair local assets/config")
+    parser.add_argument("--debug", action="store_true", help="Show debug information for troubleshooting")
     
     # Enhanced TIL features
     parser.add_argument("--search-til", type=str, help="Fuzzy search TIL entries")
@@ -1274,7 +1275,11 @@ def main():
             if quote:
                 emoji_mode = config.get('output', 'emoji') != 'plain'
                 output("\n" + format_wisdom_quote(quote, emoji_mode=emoji_mode))
-    except Exception:
+    except Exception as e:
+        # Silently log but don't break the flow
+        import sys
+        if '--debug' in sys.argv:
+            print(f"⚠️  Wisdom Drop error: {e}")
         pass
 
 if __name__ == "__main__":
