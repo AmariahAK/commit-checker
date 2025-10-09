@@ -2,6 +2,62 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.7.5] - 2025-10-09
+
+### 🤖 **AI Commit Context System**
+- **NEW: AI commit context extraction** - Analyzes staged changes for smarter suggestions
+- **Git diff summaries** - Shows files changed, additions/deletions, and context  
+- **Conventional commit type detection** - Automatically suggests feat/fix/docs/etc based on changes
+- **Context-aware suggestions** - Improved --suggest with file analysis and diff context
+- **Optional AI model support** - Download HuggingFace models for enhanced suggestions (DialoGPT, DistilBERT)
+- **Heuristics-first approach** - Works without AI models, uses smart pattern matching
+
+### 💡 **Wisdom Drop Integration**
+- **NEW: Daily motivational quotes** - Integrates with [Wisdom Drop](https://github.com/AmariahAK/wisdom-drop) repository
+- **Automatic quote display** - Shows inspirational quote after every commit check
+- **Smart parsing** - Extracts latest quote up to current date from README format
+- **24-hour caching** - Reduces API calls and works offline with cached quotes
+- **`--refresh-quote` command** - Manually refresh the daily Wisdom Drop quote
+- **`inspire` config option** - Enable/disable quote display (default: enabled)
+
+### 🔧 **Critical Bug Fixes**
+- **Fixed --update infinite loop** - Proper version comparison prevents update loops
+- **Fixed "No Public Commits Found" bug** - Prioritizes local git detection with author filtering
+- **Enhanced local commit detection** - Uses `git config user.email` to filter commits by author
+- **GitHub API caching** - 1-hour cache for API results to reduce rate limit issues
+- **Backup & restore config** - Update process now backs up config before changes
+- **Update logging** - All updates logged to ~/.commit_checker_cache/update.log
+
+### 🚀 **Enhanced Commands**
+- **NEW: `--suggest [draft]`** - AI-powered commit message suggestions with optional draft
+- **NEW: `--download-models`** - Download AI models for offline suggestions
+- **NEW: `--refresh-quote`** - Refresh Wisdom Drop quote cache
+- **NEW: `--repair`** - Auto-repair assets, templates, and profile
+- **Enhanced `--suggest`** - Now accepts draft messages and shows context summaries
+- **Context summaries** - Shows files changed, conventional commit type, and diff stats
+
+### 🛠️ **Technical Improvements**
+- **New modules**: wisdom.py, context.py, ai_handler.py for modular AI features
+- **Markdown parsing** - Robust parsing of Wisdom Drop README format
+- **Git diff analysis** - Extracts staged file changes with 3-line context
+- **Cache management** - Centralized caching in ~/.commit_checker_cache/
+- **Model download system** - One-time HuggingFace model downloads with cleanup
+- **Fallback chains** - AI → Profile → Analytics for robust suggestions
+- **Error resilience** - All new features fail gracefully without breaking main flow
+
+### 📦 **Dependencies**
+- **NEW: `transformers`** - HuggingFace transformers for AI models (optional)
+- **NEW: `torch`** - PyTorch for model inference (optional, CPU-only)
+- **NEW: `markdown`** - Markdown parsing for Wisdom Drop integration
+- **Python 3.13 requirement** - Updated minimum Python version for AI features
+
+### 🎨 **User Experience**
+- **Quote + Suggestions** - Wisdom Drop quotes shown with --suggest output
+- **Context-aware coaching** - Commit suggestions now reference actual file changes
+- **Offline-first design** - All features work offline with caching
+- **Non-disruptive display** - Quotes appear at end of flow, never interrupt
+- **Configurable inspiration** - Toggle Wisdom Drop via config inspire flag
+
 ## [0.6.2] - 2025-08-26
 
 ### 🔍 **Enhanced Commit Message Feedback**

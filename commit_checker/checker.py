@@ -1,17 +1,56 @@
 import subprocess
 import os
 import requests
+import json
 from datetime import datetime, timezone, timedelta
+
+GITHUB_CACHE_FILE = os.path.expanduser("~/.commit_checker_cache/github_commits.json")
+CACHE_DURATION = 3600
 
 def get_today_date():
     return datetime.now(timezone.utc).date().isoformat()
 
+def get_cache_dir():
+    cache_dir = os.path.expanduser("~/.commit_checker_cache")
+    os.makedirs(cache_dir, exist_ok=True)
+    return cache_dir
+
+def is_github_cache_valid():
+    if not os.path.exists(GITHUB_CACHE_FILE):
+        return False
+    try:
+        with open(GITHUB_CACHE_FILE, 'r') as f:
+            cache = json.load(f)
+        cache_time = cache.get('timestamp', 0)
+        return (datetime.now().timestamp() - cache_time) < CACHE_DURATION
+    except Exception:
+        return False
+
+def save_github_cache(results):
+    try:
+        get_cache_dir()
+        cache_data = {
+            'results': results,
+            'timestamp': datetime.now().timestamp()
+        }
+        with open(GITHUB_CACHE_FILE, 'w') as f:
+            json.dump(cache_data, f)
+    except Exception:
+        pass
+
+def load_github_cache():
+    try:
+        with open(GITHUB_CACHE_FILE, 'r') as f:
+            cache = json.load(f)
+        return cache.get('results', [])
+    except Exception:
+        return []
+
 def check_local_commits(paths):
-    """Check local commits in one or more paths"""
+    """Check local commits in one or more paths with enhanced local detection"""
     today = get_today_date()
-    repos_found = {}  # Use dict to avoid duplicates and group by repo
+    repos_found = {}
     
-    # Handle both single path (backward compatibility) and multiple paths
     if isinstance(paths, str):
         paths = [paths]
     elif paths is None:
@@ -24,12 +63,25 @@ def check_local_commits(paths):
         for root, dirs, files in os.walk(base_path):
             if '.git' in dirs:
                 try:
-                    # Get today's commits
-                    log = subprocess.check_output(
-                        ["git", "--git-dir", os.path.join(root, ".git"), "--work-tree", root,
-                         "log", "--since=midnight", "--pretty=format:%h %s"],
-                        stderr=subprocess.DEVNULL
-                    ).decode("utf-8").strip()
+                    git_dir = os.path.join(root, ".git")
+                    
+                    user_email = None
+                    try:
+                        user_email = subprocess.check_output(
+                            ["git", "--git-dir", git_dir, "--work-tree", root,
+                             "config", "user.email"],
+                            stderr=subprocess.DEVNULL
+                        ).decode("utf-8").strip()
+                    except Exception:
+                        pass
+                    
+                    log_cmd = ["git", "--git-dir", git_dir, "--work-tree", root,
+                               "log", "--since=midnight", "--pretty=format:%h %s"]
+                    
+                    if user_email:
+                        log_cmd.insert(-2, f"--author={user_email}")
+                    
+                    log = subprocess.check_output(log_cmd, stderr=subprocess.DEVNULL).decode("utf-8").strip()
                     
                     if log:
                         # Get repository name
@@ -73,18 +125,26 @@ def check_local_commits(paths):
     return [(repo_info['name'], repo_info['path'], repo_info['commits'], repo_info['count']) 
             for repo_info in repos_found.values()]
 
-def check_github_commits(username, token=None):
+def check_github_commits(username, token=None, use_cache=True):
+    if use_cache and is_github_cache_valid():
+        cached_results = load_github_cache()
+        return None, cached_results
+    
     url = f"https://api.github.com/users/{username}/events"
     headers = {"Accept": "application/vnd.github.v3+json"}
     if token:
         headers["Authorization"] = f"token {token}"
 
     try:
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, timeout=10)
         response.raise_for_status()
     except requests.RequestException as e:
-        # Enhanced error handling for common GitHub API issues
         error_msg = str(e)
+        
+        if use_cache:
+            cached_results = load_github_cache()
+            if cached_results:
+                return None, cached_results
         
         if "401" in error_msg:
             if not token:
@@ -109,6 +169,9 @@ def check_github_commits(username, token=None):
         repo = event["repo"]["name"]
         count = len(event["payload"]["commits"])
         results.append((repo, count))
+    
+    if use_cache:
+        save_github_cache(results)
 
     return None, results
 

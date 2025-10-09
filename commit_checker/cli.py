@@ -24,6 +24,9 @@ try:
     from .til_vault import (create_til_from_template, search_til_vault, display_search_results,
                            create_til_from_latest_commit, display_vault_summary, list_templates,
                            add_custom_template)
+    from .wisdom import get_latest_wisdom_quote, format_wisdom_quote, refresh_wisdom_quote
+    from .context import extract_commit_context, format_context_summary, suggest_conventional_commit_type
+    from .ai_handler import get_ai_suggestion, download_ai_models, is_ai_available
 except ImportError:
     # Standalone mode - load modules directly
     current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -114,6 +117,24 @@ except ImportError:
         list_templates = til_vault.list_templates
         create_default_templates = til_vault.create_default_templates
         add_custom_template = til_vault.add_custom_template
+        
+        # Wisdom imports
+        wisdom = load_module("wisdom", os.path.join(current_dir, "wisdom.py"))
+        get_latest_wisdom_quote = wisdom.get_latest_wisdom_quote
+        format_wisdom_quote = wisdom.format_wisdom_quote
+        refresh_wisdom_quote = wisdom.refresh_wisdom_quote
+        
+        # Context imports
+        context_module = load_module("context", os.path.join(current_dir, "context.py"))
+        extract_commit_context = context_module.extract_commit_context
+        format_context_summary = context_module.format_context_summary
+        suggest_conventional_commit_type = context_module.suggest_conventional_commit_type
+        
+        # AI handler imports
+        ai_handler = load_module("ai_handler", os.path.join(current_dir, "ai_handler.py"))
+        get_ai_suggestion = ai_handler.get_ai_suggestion
+        download_ai_models = ai_handler.download_ai_models
+        is_ai_available = ai_handler.is_ai_available
         
         # Simple bootstrap function
         def bootstrap():
@@ -476,7 +497,12 @@ def main():
     parser.add_argument("--stats-lang", action="store_true", help="Show programming language breakdown")
     parser.add_argument("--time-stats", action="store_true", help="Show commit time analysis")
     parser.add_argument("--dashboard", action="store_true", help="Show quick stats dashboard")
-    parser.add_argument("--suggest", action="store_true", help="Analyze latest commit message and suggest improvements")
+    parser.add_argument("--suggest", type=str, nargs='?', const='', help="Suggest a better commit message (optional draft message)")
+    
+    # Wisdom Drop & AI features
+    parser.add_argument("--refresh-quote", action="store_true", help="Refresh Wisdom Drop quote")
+    parser.add_argument("--download-models", action="store_true", help="Download AI models for commit suggestions")
+    parser.add_argument("--repair", action="store_true", help="Attempt to auto-repair local assets/config")
     
     # Enhanced TIL features
     parser.add_argument("--search-til", type=str, help="Fuzzy search TIL entries")
@@ -526,8 +552,8 @@ def main():
         sys.exit(0)
 
     if args.version:
-        print("🚀 commit-checker v0.7.2")
-        print("📅 Smart Profile System")
+        print("🚀 commit-checker v0.7.5")
+        print("💡 AI Commit Mentor with Wisdom Drop Integration")
         print("🔗 https://github.com/AmariahAK/commit-checker")
         sys.exit(0)
 
@@ -536,6 +562,37 @@ def main():
             manual_update_check()
         except:
             print("⚠️  Update check failed")
+        sys.exit(0)
+    
+    if args.download_models:
+        try:
+            download_ai_models()
+            print("✅ AI models downloaded.")
+        except Exception as e:
+            print(f"⚠️  Could not download AI models: {e}")
+        sys.exit(0)
+    
+    if args.refresh_quote:
+        try:
+            refresh_wisdom_quote()
+        except Exception as e:
+            print(f"⚠️  Could not refresh Wisdom Drop: {e}")
+        sys.exit(0)
+    
+    if args.repair:
+        try:
+            print("🛠️  Repairing commit-checker assets...")
+            ensure_gamification_files()
+            create_default_templates()
+            if needs_profile_rebuild():
+                local_paths = load_config().get('local_paths', [])
+                if local_paths:
+                    print("🔁 Rebuilding profile...")
+                    prof = build_profile(local_paths)
+                    save_profile(prof)
+            print("✅ Repair completed.")
+        except Exception as e:
+            print(f"⚠️  Repair encountered issues: {e}")
         sys.exit(0)
 
     if args.setup:
@@ -792,39 +849,99 @@ def main():
         print(render_dashboard(stats, config))
         sys.exit(0)
     
-    if args.suggest:
-        local_paths = config.get('local_paths', [])
-        if not local_paths:
-            print("❌ No local paths configured. Run --init or --setup first.")
-            sys.exit(1)
-        
-        latest_commit = get_latest_commit_message(local_paths)
-        if not latest_commit:
-            print("❌ No commits found to analyze.")
-            sys.exit(1)
-        
-        suggestions = analyze_commit_message(latest_commit['message'])
-        
-        # Format output based on config
-        output_mode = config.get('output', 'emoji')
-        if output_mode == 'emoji':
-            print(f"🔍 Latest commit in {latest_commit['repo']}: \"{latest_commit['message']}\"")
-            print()
-            if suggestions:
-                print("💡 Suggestions:")
-                for suggestion in suggestions:
-                    print(f"  • {suggestion}")
-            else:
-                print("✅ Commit message looks good!")
+    # AI-powered commit message suggestion
+    if args.suggest is not None:
+        current_dir = os.getcwd()
+        repo_path = current_dir
+        while repo_path and repo_path != '/':
+            if os.path.exists(os.path.join(repo_path, '.git')):
+                break
+            repo_path = os.path.dirname(repo_path)
         else:
-            print(f"Latest commit in {latest_commit['repo']}: \"{latest_commit['message']}\"")
-            print()
-            if suggestions:
-                print("Suggestions:")
-                for suggestion in suggestions:
-                    print(f"  - {suggestion}")
-            else:
-                print("Commit message looks good!")
+            repo_path = current_dir
+        
+        draft_message = (args.suggest or "").strip()
+        if not draft_message:
+            try:
+                local_paths = config.get('local_paths', [])
+                if local_paths:
+                    latest = get_latest_commit_message(local_paths)
+                    if latest:
+                        draft_message = latest.get('message', '')
+            except Exception:
+                pass
+        
+        context_info = None
+        conventional_type = None
+        try:
+            context_info = extract_commit_context(repo_path)
+            conventional_type = suggest_conventional_commit_type(context_info)
+        except Exception:
+            pass
+        
+        emoji_mode = config.get('output', 'emoji') != 'plain'
+        if context_info and context_info.get('has_changes'):
+            print("\n🧠 Context summary:" if emoji_mode else "\nContext summary:")
+            print(format_context_summary(context_info, emoji_mode))
+        
+        if conventional_type:
+            print(f"\n🔖 Conventional type suggestion: {conventional_type}")
+        
+        suggestions = []
+        try:
+            use_ai = is_ai_available()
+            profile_obj = None
+            
+            if use_ai:
+                if is_profile_enabled():
+                    try:
+                        profile_obj = load_profile()
+                    except Exception:
+                        pass
+                
+                suggestions_list = get_ai_suggestion(
+                    draft_message or "",
+                    context=context_info,
+                    profile=profile_obj,
+                    use_model=use_ai
+                )
+                if isinstance(suggestions_list, list):
+                    suggestions = suggestions_list
+                elif isinstance(suggestions_list, str):
+                    suggestions = [suggestions_list]
+            elif is_profile_enabled() and draft_message:
+                try:
+                    profile_obj = load_profile()
+                    suggestions = suggest_commit_message(repo_path, profile_obj, draft_message)
+                except Exception:
+                    pass
+            
+            if not suggestions and draft_message:
+                analysis_result = analyze_commit_message(draft_message)
+                if isinstance(analysis_result, list):
+                    suggestions = analysis_result
+        except Exception as e:
+            print(f"⚠️  Suggestion engine issue: {e}")
+        
+        print("\n✨ Suggested commit message:")
+        if suggestions:
+            for suggestion in suggestions[:3]:
+                print(f"  {suggestion}")
+        else:
+            print("  No strong suggestion available. Try providing a draft or download AI models with --download-models")
+        
+        try:
+            play_sound("suggest.wav")
+        except:
+            pass
+        
+        try:
+            quote = get_latest_wisdom_quote()
+            if quote:
+                print()
+                print(format_wisdom_quote(quote, emoji_mode=emoji_mode))
+        except:
+            pass
         
         sys.exit(0)
     
@@ -1149,6 +1266,16 @@ def main():
             output("\n🧙 Smart Profile: No profile found!")
             output("💡 Run --build-profile to enable personalized suggestions")
             play_sound("suggest.wav")
+    
+    # Display Wisdom Drop quote at end of every commit check
+    try:
+        if config.get('inspire', True):
+            quote = get_latest_wisdom_quote()
+            if quote:
+                emoji_mode = config.get('output', 'emoji') != 'plain'
+                output("\n" + format_wisdom_quote(quote, emoji_mode=emoji_mode))
+    except Exception:
+        pass
 
 if __name__ == "__main__":
     main()

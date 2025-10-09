@@ -5,12 +5,15 @@ import os
 import sys
 import json
 import time
+import shutil
 
-LOCAL_VERSION = "0.6.2.2"
+LOCAL_VERSION = "0.7.5"
 REPO = "AmariahAK/commit-checker"
-UPDATE_MARKER_FILE = os.path.expanduser("~/.commit-checker/pending_update")
-VERSION_CACHE_FILE = os.path.expanduser("~/.commit-checker/version_cache.json")
-UPDATE_CHECK_INTERVAL = 86400  # 24 hours in seconds
+UPDATE_MARKER_FILE = os.path.expanduser("~/.commit_checker_cache/pending_update")
+VERSION_CACHE_FILE = os.path.expanduser("~/.commit_checker_cache/version_cache.json")
+BACKUP_CONFIG_FILE = os.path.expanduser("~/.commit_checker_cache/backup_config.json")
+UPDATE_LOG_FILE = os.path.expanduser("~/.commit_checker_cache/update.log")
+UPDATE_CHECK_INTERVAL = 86400
 
 def detect_installation_type():
     """Detect how commit-checker is installed"""
@@ -130,19 +133,70 @@ def clear_pending_update():
         except Exception:
             pass
 
-def perform_update(target_version):
-    """Perform the actual update"""
+def log_update(message):
     try:
+        os.makedirs(os.path.dirname(UPDATE_LOG_FILE), exist_ok=True)
+        with open(UPDATE_LOG_FILE, 'a') as f:
+            timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
+            f.write(f"[{timestamp}] {message}\n")
+    except Exception:
+        pass
+
+def backup_config():
+    try:
+        config_file = os.path.expanduser("~/.commit_checker_config")
+        if os.path.exists(config_file):
+            os.makedirs(os.path.dirname(BACKUP_CONFIG_FILE), exist_ok=True)
+            shutil.copy2(config_file, BACKUP_CONFIG_FILE)
+            log_update(f"Config backed up to {BACKUP_CONFIG_FILE}")
+            return True
+    except Exception as e:
+        log_update(f"Config backup failed: {e}")
+    return False
+
+def restore_config():
+    try:
+        config_file = os.path.expanduser("~/.commit_checker_config")
+        if os.path.exists(BACKUP_CONFIG_FILE):
+            shutil.copy2(BACKUP_CONFIG_FILE, config_file)
+            log_update("Config restored from backup")
+            return True
+    except Exception as e:
+        log_update(f"Config restore failed: {e}")
+    return False
+
+def perform_update(target_version):
+    try:
+        current = get_installed_version()
+        
+        if version.parse(current) >= version.parse(target_version):
+            print(f"✅ Already at version v{current}, skipping update")
+            log_update(f"Skipped update - already at v{current}")
+            return True
+        
         installation_type = detect_installation_type()
-        print(f"⬆️  Updating commit-checker to v{target_version}...")
+        print(f"⬆️  Updating commit-checker from v{current} to v{target_version}...")
+        log_update(f"Starting update from v{current} to v{target_version}")
+        
+        backup_config()
         
         if installation_type == "standalone":
-            return update_standalone(target_version)
+            result = update_standalone(target_version)
         else:
-            return update_pip_installation(target_version)
+            result = update_pip_installation(target_version)
+        
+        if result:
+            log_update(f"Update to v{target_version} successful")
+        else:
+            log_update(f"Update to v{target_version} failed")
+            restore_config()
+        
+        return result
         
     except Exception as e:
+        log_update(f"Update failed with exception: {e}")
         print(f"❌ Update failed: {e}")
+        restore_config()
         return False
 
 
