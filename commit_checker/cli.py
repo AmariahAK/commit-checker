@@ -1280,12 +1280,16 @@ def main():
             quote = get_latest_wisdom_quote()
             if quote:
                 emoji_mode = config.get('output', 'emoji') != 'plain'
-                output("\n" + format_wisdom_quote(quote, emoji_mode=emoji_mode))
+                formatted = format_wisdom_quote(quote, emoji_mode=emoji_mode)
+                output("\n" + formatted)
+            elif args.debug:
+                print("⚠️  Wisdom Drop: No quote retrieved")
     except Exception as e:
         # Silently log but don't break the flow
-        import sys
-        if '--debug' in sys.argv:
+        if args.debug:
+            import traceback
             print(f"⚠️  Wisdom Drop error: {e}")
+            traceback.print_exc()
         pass
 
 if __name__ == "__main__":
