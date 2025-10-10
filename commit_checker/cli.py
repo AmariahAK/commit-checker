@@ -156,7 +156,7 @@ except ImportError:
                             print(f"⚠️  Could not install {package}. Some features may not work.")
                             return False
             
-            for pkg in ["requests", "colorama", "packaging"]:
+            for pkg in ["requests", "colorama", "packaging", "markdown"]:
                 ensure_package(pkg)
         
     except Exception as e:
