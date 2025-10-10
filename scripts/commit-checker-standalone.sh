@@ -264,7 +264,7 @@ def main():
         sys.exit(0)
     
     if args.version:
-        print("🚀 commit-checker v0.7.2")
+        print("🚀 commit-checker v0.7.5.1")
         print("📅 Smart Profile System")
         print("🔗 https://github.com/AmariahAK/commit-checker")
         sys.exit(0)
