@@ -1,5 +1,9 @@
 import subprocess
 import sys
+import warnings
+
+# Suppress urllib3 OpenSSL warnings
+warnings.filterwarnings('ignore', message='.*urllib3.*OpenSSL.*')
 
 def ensure_package(package):
     try:

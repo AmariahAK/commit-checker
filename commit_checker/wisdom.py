@@ -5,6 +5,7 @@ import re
 from datetime import datetime, timedelta
 
 WISDOM_DROP_URL = "https://raw.githubusercontent.com/AmariahAK/wisdom-drop/main/README.md"
+WISDOM_DROP_API_URL = "https://api.github.com/repos/AmariahAK/wisdom-drop/commits?path=README.md&per_page=1"
 QUOTE_CACHE_FILE = os.path.expanduser("~/.commit_checker_cache/quote.json")
 CACHE_DURATION = 86400
 
@@ -13,12 +14,33 @@ def get_cache_dir():
     os.makedirs(cache_dir, exist_ok=True)
     return cache_dir
 
+def get_latest_wisdom_commit_sha():
+    """Get the latest commit SHA for wisdom-drop README.md"""
+    try:
+        response = requests.get(WISDOM_DROP_API_URL, timeout=5)
+        response.raise_for_status()
+        commits = response.json()
+        if commits and len(commits) > 0:
+            return commits[0]['sha']
+    except Exception:
+        pass
+    return None
+
 def is_cache_valid():
     if not os.path.exists(QUOTE_CACHE_FILE):
         return False
     try:
         with open(QUOTE_CACHE_FILE, 'r', encoding='utf-8') as f:
             cache = json.load(f)
+        
+        # Check if wisdom-drop repo has been updated
+        cached_commit = cache.get('commit_sha')
+        if cached_commit:
+            latest_commit = get_latest_wisdom_commit_sha()
+            if latest_commit and latest_commit != cached_commit:
+                return False  # New commit available, cache invalid
+        
+        # Fallback to time-based cache (24hr)
         cache_time = cache.get('timestamp', 0)
         return (datetime.now().timestamp() - cache_time) < CACHE_DURATION
     except Exception:
@@ -36,14 +58,15 @@ def load_cached_quote():
     except Exception:
         return None
 
-def save_quote_to_cache(quote, author, category):
+def save_quote_to_cache(quote, author, category, commit_sha=None):
     try:
         get_cache_dir()
         cache_data = {
             'quote': quote,
             'author': author,
             'category': category,
-            'timestamp': datetime.now().timestamp()
+            'timestamp': datetime.now().timestamp(),
+            'commit_sha': commit_sha
         }
         with open(QUOTE_CACHE_FILE, 'w', encoding='utf-8') as f:
             json.dump(cache_data, f, indent=2)
@@ -152,7 +175,8 @@ def get_latest_wisdom_quote():
         
         latest = max(valid_quotes, key=lambda q: q['date'])
         
-        save_quote_to_cache(latest['quote'], latest['author'], latest['category'])
+        commit_sha = get_latest_wisdom_commit_sha()
+        save_quote_to_cache(latest['quote'], latest['author'], latest['category'], commit_sha)
         
         return {
             'quote': latest['quote'],

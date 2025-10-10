@@ -475,6 +475,7 @@ def main():
     parser.add_argument("--nocolor", action="store_true", help="Disable emojis and colors in output")
     parser.add_argument("--check-only", action="store_true", help="Run check without startup actions")
     parser.add_argument("--update", action="store_true", help="Manually check for new GitHub version")
+    parser.add_argument("--refresh-quote", action="store_true", help="Force refresh Wisdom Drop quote")
     parser.add_argument("--stats", action="store_true", help="Show ASCII commit trend charts")
     parser.add_argument("--diagnose", action="store_true", help="Run system diagnostics")
     parser.add_argument("--version", action="store_true", help="Show version information")
@@ -500,7 +501,6 @@ def main():
     parser.add_argument("--suggest", type=str, nargs='?', const='', help="Suggest a better commit message (optional draft message)")
     
     # Wisdom Drop & AI features
-    parser.add_argument("--refresh-quote", action="store_true", help="Refresh Wisdom Drop quote")
     parser.add_argument("--download-models", action="store_true", help="Download AI models for commit suggestions")
     parser.add_argument("--repair", action="store_true", help="Attempt to auto-repair local assets/config")
     parser.add_argument("--debug", action="store_true", help="Show debug information for troubleshooting")
@@ -553,7 +553,7 @@ def main():
         sys.exit(0)
 
     if args.version:
-        print("🚀 commit-checker v0.7.6")
+        print("🚀 commit-checker v0.7.7")
         print("💡 AI Commit Mentor with Wisdom Drop Integration")
         print("🔗 https://github.com/AmariahAK/commit-checker")
         sys.exit(0)

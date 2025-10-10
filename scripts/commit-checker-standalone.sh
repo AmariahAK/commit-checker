@@ -100,6 +100,7 @@ try:
     analytics = load_module("analytics", os.path.join(script_dir, "analytics.py"))
     til_vault = load_module("til_vault", os.path.join(script_dir, "til_vault.py"))
     updater = load_module("updater", os.path.join(script_dir, "updater.py"))
+    wisdom = load_module("wisdom", os.path.join(script_dir, "wisdom.py"))
     
     # Get functions from modules
     check_github_commits = checker.check_github_commits
@@ -264,7 +265,7 @@ def main():
         sys.exit(0)
     
     if args.version:
-        print("🚀 commit-checker v0.7.6")
+        print("🚀 commit-checker v0.7.7")
         print("💡 AI Commit Mentor with Wisdom Drop Integration")
         print("🔗 https://github.com/AmariahAK/commit-checker")
         sys.exit(0)
@@ -648,7 +649,6 @@ def main():
     # Display Wisdom Drop quote at end
     try:
         if config.get('inspire', True):
-            wisdom = load_module("wisdom", os.path.join(script_dir, "wisdom.py"))
             quote = wisdom.get_latest_wisdom_quote()
             if quote:
                 emoji_mode = config.get('output', 'emoji') != 'plain'
