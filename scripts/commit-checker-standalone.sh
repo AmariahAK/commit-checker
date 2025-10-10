@@ -264,8 +264,8 @@ def main():
         sys.exit(0)
     
     if args.version:
-        print("🚀 commit-checker v0.7.5.1")
-        print("📅 Smart Profile System")
+        print("🚀 commit-checker v0.7.6")
+        print("💡 AI Commit Mentor with Wisdom Drop Integration")
         print("🔗 https://github.com/AmariahAK/commit-checker")
         sys.exit(0)
     
@@ -575,38 +575,26 @@ def main():
         if args.silent:
             print(format_output(text))
 
-    # Check GitHub commits
-    if config.get('github_username'):
-        output(f"🌐 GitHub: @{config['github_username']}")
-        error, commits = check_github_commits(config["github_username"], config.get("github_token"))
-        if error:
-            output(error)
-        elif not commits:
-            output("😢 No public commits found today.")
-            silent_output("No GitHub commits today")
-        else:
-            output("\n🟢 GitHub Commits:")
-            for repo, count in commits:
-                output(f"✅ {repo} — {count} commit(s)")
-                silent_output(f"{repo}: {count} commit(s)")
-
-    # Check local commits
+    # Handle local paths
     local_paths = config.get('local_paths', [])
     
     # Process commits for gamification
     gamification_data = process_commits_for_gamification(local_paths, config)
     
+    # Check local commits FIRST
+    local_commits_found = False
     if local_paths:
-        output(f"\n🗂️  Scanning {len(local_paths)} local path(s):")
+        output(f"🗂️  Scanning {len(local_paths)} local path(s):")
         for path in local_paths:
             if path:
                 output(f"   📁 {path}")
     
     local = check_local_commits(local_paths)
     if not local:
-        output("😢 No local commits found today.")
+        output("\n😢 No local commits found today.")
         silent_output("No local commits today")
     else:
+        local_commits_found = True
         output("\n🟩 Local Commits:")
         for repo_name, repo_path, commits, count in local:
             output(f"📁 Repository: {repo_name}")
@@ -614,6 +602,24 @@ def main():
             output(f"   📊 {count} commit(s) today:")
             output(f"   {commits}\n")
             silent_output(f"{repo_name}: {count} commit(s)")
+    
+    # Check GitHub commits (after local)
+    if config.get('github_username'):
+        output(f"\n🌐 GitHub: @{config['github_username']}")
+        error, commits = check_github_commits(config["github_username"], config.get("github_token"))
+        if error:
+            output(error)
+        elif not commits:
+            if local_commits_found:
+                output("ℹ️  No commits pushed to GitHub yet (local commits not yet pushed)")
+            else:
+                output("😢 No public commits found today.")
+            silent_output("No GitHub commits today")
+        else:
+            output("🟢 GitHub Commits:")
+            for repo, count in commits:
+                output(f"✅ {repo} — {count} commit(s)")
+                silent_output(f"{repo}: {count} commit(s)")
     
     # Display gamification results
     if gamification_data["xp_gained"] > 0 or gamification_data["commits_today"] > 0:
@@ -638,6 +644,18 @@ def main():
         
         if gamification_data["current_streak"] > 0:
             output(f"🔥 Current streak: {gamification_data['current_streak']} days")
+    
+    # Display Wisdom Drop quote at end
+    try:
+        if config.get('inspire', True):
+            wisdom = load_module("wisdom", os.path.join(script_dir, "wisdom.py"))
+            quote = wisdom.get_latest_wisdom_quote()
+            if quote:
+                emoji_mode = config.get('output', 'emoji') != 'plain'
+                formatted = wisdom.format_wisdom_quote(quote, emoji_mode=emoji_mode)
+                output("\n" + formatted)
+    except Exception:
+        pass
 
 if __name__ == "__main__":
     main()

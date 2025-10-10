@@ -553,7 +553,7 @@ def main():
         sys.exit(0)
 
     if args.version:
-        print("🚀 commit-checker v0.7.5.1")
+        print("🚀 commit-checker v0.7.6")
         print("💡 AI Commit Mentor with Wisdom Drop Integration")
         print("🔗 https://github.com/AmariahAK/commit-checker")
         sys.exit(0)

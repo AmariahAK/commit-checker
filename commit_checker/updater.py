@@ -7,7 +7,7 @@ import json
 import time
 import shutil
 
-LOCAL_VERSION = "0.7.5.1"
+LOCAL_VERSION = "0.7.6"
 REPO = "AmariahAK/commit-checker"
 UPDATE_MARKER_FILE = os.path.expanduser("~/.commit_checker_cache/pending_update")
 VERSION_CACHE_FILE = os.path.expanduser("~/.commit_checker_cache/version_cache.json")
