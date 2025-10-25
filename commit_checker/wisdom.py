@@ -199,7 +199,7 @@ def format_wisdom_quote(quote_data, emoji_mode=True):
     author = quote_data['author']
     category = quote_data['category']
     
-    return f"{icon} Wisdom Drop: \"{quote}\" — {author}, {category}"
+    return f"{icon} [{category}] Wisdom of the day: \"{quote}\" — {author}"
 
 def refresh_wisdom_quote():
     try:

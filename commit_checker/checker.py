@@ -167,7 +167,8 @@ def check_github_commits(username, token=None, use_cache=True):
     results = []
     for event in pushes_today:
         repo = event["repo"]["name"]
-        count = len(event["payload"]["commits"])
+        commits = event.get("payload", {}).get("commits", [])
+        count = len(commits) if commits else 1
         results.append((repo, count))
     
     if use_cache:
