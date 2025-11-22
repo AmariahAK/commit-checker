@@ -164,12 +164,20 @@ def check_github_commits(username, token=None, use_cache=True):
         e for e in events if e["type"] == "PushEvent" and e["created_at"].startswith(today)
     ]
 
-    results = []
+    # Group commits by repository to avoid duplicates
+    repo_commits = {}
     for event in pushes_today:
         repo = event["repo"]["name"]
         commits = event.get("payload", {}).get("commits", [])
         count = len(commits) if commits else 1
-        results.append((repo, count))
+        
+        if repo in repo_commits:
+            repo_commits[repo] += count
+        else:
+            repo_commits[repo] = count
+    
+    # Convert to list of tuples
+    results = [(repo, count) for repo, count in repo_commits.items()]
     
     if use_cache:
         save_github_cache(results)
