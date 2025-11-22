@@ -106,7 +106,7 @@ Automatically checks your daily commits — both **public (GitHub)** and **local
 
 ### 🛠️ Installation & Updates
 
-- ✅ **No pip installation issues** - works with any Python setup
+- ✅ **No complex setup** - works with any Python installation
 - ✅ **One-line installation** with curl/bash
 - ✅ **Intelligent Update System** with version caching
 - ✅ **PEP 668 Compliance** - handles externally managed environments
@@ -142,7 +142,7 @@ chmod +x /tmp/commit-checker.sh
 /tmp/commit-checker.sh
 ```
 
-### **Method 5: Traditional pip Install**
+### **Method 5: Git Clone Install**
 ```bash
 curl -s https://raw.githubusercontent.com/AmariahAK/commit-checker/main/install.sh | bash
 ```
@@ -253,7 +253,7 @@ commit-checker/
 ├── 📖 README.md                  # This file
 ├── 📦 setup.py                   # Python package setup (pip version)
 ├── 📋 requirements.txt           # Python dependencies
-├── 🚀 install.sh                 # Traditional pip installation
+├── 🚀 install.sh                 # Git clone installation
 ├── scripts/                      # Standalone versions
 │   ├── 🎯 install-standalone.sh  # Standalone installer
 │   └── 🚀 commit-checker-standalone.sh  # Standalone script
