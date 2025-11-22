@@ -315,16 +315,121 @@ def main():
         sys.exit(0)
     
     if args.setup_ai:
-        print("\\n🔧 AI Setup")
+        # Full AI setup functionality (same as main CLI)
+        print("\\n🤖 AI Model Setup")
         print("=" * 60)
-        print("For full AI setup, please use the pip installation:")
-        print("  pip install commit-checker")
+        print("Choose your AI model:")
         print()
-        print("Standalone mode includes:")
-        print("  ✓ TensorFlow (built-in)")
-        print("  ✓ Heuristic Coach (built-in)")
+        print("1. TensorFlow (Smart & Lightweight)")
+        print("   • Pattern-based ML, no dependencies")
+        print("   • Always available, fast, good quality")
         print()
-        print("For Ollama/TogetherAI, use pip version.")
+        print("2. Ollama (Flexible Local AI)")
+        print("   • Any Ollama model you have installed")
+        print("   • Requires: https://ollama.com/download")
+        print("   • Setup: ollama serve && ollama pull llama3")
+        print()
+        print("3. TogetherAI (Cloud API - Highest Quality)")
+        print("   • Best quality, requires API key")
+        print("   • Costs ~$0.0004 per suggestion")
+        print("   • Get key: https://api.together.xyz/signup")
+        print()
+        print("4. Heuristic Coach (Rule-Based)")
+        print("   • Always available")
+        print("   • No AI, just smart coaching")
+        print()
+        
+        try:
+            choice = input("Enter choice [1-4]: ").strip()
+            
+            # Load module for config management
+            config_mod = load_module("config_manager", os.path.join(script_dir, "config_manager.py"))
+            
+            if choice == "1":
+                config_mod.set_preference("default_ai_model", "tensorflow")
+                print("\\n✅ TensorFlow selected as default")
+                print("💡 Try: commit-checker --suggest")
+            
+            elif choice ==  "2":
+                ollama_mod = load_module("ollama_integration", os.path.join(script_dir, "ollama_integration.py"))
+                
+                if not ollama_mod.is_ollama_running():
+                    print("\\n⚠️  Ollama is not running")
+                    print("   1. Install: https://ollama.com/download")
+                    print("   2. Start: ollama serve")
+                    print("   3. Pull model: ollama pull llama3")
+                else:
+                    models = ollama_mod.get_installed_models()
+                    if not models:
+                        print("\\n⚠️  No Ollama models found")
+                        print("   Install a model: ollama pull llama3")
+                    else:
+                        print(f"\\n✅ Found {len(models)} Ollama model(s):")
+                        for i, model in enumerate(models, 1):
+                            print(f"   {i}. {model}")
+                        
+                        if len(models) == 1:
+                            selected = models[0]
+                            print(f"\\nAuto-selected: {selected}")
+                        else:
+                            model_choice = input(f"\\nChoose model [1-{len(models)}]: ").strip()
+                            try:
+                                idx = int(model_choice) - 1
+                                selected = models[idx]
+                            except:
+                                selected = ollama_mod.select_default_model(models)
+                                print(f"Using default: {selected}")
+                        
+                        config_mod.set_preference("default_ai_model", "ollama")
+                        config_mod.set_preference("ollama_model", selected)
+                        print(f"\\n✅ Ollama ({selected}) selected as default")
+            
+            elif choice == "3":
+                together_mod = load_module("together_ai", os.path.join(script_dir, "together_ai.py"))
+                
+                print("\\n📋 TogetherAI Setup")
+                print("1. Go to: https://api.together.xyz/signup")
+                print("2. Create account and get API key")
+                print("3. Browse models: https://api.together.xyz/models")
+                print()
+                
+                api_key = input("Enter your API key: ").strip()
+                if not api_key:
+                    print("❌ API key required")
+                    sys.exit(1)
+                
+                # Test API key
+                print("\\n🔍 Testing API key...")
+                result = together_mod.test_api_key(api_key)
+                if not result.get('valid'):
+                    print(f"❌ {result.get('error', 'Invalid API key')}")
+                    sys.exit(1)
+                
+                print("✅ API key valid!")
+                
+                # Get model preference
+                model = input("\\nEnter model ID (or press Enter for default): ").strip()
+                if not model:
+                    model = "meta-llama/Llama-3-70b-chat-hf"
+                
+                config_mod.set_api_key("together_ai", api_key)
+                config_mod.set_preference("default_ai_model", "together_ai")
+                config_mod.set_preference("selected_together_model", model)
+                
+                print(f"\\n✅ TogetherAI ({model}) configured!")
+            
+            elif choice == "4":
+                config_mod.set_preference("default_ai_model", "heuristic")
+                print("\\n✅ Heuristic Coach selected as default")
+            
+            else:
+                print("\\n❌ Invalid choice")
+                sys.exit(1)
+            
+            print("\\n💡 Test with: commit-checker --suggest")
+        except Exception as e:
+            print(f"\\n❌ Setup failed: {e}")
+        
         sys.exit(0)
     
     if args.dashboard:
