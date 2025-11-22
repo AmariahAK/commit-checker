@@ -500,8 +500,13 @@ def main():
     parser.add_argument("--dashboard", action="store_true", help="Show quick stats dashboard")
     parser.add_argument("--suggest", type=str, nargs='?', const='', help="Suggest a better commit message (optional draft message)")
     
-    # Wisdom Drop & AI features
+    # Wisdom Drop    # AI Commands
     parser.add_argument("--download-models", action="store_true", help="Download AI models for commit suggestions")
+    parser.add_argument("--ai-status", action="store_true", help="Check AI models availability and requirements")
+    parser.add_argument("--setup-ai", action="store_true", help="Setup TogetherAI API integration (flexible model selection)")
+    parser.add_argument("--ai-suggest", action="store_true", help="Get AI-powered commit message suggestions from staged changes")
+    parser.add_argument("--analyze-diff", action="store_true", help="Analyze current git diff with detailed breakdown")
+    parser.add_argument("--learn-style", action="store_true", help="Analyze your commit history to learn your style")
     parser.add_argument("--repair", action="store_true", help="Attempt to auto-repair local assets/config")
     parser.add_argument("--debug", action="store_true", help="Show debug information for troubleshooting")
     
@@ -553,8 +558,8 @@ def main():
         sys.exit(0)
 
     if args.version:
-        print("🚀 commit-checker v0.7.8")
-        print("💡 AI Commit Mentor with Wisdom Drop Integration")
+        print("🚀 commit-checker v0.8.5")
+        print("💡 AI Commit Mentor with Advanced AI Integration")
         print("🔗 https://github.com/AmariahAK/commit-checker")
         sys.exit(0)
 
@@ -567,10 +572,47 @@ def main():
     
     if args.download_models:
         try:
+            from .ai_handler import download_ai_models
             download_ai_models()
             print("✅ AI models downloaded.")
+        except ImportError:
+            try:
+                import importlib.util
+                current_dir = os.path.dirname(os.path.abspath(__file__))
+                spec = importlib.util.spec_from_file_location("ai_handler", os.path.join(current_dir, "ai_handler.py"))
+                ai_handler = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(ai_handler)
+                download_ai_models = ai_handler.download_ai_models
+                download_ai_models()
+                print("✅ AI models downloaded.")
+            except Exception as e:
+                print(f"⚠️  Could not download AI models: {e}")
         except Exception as e:
             print(f"⚠️  Could not download AI models: {e}")
+        sys.exit(0)
+    
+    if args.ai_status:
+        try:
+            from .ai_handler import get_ai_status
+        except ImportError:
+            try:
+                import importlib.util
+                current_dir = os.path.dirname(os.path.abspath(__file__))
+                spec = importlib.util.spec_from_file_location("ai_handler", os.path.join(current_dir, "ai_handler.py"))
+                ai_handler = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(ai_handler)
+                get_ai_status = ai_handler.get_ai_status
+            except Exception:
+                print("❌ Error loading AI status module")
+                sys.exit(1)
+        
+        status = get_ai_status()
+        print("\n🤖 AI Assistant Status")
+        print("=" * 50)
+        print(status['message'])
+        if status['suggestion']:
+            print(status['suggestion'])
+        print()
         sys.exit(0)
     
     if args.refresh_quote:

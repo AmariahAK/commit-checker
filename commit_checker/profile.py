@@ -27,15 +27,17 @@ def detect_tech_stack(repo_path: str) -> List[str]:
     """
     Detect tech stack based on project files (shallow scan, top 2 levels only)
     Returns list of 1-3 tech stack identifiers
+    Supports 30+ programming languages and frameworks
     """
-    # Expanded tech stack detection map
+    # Massively expanded tech stack detection map
     TECH_STACKS = {
-        "python": ["requirements.txt", "pyproject.toml", "setup.py"],
-        "django": ["manage.py", "settings.py"],  # Sub of python
-        "flask": ["app.py", "run.py"],  # Sub of python
+        # Existing languages
+        "python": ["requirements.txt", "pyproject.toml", "setup.py", "Pipfile"],
+        "django": ["manage.py", "settings.py"],
+        "flask": ["app.py", "run.py"],
         "javascript": ["package.json", "package-lock.json"],
-        "react": ["src/App.js"],  # Sub of javascript, checked via package.json
-        "typescript": ["tsconfig.json"],  # Sub of javascript
+        "react": ["src/App.js", "src/App.jsx"],
+        "typescript": ["tsconfig.json"],
         "rust": ["Cargo.toml", "Cargo.lock"],
         "java": ["pom.xml", "build.gradle"],
         "go": ["go.mod", "go.sum"],
@@ -46,7 +48,53 @@ def detect_tech_stack(repo_path: str) -> List[str]:
         "kotlin": ["build.gradle.kts"],
         "elixir": ["mix.exs"],
         "scala": ["build.sbt"],
-        "haskell": ["cabal.project", "package.yaml"]
+        "haskell": ["cabal.project", "package.yaml", "stack.yaml"],
+        
+        # NEW: C/C++ and related
+        "c": ["Makefile", "CMakeLists.txt", "configure.ac"],
+        "cpp": ["CMakeLists.txt", "meson.build"],
+        "objectivec": ["Podfile", "*.xcodeproj"],
+        
+        # NEW: Mobile and cross-platform
+        "dart": ["pubspec.yaml", "pubspec.lock"],  # Flutter/Dart
+        "flutter": ["pubspec.yaml"],
+        "reactnative": ["app.json", "metro.config.js"],
+        
+        # NEW: Data science and scientific computing
+        "r": ["DESCRIPTION", "NAMESPACE", ".Rproj"],
+        "julia": ["Project.toml", "Manifest.toml"],
+        "matlab": ["*.mlx", "*.mlapp"],
+        
+        # NEW: Scripting languages
+        "perl": ["cpanfile", "Makefile.PL"],
+        "lua": ["rockspec", "*.rockspec"],
+        "bash": ["*.sh", "configure"],
+        "powershell": ["*.ps1", "*.psm1"],
+        
+        # NEW: Systems and low-level
+        "zig": ["build.zig", "build.zig.zon"],
+        "nim": ["*.nimble", "config.nims"],
+        "crystal": ["shard.yml", "shard.lock"],
+        "v": ["v.mod"],
+        "fortran": ["*.f90", "*.f95", "Makefile"],
+        "assembly": ["*.asm", "*.s"],
+        
+        # NEW: Hardware description
+        "vhdl": ["*.vhdl", "*.vhd"],
+        "verilog": ["*.v", "*.sv"],
+        
+        # NEW: Blockchain and smart contracts
+        "solidity": ["hardhat.config.js", "truffle-config.js", "foundry.toml"],
+        "move": ["Move.toml"],  # Sui/Aptos
+        "cairo": ["Scarb.toml"],  # Starknet
+        
+        # NEW: Emerging languages
+        "gren": ["gren.json"],
+        "roc": ["*.roc"],
+        
+        # NEW: Markup and config
+        "latex": ["*.tex", "*.bib"],
+        "markdown": ["*.md", "*.markdown"],
     }
     
     stack = []
@@ -112,10 +160,52 @@ def detect_tech_stack(repo_path: str) -> List[str]:
     # Fallback: detect by file extensions if no manifest files found
     if not stack:
         ext_map = {
+            # Existing
             ".py": "python", ".js": "javascript", ".ts": "typescript",
             ".rs": "rust", ".java": "java", ".go": "go", ".cs": "csharp",
             ".rb": "ruby", ".php": "php", ".swift": "swift", ".kt": "kotlin",
-            ".ex": "elixir", ".exs": "elixir", ".scala": "scala", ".hs": "haskell"
+            ".ex": "elixir", ".exs": "elixir", ".scala": "scala", ".hs": "haskell",
+            
+            # NEW: C/C++ family
+            ".c": "c", ".h": "c",
+            ".cpp": "cpp", ".cc": "cpp", ".cxx": "cpp", ".hpp": "cpp",
+            ".m": "objectivec", ".mm": "objectivec",
+            
+            # NEW: Mobile/cross-platform
+            ".dart": "dart",
+            ".jsx": "react",
+            
+            # NEW: Data science
+            ".r": "r", ".R": "r",
+            ".jl": "julia",
+            ".m": "matlab",  # Conflicts with objc, check context
+            
+            # NEW: Scripting
+            ".pl": "perl", ".pm": "perl",
+            ".lua": "lua",
+            ".sh": "bash", ".bash": "bash", ".zsh": "bash",
+            ".ps1": "powershell", ".psm1": "powershell",
+            
+            # NEW: Systems/low-level
+            ".zig": "zig",
+            ".nim": "nim",
+            ".cr": "crystal",
+            ".v": "v",
+            ".f90": "fortran", ".f95": "fortran", ".f03": "fortran",
+            ".asm": "assembly", ".s": "assembly",
+            
+            # NEW: Hardware
+            ".vhd": "vhdl", ".vhdl": "vhdl",
+            ".v": "verilog", ".sv": "verilog",  # System Verilog
+            
+            # NEW: Blockchain
+            ".sol": "solidity",
+            ".move": "move",
+            ".cairo": "cairo",
+            
+            # NEW: Other
+            ".tex": "latex",
+            ".md": "markdown", ".markdown": "markdown",
         }
         
         for ext, count in file_extensions.items():

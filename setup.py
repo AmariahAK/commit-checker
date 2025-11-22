@@ -2,8 +2,8 @@ from setuptools import setup, find_packages
 
 setup(
     name="commit-checker",
-    version="0.7.8",
-    description="AI-powered commit mentor CLI tool with Wisdom Drop integration, contextual commit suggestions, smart profile system, advanced analytics, and TIL logging",
+    version="0.8.0",
+    description="AI-powered commit mentor CLI tool with Wisdom Drop integration, VS Code extension support, gamification, smart profile system, advanced analytics, and TIL logging - now faster and more streamlined",
     author="Amariah Kamau",
     packages=find_packages(),
     install_requires=["requests", "colorama", "packaging", "textual", "plotext", "markdown"],

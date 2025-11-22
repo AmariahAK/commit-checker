@@ -1,3 +1,12 @@
+"""AI-powered commit message assistant with model management.
+
+This module provides:
+- AI-based commit message suggestions using transformers (DialoGPT, DistilBERT)
+- Intelligent fallback to heuristic-based suggestions
+- Model download and management
+- Status checking for AI availability
+- Profile-aware coaching for personalized suggestions
+"""
 import os
 import json
 import re
@@ -20,6 +29,38 @@ class CommitAIModel:
             return os.path.exists(MODEL_DIR) and os.path.isdir(MODEL_DIR)
         except ImportError:
             return False
+    
+    def ai_status_message(self):
+        """Get a detailed status message about AI availability"""
+        try:
+            import transformers
+            import torch
+            transformers_available = True
+        except ImportError:
+            transformers_available = False
+        
+        if not transformers_available:
+            return {
+                'available': False,
+                'reason': 'missing_dependencies',
+                'message': '⚠️  AI models not available - transformers/torch not installed',
+                'suggestion': '💡 Install with: pip install transformers torch --break-system-packages\n   Or run: commit-checker --download-models (requires dependencies first)'
+            }
+        
+        if not os.path.exists(MODEL_DIR) or not os.path.isdir(MODEL_DIR):
+            return {
+                'available': False,
+                'reason': 'models_not_downloaded',
+                'message': '⚠️  AI models not downloaded',
+                'suggestion': '💡 Download models with: commit-checker --download-models'
+            }
+        
+        return {
+            'available': True,
+            'reason': 'ready',
+            'message': '✅ AI models available and ready',
+            'suggestion': ''
+        }
     
     def load_model(self, model_type='generator'):
         if self.model_loaded:
@@ -324,3 +365,7 @@ def download_ai_models(hf_token=None):
 
 def is_ai_available():
     return ai_model.is_model_available()
+
+def get_ai_status():
+    """Get detailed AI status information"""
+    return ai_model.ai_status_message()

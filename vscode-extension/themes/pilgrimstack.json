@@ -1,0 +1,40 @@
+{
+    "pilgrimstack": {
+        "name": "PilgrimStack Theme",
+        "colors": {
+            "background": {
+                "primary": "#0a0e1a",
+                "secondary": "#151b2e",
+                "tertiary": "#1f2638"
+            },
+            "text": {
+                "primary": "#e8edf4",
+                "secondary": "#a8b5d1",
+                "muted": "#6b7a99",
+                "accent": "#4fc3f7"
+            },
+            "accent": {
+                "primary": "#667eea",
+                "secondary": "#4fc3f7",
+                "success": "#48bb78",
+                "warning": "#f6ad55",
+                "error": "#fc8181",
+                "info": "#63b3ed"
+            },
+            "ui": {
+                "border": "#2d3549",
+                "hover": "#252d42",
+                "active": "#313a52",
+                "disabled": "#404c66"
+            },
+            "syntax": {
+                "keyword": "#bb86fc",
+                "string": "#98c379",
+                "function": "#61afef",
+                "variable": "#e06c75",
+                "comment": "#5c6370",
+                "constant": "#d19a66"
+            }
+        }
+    }
+}

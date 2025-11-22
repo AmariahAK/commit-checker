@@ -1,6 +1,9 @@
 # Commit Checker License
 
-**Copyright © 2025 Amariah Kamau. All Rights Reserved.**
+**Copyright © 2025 Amariah Kamau & Contributors. All Rights Reserved.**
+
+> **Built with Commit-Checker** - This software was made in commit-checker.  
+> All contributors to this project must be recognized and appreciated.
 
 ## Grant of License
 
@@ -28,20 +31,45 @@ Commercial use includes, but is not limited to:
 ### 3. Credit and Attribution for Derivatives
 Forks, derivatives, and modified versions must include **visible credit** in the following format:
 
-> **Built by Amariah Kamau** – https://github.com/AmariahAK
+> **Built with Commit-Checker** by Amariah Kamau & Contributors  
+> Original: https://github.com/AmariahAK/commit-checker
 
 This credit must appear in:
 - The README or main documentation
 - The application's help/about section (if applicable)
 - Any public-facing materials describing the software
 
-### 4. Contributions
-Contributions to the Software are **welcome and encouraged**, and must be submitted via pull requests to the official repository: https://github.com/AmariahAK/commit-checker
+**You may NOT**:
+- Claim this code as solely your own creation
+- Remove or obscure attribution to the original project
+- Remove or obscure recognition of contributors
+
+### 4. Contributions - Welcome & Deeply Appreciated
+Contributions to the Software are **very much welcome and deeply appreciated**!
+
+**We value every contribution**, whether it's:
+- Bug fixes and improvements
+- New features and enhancements
+- Documentation updates
+- Testing and feedback
+- Design and UX improvements
+
+**All contributors will be recognized** in:
+- The project's CONTRIBUTORS.md file
+- Release notes and changelogs
+- The project README
+
+**To contribute**:
+1. Fork the repository
+2. Make your changes
+3. Submit a pull request to: https://github.com/AmariahAK/commit-checker
+4. Await review and feedback
 
 By submitting a contribution, you agree that:
 - Your contribution will be licensed under the same terms as this Software
 - You have the right to submit the contribution
-- You grant Amariah Kamau a perpetual, worldwide, non-exclusive, royalty-free license to use your contribution
+- **You will be credited as a contributor** to the project
+- Your work becomes part of the collective effort, but your authorship is recognized
 
 ### 5. No Warranty
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT.

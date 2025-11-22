@@ -7,6 +7,14 @@ Automatically checks your daily commits — both **public (GitHub)** and **local
 
 ## ✨ Features
 
+### 🚀 **NEW: Performance & Stability (v0.8.0)**
+
+- ✅ **Optimized Git Operations** - Faster repository scanning and commit analysis
+- ✅ **Reduced Memory Footprint** - More efficient resource usage
+- ✅ **Improved Error Handling** - More robust and user-friendly error messages
+- ✅ **Enhanced Cross-Platform Compatibility** - Better support for various shell environments
+- ✅ **Refactored Core Logic** - Cleaner, more maintainable codebase
+
 ### 🧠 **NEW: Smart Profile System (v0.7.0)**
 
 - ✅ **AI-like Personalization** - Learns your coding patterns without ML dependencies
@@ -21,6 +29,26 @@ Automatically checks your daily commits — both **public (GitHub)** and **local
 ### 🎮 **Gamification & Developer Progress (v0.6.0)**
 
 - ✅ **Achievement System** - Unlock badges with ASCII art (Common to Mythic rarity)
+- ✅ **AI-powered commits** (`--suggest`) - Optional ML-based suggestions (DialoGPT, DistilBERT)
+- ✅ **GitHub streak tracker** - Never miss a day with automated checks
+- ✅ **Wisdom Drop Integration** - Daily coding wisdom from AmariahAK/wisdom-drop
+
+### 📱 **NEW: VS Code Extension (v0.8.0)**
+
+- ✅ **Status Bar Widget** - Shows streak, daily commits, and level at a glance
+- ✅ **Interactive Dashboard** - Beautiful webview with XP progress and achievements
+- ✅ **TIL Integration** - Add and search TIL entries from the editor
+- ✅ **Achievements Gallery** - View unlocked badges within VS Code
+- ✅ **Local & Secure** - Uses existing CLI installation, no separate login
+- ✅ **Auto-refresh** - Configurable stats updates (default: 5 minutes)
+
+### 💡 **Enhanced Wisdom Drop (v0.8.0)**
+
+- ✅ **Category Display** - Shows wisdom category (Developer, Samurai, Faith, etc.)
+- ✅ **Date Information** - Displays the specific date of each quote
+- ✅ **Daily Refresh** - Automatically updates quotes daily
+- ✅ **Smart Caching** - Efficient fetching with commit-based invalidation
+- ✅ **Example**: `💡 [Samurai Discipline / Modern Focus] Wisdom of the day (November 21 2025): "A samurai does not wait for the perfect wind..." — Inspired by the Way of the Samurai`
 - ✅ **XP & Level System** - Earn XP from commits, progress through 10 levels
 - ✅ **Streak Tracking** - Daily commit streaks with automatic achievement unlocking
 - ✅ **Visual Progress** - Unicode progress bars and level-up celebrations

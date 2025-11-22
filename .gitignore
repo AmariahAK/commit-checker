@@ -9,3 +9,5 @@ dist/
 build/
 .commit-checker/
 instructions.md
+vscode-extension/
+.gemini/
