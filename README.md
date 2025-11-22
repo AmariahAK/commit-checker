@@ -116,7 +116,7 @@ Automatically checks your daily commits — both **public (GitHub)** and **local
 
 ## 🚀 Quick Install (Recommended)
 
-> **v0.6.1 Update**: If you're experiencing uninstall issues or missing commands from v0.6.0, the latest version fixes all known issues including complete cleanup and standalone feature parity.
+> **v0.8.5 Update**: Advanced AI Integration with 4 model options (TensorFlow, Ollama, Together AI, Heuristic). All installation methods updated.
 
 ### **Method 1: Safe Installation** (Recommended - avoids encoding issues)
 ```bash
