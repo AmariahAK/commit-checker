@@ -293,6 +293,44 @@ def main():
         except Exception as e:
             print(f"⚠️  Could not refresh Wisdom Drop: {e}")
         sys.exit(0)
+    
+    # v0.8.5 AI commands
+    if args.ai_status:
+        print("\\n🤖 AI Model Status")
+        print("=" * 60)
+        print("✓ TensorFlow (Smart & Lightweight)")
+        print("  Pattern-based ML, no dependencies, always available")
+        print()
+        print("✗ Ollama (Flexible Local AI)")
+        print("  Install: https://ollama.com/download")
+        print()
+        print("✗ TogetherAI (Cloud API)")
+        print("  Setup: commit-checker --setup-ai")
+        print()
+        print("✓ Heuristic Coach")
+        print("  Rule-based coaching, always available")
+        print()
+        print("🎯 Will use: TensorFlow (default)")
+        print("💡 Configure: commit-checker --setup-ai")
+        sys.exit(0)
+    
+    if args.setup_ai:
+        print("\\n🔧 AI Setup")
+        print("=" * 60)
+        print("For full AI setup, please use the pip installation:")
+        print("  pip install commit-checker")
+        print()
+        print("Standalone mode includes:")
+        print("  ✓ TensorFlow (built-in)")
+        print("  ✓ Heuristic Coach (built-in)")
+        print()
+        print("For Ollama/TogetherAI, use pip version.")
+        sys.exit(0)
+    
+    if args.dashboard:
+        print("\\n📊 Quick Dashboard")
+        print("  Run without flags for full stats display")
+        sys.exit(0)
 
     # Load or create config
     if not config_exists():

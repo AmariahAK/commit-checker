@@ -13,6 +13,7 @@ import re
 from datetime import datetime
 
 WISDOM_DROP_URL = "https://raw.githubusercontent.com/AmariahAK/wisdom-drop/main/README.md"
+WISDOM_DROP_API_URL = "https://api.github.com/repos/AmariahAK/wisdom-drop/commits?path=README.md"
 GITHUB_API_URL = "https://api.github.com/repos/AmariahAK/wisdom-drop/commits"
 CACHE_DIR = os.path.expanduser("~/.commit_checker_cache")
 QUOTE_CACHE_FILE = os.path.join(CACHE_DIR, "quote.json")
