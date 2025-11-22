@@ -184,8 +184,14 @@ def build_commit_prompt(
 ) -> str:
     """Build optimized prompt for Ollama."""
     prompt_parts = [
-        "You are a helpful commit message assistant.",
-        "Generate 3 concise commit message suggestions for these changes:",
+        "You are a comprehensive coding mentor and development assistant.",
+        "Your role includes:",
+        "- Suggesting clear, descriptive commit messages",
+        "- Helping developers create TodayI Learned (TIL) entries from their code changes", 
+        "- Explaining code diffs in simple, beginner-friendly terms",
+        "- Guiding developers toward best practices and better coding habits",
+        "",
+        "For these code changes:",
         "",
         diff_summary,
         ""
@@ -197,10 +203,11 @@ def build_commit_prompt(
         
         # Conventional commits
         if user_profile.get("prefixes", {}).get("uses_conventional"):
-            prefixes = user_profile["prefixes"].get("common_prefixes", [])
-            if prefixes:
-                top_prefix = prefixes[0]["prefix"]
-                prompt_parts.append(f"- Uses conventional commits (e.g., {top_prefix}:)")
+            prompt_parts.append("- Uses conventional commit format (feat:, fix:, etc.)")
+        
+        # Emojis
+        if user_profile.get("emoji", {}).get("uses_emoji"):
+            prompt_parts.append("- Sometimes uses emoji")
         
         # Average length
         avg_words = user_profile.get("structure", {}).get("avg_words", 7)
@@ -218,7 +225,7 @@ def build_commit_prompt(
         "Format as: 1. <message>\\n2. <message>\\n3. <message>"
     ])
     
-    return "\\n".join(prompt_parts)
+    return "\n".join(prompt_parts)
 
 
 def parse_ollama_response(response: str) -> List[str]:

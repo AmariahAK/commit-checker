@@ -435,6 +435,84 @@ def main():
         
         sys.exit(0)
     
+    if args.suggest is not None:
+        # AI commit message suggestions
+        print("\n🤖 AI Commit Message Suggestions")
+        print("=" * 60)
+        
+        # Define script directory
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        
+        # Get current repo
+        current_dir = os.getcwd()
+        repo_path = current_dir
+        while repo_path and repo_path != '/':
+            if os.path.exists(os.path.join(repo_path, '.git')):
+                break
+            repo_path = os.path.dirname(repo_path)
+        else:
+            repo_path = current_dir
+        
+        try:
+            # Load AI modules
+            ai_handler_mod = load_module("ai_handler", os.path.join(script_dir, "ai_handler.py"))
+            config_mod = load_module("config_manager", os.path.join(script_dir, "config_manager.py"))
+            context_mod = load_module("context", os.path.join(script_dir, "context.py"))
+            
+            # Get diff
+            try:
+                diff = subprocess.check_output(
+                    ["git", "--git-dir", os.path.join(repo_path, ".git"),
+                     "--work-tree", repo_path, "diff", "--cached"],
+                    stderr=subprocess.DEVNULL
+                ).decode("utf-8")
+                
+                if not diff:
+                    # Try unstaged if no staged changes
+                    diff = subprocess.check_output(
+                        ["git", "--git-dir", os.path.join(repo_path, ".git"),
+                         "--work-tree", repo_path, "diff"],
+                        stderr=subprocess.DEVNULL
+                    ).decode("utf-8")
+            except:
+                diff = ""
+            
+            if not diff:
+                print("❌ No changes detected")
+                print("💡 Make some changes and stage them with: git add <files>")
+                sys.exit(1)
+            
+            draft_message = (args.suggest or "").strip()
+            
+            # Get context
+            try:
+                context_info = context_mod.extract_commit_context(repo_path)
+            except:
+                context_info = None
+            
+            # Get suggestions
+            print("\n🔍 Analyzing changes...")
+            suggestions_list = ai_handler_mod.get_ai_suggestion(
+                draft_message or "",
+                context=context_info,
+                profile=None,
+                use_model=True
+            )
+            
+            if suggestions_list:
+                print("\n✨ Suggestions:\n")
+                for i, suggestion in enumerate(suggestions_list, 1):
+                    print(f"{i}. {suggestion}")
+                print(f"\n💡 Use these suggestions to craft your commit message!")
+            else:
+                print("❌ Could not generate suggestions")
+                
+        except Exception as e:
+            print(f"❌ Error: {e}")
+            print("\n💡 Make sure AI is configured: commit-checker --setup-ai")
+        
+        sys.exit(0)
+    
     if args.dashboard:
         print("\n📊 Quick Dashboard")
         print("  Run without flags for full stats display")

@@ -173,7 +173,14 @@ def build_commit_prompt(
 ) -> str:
     """Build optimized prompt for commit message generation."""
     prompt_parts = [
-        "Generate 3 commit message suggestions for these changes:",
+        "You are a comprehensive coding mentor and development assistant.",
+        "Your role includes:",
+        "- Crafting clear, descriptive commit messages",
+        "- Helping create Today I Learned (TIL) entries from code changes",
+        "- Explaining code diffs in simple, educational terms",
+        "- Guiding developers toward professional coding practices",
+        "",
+        "For these code changes:",
         "",
         diff_summary,
         ""
@@ -185,20 +192,16 @@ def build_commit_prompt(
         
         # Conventional commits
         if user_style_profile.get("prefixes", {}).get("uses_conventional"):
-            prefixes = user_style_profile["prefixes"].get("common_prefixes", [])
-            if prefixes:
-                top_prefix = prefixes[0]["prefix"]
-                prompt_parts.append(f"- Uses conventional commits (common prefix: {top_prefix}:)")
+            prompt_parts.append("- Prefers conventional commit format")
         
-        # Tone
-        tone = user_style_profile.get("tone", "imperative")
-        prompt_parts.append(f"- Style: {tone}")
+        # Emojis
+        if user_style_profile.get("emoji", {}).get("uses_emoji"):
+            prompt_parts.append("- Occasionally uses emoji")
         
         # Length
         avg_words = user_style_profile.get("structure", {}).get("avg_words", 7)
         prompt_parts.append(f"- Usually ~{avg_words} words")
         
-        # Emoji
         if user_style_profile.get("emoji", {}).get("uses_emoji"):
             prompt_parts.append("- Sometimes uses emoji")
         
