@@ -253,6 +253,13 @@ def main():
     parser.add_argument("--til-from-diff", action="store_true", help="Create TIL from latest commit")
     parser.add_argument("--list-templates", action="store_true", help="List available TIL templates")
     
+    # v0.8.5 - AI & Dashboard features
+    parser.add_argument("--dashboard", action="store_true", help="Show quick stats dashboard")
+    parser.add_argument("--refresh-quote", action="store_true", help="Refresh Wisdom Drop quote")
+    parser.add_argument("--ai-status", action="store_true", help="Check AI models availability")
+    parser.add_argument("--setup-ai", action="store_true", help="Setup AI model (TensorFlow/Ollama/Together AI)")
+    parser.add_argument("--suggest", type=str, nargs='?', const='', help="AI commit message suggestions")
+    
     args = parser.parse_args()
 
     if args.uninstall:
@@ -278,6 +285,13 @@ def main():
     
     if args.update:
         manual_update_check()
+        sys.exit(0)
+    
+    if args.refresh_quote:
+        try:
+            wisdom.refresh_wisdom_quote()
+        except Exception as e:
+            print(f"⚠️  Could not refresh Wisdom Drop: {e}")
         sys.exit(0)
 
     # Load or create config
