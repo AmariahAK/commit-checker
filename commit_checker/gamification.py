@@ -733,7 +733,15 @@ def check_special_achievements(local_paths, config):
             achievements_unlocked.append("midnight_coder")
     
     # Check for polyglot achievement (5+ languages)
-    from commit_checker.analytics import get_language_stats
+    try:
+        from commit_checker.analytics import get_language_stats
+    except ImportError:
+        # Standalone mode
+        import sys
+        import os
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        sys.path.insert(0, script_dir)
+        from analytics import get_language_stats
     
     language_stats = get_language_stats(local_paths)
     if len(language_stats) >= 5:
