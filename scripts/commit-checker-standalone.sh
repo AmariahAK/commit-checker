@@ -316,7 +316,7 @@ def main():
     
     if args.setup_ai:
         # Full AI setup functionality (same as main CLI)
-        print("\\n🤖 AI Model Setup")
+        print("\n🤖 AI Model Setup")
         print("=" * 60)
         print("Choose your AI model:")
         print()
@@ -342,37 +342,40 @@ def main():
         try:
             choice = input("Enter choice [1-4]: ").strip()
             
+            # Get script directory
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            
             # Load module for config management
             config_mod = load_module("config_manager", os.path.join(script_dir, "config_manager.py"))
             
             if choice == "1":
                 config_mod.set_preference("default_ai_model", "tensorflow")
-                print("\\n✅ TensorFlow selected as default")
+                print("\n✅ TensorFlow selected as default")
                 print("💡 Try: commit-checker --suggest")
             
             elif choice ==  "2":
                 ollama_mod = load_module("ollama_integration", os.path.join(script_dir, "ollama_integration.py"))
                 
                 if not ollama_mod.is_ollama_running():
-                    print("\\n⚠️  Ollama is not running")
+                    print("\n⚠️  Ollama is not running")
                     print("   1. Install: https://ollama.com/download")
                     print("   2. Start: ollama serve")
                     print("   3. Pull model: ollama pull llama3")
                 else:
                     models = ollama_mod.get_installed_models()
                     if not models:
-                        print("\\n⚠️  No Ollama models found")
+                        print("\n⚠️  No Ollama models found")
                         print("   Install a model: ollama pull llama3")
                     else:
-                        print(f"\\n✅ Found {len(models)} Ollama model(s):")
+                        print(f"\n✅ Found {len(models)} Ollama model(s):")
                         for i, model in enumerate(models, 1):
                             print(f"   {i}. {model}")
                         
                         if len(models) == 1:
                             selected = models[0]
-                            print(f"\\nAuto-selected: {selected}")
+                            print(f"\nAuto-selected: {selected}")
                         else:
-                            model_choice = input(f"\\nChoose model [1-{len(models)}]: ").strip()
+                            model_choice = input(f"\nChoose model [1-{len(models)}]: ").strip()
                             try:
                                 idx = int(model_choice) - 1
                                 selected = models[idx]
@@ -382,12 +385,12 @@ def main():
                         
                         config_mod.set_preference("default_ai_model", "ollama")
                         config_mod.set_preference("ollama_model", selected)
-                        print(f"\\n✅ Ollama ({selected}) selected as default")
+                        print(f"\n✅ Ollama ({selected}) selected as default")
             
             elif choice == "3":
                 together_mod = load_module("together_ai", os.path.join(script_dir, "together_ai.py"))
                 
-                print("\\n📋 TogetherAI Setup")
+                print("\n📋 TogetherAI Setup")
                 print("1. Go to: https://api.together.xyz/signup")
                 print("2. Create account and get API key")
                 print("3. Browse models: https://api.together.xyz/models")
@@ -399,7 +402,7 @@ def main():
                     sys.exit(1)
                 
                 # Test API key
-                print("\\n🔍 Testing API key...")
+                print("\n🔍 Testing API key...")
                 result = together_mod.test_api_key(api_key)
                 if not result.get('valid'):
                     print(f"❌ {result.get('error', 'Invalid API key')}")
@@ -408,7 +411,7 @@ def main():
                 print("✅ API key valid!")
                 
                 # Get model preference
-                model = input("\\nEnter model ID (or press Enter for default): ").strip()
+                model = input("\nEnter model ID (or press Enter for default): ").strip()
                 if not model:
                     model = "meta-llama/Llama-3-70b-chat-hf"
                 
@@ -416,24 +419,24 @@ def main():
                 config_mod.set_preference("default_ai_model", "together_ai")
                 config_mod.set_preference("selected_together_model", model)
                 
-                print(f"\\n✅ TogetherAI ({model}) configured!")
+                print(f"\n✅ TogetherAI ({model}) configured!")
             
             elif choice == "4":
                 config_mod.set_preference("default_ai_model", "heuristic")
-                print("\\n✅ Heuristic Coach selected as default")
+                print("\n✅ Heuristic Coach selected as default")
             
             else:
-                print("\\n❌ Invalid choice")
+                print("\n❌ Invalid choice")
                 sys.exit(1)
             
-            print("\\n💡 Test with: commit-checker --suggest")
+            print("\n💡 Test with: commit-checker --suggest")
         except Exception as e:
-            print(f"\\n❌ Setup failed: {e}")
+            print(f"\n❌ Setup failed: {e}")
         
         sys.exit(0)
     
     if args.dashboard:
-        print("\\n📊 Quick Dashboard")
+        print("\n📊 Quick Dashboard")
         print("  Run without flags for full stats display")
         sys.exit(0)
 
