@@ -349,7 +349,7 @@ def main():
             config_mod = load_module("config_manager", os.path.join(script_dir, "config_manager.py"))
             
             if choice == "1":
-                config_mod.set_preference("default_ai_model", "tensorflow")
+                config_mod.update_preference("default_ai_model", "tensorflow")
                 print("\n✅ TensorFlow selected as default")
                 print("💡 Try: commit-checker --suggest")
             
@@ -383,8 +383,8 @@ def main():
                                 selected = ollama_mod.select_default_model(models)
                                 print(f"Using default: {selected}")
                         
-                        config_mod.set_preference("default_ai_model", "ollama")
-                        config_mod.set_preference("ollama_model", selected)
+                        config_mod.update_preference("default_ai_model", "ollama")
+                        config_mod.update_preference("ollama_model", selected)
                         print(f"\n✅ Ollama ({selected}) selected as default")
             
             elif choice == "3":
@@ -416,13 +416,13 @@ def main():
                     model = "meta-llama/Llama-3-70b-chat-hf"
                 
                 config_mod.set_api_key("together_ai", api_key)
-                config_mod.set_preference("default_ai_model", "together_ai")
-                config_mod.set_preference("selected_together_model", model)
+                config_mod.update_preference("default_ai_model", "together_ai")
+                config_mod.update_preference("selected_together_model", model)
                 
                 print(f"\n✅ TogetherAI ({model}) configured!")
             
             elif choice == "4":
-                config_mod.set_preference("default_ai_model", "heuristic")
+                config_mod.update_preference("default_ai_model", "heuristic")
                 print("\n✅ Heuristic Coach selected as default")
             
             else:
