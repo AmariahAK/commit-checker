@@ -39,6 +39,12 @@ download_if_needed "bootstrap.py" "$REPO_URL/commit_checker/bootstrap.py"
 download_if_needed "wisdom.py" "$REPO_URL/commit_checker/wisdom.py"
 download_if_needed "context.py" "$REPO_URL/commit_checker/context.py"
 download_if_needed "ai_handler.py" "$REPO_URL/commit_checker/ai_handler.py"
+download_if_needed "ai_models.py" "$REPO_URL/commit_checker/ai_models.py"
+download_if_needed "ollama_integration.py" "$REPO_URL/commit_checker/ollama_integration.py"
+download_if_needed "tensorflow_model.py" "$REPO_URL/commit_checker/tensorflow_model.py"
+download_if_needed "together_ai.py" "$REPO_URL/commit_checker/together_ai.py"
+download_if_needed "config_manager.py" "$REPO_URL/commit_checker/config_manager.py"
+download_if_needed "diff_analyzer.py" "$REPO_URL/commit_checker/diff_analyzer.py"
 
 # Create a simple Python runner
 cat > "$SCRIPT_DIR/run_commit_checker.py" << 'EOF'
@@ -265,8 +271,8 @@ def main():
         sys.exit(0)
     
     if args.version:
-        print("🚀 commit-checker v0.7.8")
-        print("💡 AI Commit Mentor with Wisdom Drop Integration")
+        print("🚀 commit-checker v0.8.5")
+        print("💡 AI Commit Mentor with Advanced AI Integration")
         print("🔗 https://github.com/AmariahAK/commit-checker")
         sys.exit(0)
     
