@@ -233,21 +233,211 @@ ACHIEVEMENTS = {
             "╚███╔███╔╝╚███╔███╔╝",
             " ╚══╝╚══╝  ╚══╝╚══╝ "
         ]
+    },
+    # TIL Achievements (v0.8.5)
+    "first_til": {
+        "name": "Knowledge Seeker",
+        "description": "Created your first TIL entry",
+        "rarity": "common",
+        "emoji": "🟩",
+        "ascii": [
+           " ████████╗██╗██╗     ",
+            "╚══██╔══╝██║██║     ",
+            "   ██║   ██║██║     ",
+            "   ██║   ██║██║     ",
+            "   ██║   ██║███████╗",
+            "   ╚═╝   ╚═╝╚══════╝"
+        ]
+    },
+    "til_10": {
+        "name": "Learning Habit",
+        "description": "Created 10 TIL entries",
+        "rarity": "common",
+        "emoji": "🟩",
+        "ascii": [
+            " ██╗ ██████╗ ",
+            "███║██╔═████╗",
+            "╚██║██║██╔██║",
+            " ██║████╔╝██║",
+            " ██║╚██████╔╝",
+            " ╚═╝ ╚═════╝ "
+        ]
+    },
+    "til_100": {
+        "name": "Knowledge Vault",
+        "description": "Created 100 TIL entries",
+        "rarity": "rare",
+        "emoji": "🟦",
+        "ascii": [
+            "  ██╗ ██████╗  ██████╗ ",
+            " ███║██╔═████╗██╔═████╗",
+            " ╚██║██║██╔██║██║██╔██║",
+            "  ██║████╔╝██║████╔╝██║",
+            "  ██║╚██████╔╝╚██████╔╝",
+            "  ╚═╝ ╚═════╝  ╚═════╝ "
+        ]
+    },
+    "til_1000": {
+        "name": "Encyclopedia",
+        "description": "Created 1,000 TIL entries",
+        "rarity": "epic",
+        "emoji": "🟨",
+        "ascii": [
+            "  ██╗ ██████╗  ██████╗  ██████╗ ",
+            " ███║██╔═████╗██╔═████╗██╔═████╗",
+            " ╚██║██║██╔██║██║██╔██║██║██╔██║",
+            "  ██║████╔╝██║████╔╝██║████╔╝██║",
+            "  ██║╚██████╔╝╚██████╔╝╚██████╔╝",
+            "  ╚═╝ ╚═════╝  ╚═════╝  ╚═════╝ "
+        ]
+    },
+    "til_10000": {
+        "name": "Omniscient Mind",
+        "description": "Created 10,000 TIL entries",
+        "rarity": "mythic",
+        "emoji": "🟪",
+        "ascii": [
+            " ██╗ ██████╗  ██████╗  ██████╗  ██████╗ ",
+            "███║██╔═████╗██╔═████╗██╔═████╗██╔═████╗",
+            "╚██║██║██╔██║██║██╔██║██║██╔██║██║██╔██║",
+            " ██║████╔╝██║████╔╝██║████╔╝██║████╔╝██║",
+            " ██║╚██████╔╝╚██████╔╝╚██████╔╝╚██████╔╝",
+            " ╚═╝ ╚═════╝  ╚═════╝  ╚═════╝  ╚═════╝ "
+        ]
+    },
+    # AI Assistant Achievements (v0.8.5)
+    "ai_curious": {
+        "name": "AI Curious",
+        "description": "Used AI suggestions for the first time",
+        "rarity": "common",
+        "emoji": "🟩",
+        "ascii": [
+            " █████╗ ██╗",
+            "██╔══██╗██║",
+            "███████║██║",
+            "██╔══██║██║",
+            "██║  ██║██║",
+            "╚═╝  ╚═╝╚═╝"
+        ]
+    },
+    "ai_student": {
+        "name": "AI Student",
+        "description": "Used AI suggestions 10 times",
+        "rarity": "common",
+        "emoji": "🟩",
+        "ascii": [
+            " █████╗ ██╗ ██╗ ██████╗ ",
+            "██╔══██╗██║███║██╔═████╗",
+            "███████║██║╚██║██║██╔██║",
+            "██╔══██║██║ ██║████╔╝██║",
+            "██║  ██║██║ ██║╚██████╔╝",
+            "╚═╝  ╚═╝╚═╝ ╚═╝ ╚═════╝ "
+        ]
+    },
+    "ai_apprentice": {
+        "name": "AI Apprentice",
+        "description": "Used AI suggestions 50 times",
+        "rarity": "rare",
+        "emoji": "🟦",
+        "ascii": [
+            " █████╗ ██╗███████╗ ██████╗ ",
+            "██╔══██╗██║██╔════╝██╔═████╗",
+            "███████║██║███████╗██║██╔██║",
+            "██╔══██║██║╚════██║████╔╝██║",
+            "██║  ██║██║███████║╚██████╔╝",
+            "╚═╝  ╚═╝╚═╝╚══════╝ ╚═════╝ "
+        ]
+    },
+    "ai_master": {
+        "name": "AI Master",
+        "description": "Used AI suggestions 100 times",
+        "rarity": "epic",
+        "emoji": "🟨",
+        "ascii": [
+            " █████╗ ██╗  ██╗ ██████╗  ██████╗ ",
+            "██╔══██╗██║ ███║██╔═████╗██╔═████╗",
+            "███████║██║ ╚██║██║██╔██║██║██╔██║",
+            "██╔══██║██║  ██║████╔╝██║████╔╝██║",
+            "██║  ██║██║  ██║╚██████╔╝╚██████╔╝",
+            "╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝  ╚═════╝ "
+        ]
+    },
+    "ai_polyglot": {
+        "name": "AI Polyglot",
+        "description": "Used all 4 AI models (TensorFlow, Ollama, TogetherAI, Heuristic)",
+        "rarity": "legendary",
+        "emoji": "🟥",
+        "ascii": [
+            " █████╗ ██╗██╗  ██╗",
+            "██╔══██╗██║██║  ██║",
+            "███████║██║███████║",
+            "██╔══██║██║╚════██║",
+            "██║  ██║██║     ██║",
+            "╚═╝  ╚═╝╚═╝     ╚═╝"
+        ]
+    },
+    # Enhanced Commit Achievements (v0.8.5)
+    "commits_500": {
+        "name": "Commit Champion",
+        "description": "Made 500 total commits",
+        "rarity": "epic",
+        "emoji": "🟨",
+        "ascii": [
+            "███████╗ ██████╗  ██████╗ ",
+            "██╔════╝██╔═████╗██╔═████╗",
+            "███████╗██║██╔██║██║██╔██║",
+            "╚════██║████╔╝██║████╔╝██║",
+            "███████║╚██████╔╝╚██████╔╝",
+            "╚══════╝ ╚═════╝  ╚═════╝ "
+        ]
+    },
+    "commits_5000": {
+        "name": "Commit Legend",
+        "description": "Made 5,000 total commits",
+        "rarity": "legendary",
+        "emoji": "🟥",
+        "ascii": [
+            "███████╗ ██████╗  ██████╗  ██████╗ ",
+            "██╔════╝██╔═████╗██╔═████╗██╔═████╗",
+            "███████╗██║██╔██║██║██╔██║██║██╔██║",
+            "╚════██║████╔╝██║████╔╝██║████╔╝██║",
+            "███████║╚██████╔╝╚██████╔╝╚██████╔╝",
+            "╚══════╝ ╚═════╝  ╚═════╝  ╚═════╝ "
+        ]
+    },
+    "commits_10000": {
+        "name": "Commit Deity",
+        "description": "Made 10,000 total commits",
+        "rarity": "mythic",
+        "emoji": "🟪",
+        "ascii": [
+            " ██╗ ██████╗  ██████╗  ██████╗  ██████╗ ",
+            "███║██╔═████╗██╔═████╗██╔═████╗██╔═████╗",
+            "╚██║██║██╔██║██║██╔██║██║██╔██║██║██╔██║",
+            " ██║████╔╝██║████╔╝██║████╔╝██║████╔╝██║",
+            " ██║╚██████╔╝╚██████╔╝╚██████╔╝╚██████╔╝",
+            " ╚═╝ ╚═════╝  ╚═════╝  ╚═════╝  ╚═════╝ "
+        ]
     }
 }
 
-# XP Level thresholds - Exponential curve (Soulslike progression)
+# XP Level thresholds - MUCH HARDER (v0.8.5 overhaul)
 XP_LEVELS = [
     {"level": 1, "threshold": 0, "title": "Novice Coder"},
-    {"level": 2, "threshold": 50, "title": "Code Apprentice"},
-    {"level": 3, "threshold": 150, "title": "Script Warrior"},
-    {"level": 4, "threshold": 350, "title": "Function Master"},
-    {"level": 5, "threshold": 700, "title": "Class Hero"},
-    {"level": 6, "threshold": 1300, "title": "Module Sage"},
-    {"level": 7, "threshold": 2500, "title": "Framework Knight"},
-    {"level": 8, "threshold": 4500, "title": "Architecture Lord"},
-    {"level": 9, "threshold": 8000, "title": "Code Overlord"},
-    {"level": 10, "threshold": 15000, "title": "Programming Deity"}
+    {"level": 2, "threshold": 100, "title": "Code Apprentice"},
+    {"level": 3, "threshold": 300, "title": "Script Warrior"},
+    {"level": 4, "threshold": 700, "title": "Function Master"},
+    {"level": 5, "threshold": 1500, "title": "Class Hero"},
+    {"level": 6, "threshold": 3000, "title": "Module Sage"},
+    {"level": 7, "threshold": 6000, "title": "Framework Knight"},
+    {"level": 8, "threshold": 12000, "title": "Architecture Lord"},
+    {"level": 9, "threshold": 24000, "title": "Code Overlord"},
+    {"level": 10, "threshold": 48000, "title": "Programming Deity"},
+    {"level": 11, "threshold": 75000, "title": "Code Legend"},
+    {"level": 12, "threshold": 110000, "title": "Digital Sage"},
+    {"level": 13, "threshold": 160000, "title": "Binary Master"},
+    {"level": 14, "threshold": 230000, "title": "Algorithm God"},
+    {"level": 15, "threshold": 320000, "title": "Omniscient Developer"}
 ]
 
 
@@ -409,6 +599,15 @@ def get_weekend_bonus_xp():
     return 0
 
 
+def get_streak_bonus_xp(streak_days):
+    """Calculate bonus XP based on current streak (v0.8.5)
+    
+    Small buff: 0.1 XP per day of streak
+    Encourages consistency without overwhelming progression
+    """
+    return streak_days * 0.1
+
+
 def add_xp(amount, commit_info=None):
     """Add XP and check for level up"""
     xp_data = load_xp_data()
@@ -487,9 +686,21 @@ def check_total_commits_achievements(total_commits):
         if unlock_achievement("hundred_commits"):
             achievements_unlocked.append("hundred_commits")
     
+    if total_commits >= 500:
+        if unlock_achievement("commits_500"):
+            achievements_unlocked.append("commits_500")
+    
     if total_commits >= 1000:
         if unlock_achievement("thousand_commits"):
             achievements_unlocked.append("thousand_commits")
+    
+    if total_commits >= 5000:
+        if unlock_achievement("commits_5000"):
+            achievements_unlocked.append("commits_5000")
+    
+    if total_commits >= 10000:
+        if unlock_achievement("commits_10000"):
+            achievements_unlocked.append("commits_10000")
     
     return achievements_unlocked
 
@@ -522,13 +733,7 @@ def check_special_achievements(local_paths, config):
             achievements_unlocked.append("midnight_coder")
     
     # Check for polyglot achievement (5+ languages)
-    try:
-        # Try relative import first (package mode)
-        from .analytics import get_language_stats
-    except ImportError:
-        # Fallback to direct import (standalone mode)
-        import analytics
-        get_language_stats = analytics.get_language_stats
+    from commit_checker.analytics import get_language_stats
     
     language_stats = get_language_stats(local_paths)
     if len(language_stats) >= 5:
@@ -541,6 +746,67 @@ def check_special_achievements(local_paths, config):
         # This is a simplified check - in a real implementation, 
         # you'd track weekend commits over time
         pass
+    
+    return achievements_unlocked
+
+
+def check_til_achievements(til_count):
+    """Check achievements based on TIL entries (v0.8.5)"""
+    achievements_unlocked = []
+    
+    if til_count >= 1:
+        if unlock_achievement("first_til"):
+            achievements_unlocked.append("first_til")
+    
+    if til_count >= 10:
+        if unlock_achievement("til_10"):
+            achievements_unlocked.append("til_10")
+    
+    if til_count >= 100:
+        if unlock_achievement("til_100"):
+            achievements_unlocked.append("til_100")
+    
+    if til_count >= 1000:
+        if unlock_achievement("til_1000"):
+            achievements_unlocked.append("til_1000")
+    
+    if til_count >= 10000:
+        if unlock_achievement("til_10000"):
+            achievements_unlocked.append("til_10000")
+    
+    return achievements_unlocked
+
+
+def check_ai_achievements(ai_usage_count, models_used_set):
+    """Check achievements based on AI assistant usage (v0.8.5)
+    
+    Args:
+        ai_usage_count: Total number of AI suggestions used
+        models_used_set: Set of model names used (e.g., {'tensorflow', 'ollama'})
+    """
+    achievements_unlocked = []
+    
+    if ai_usage_count >= 1:
+        if unlock_achievement("ai_curious"):
+            achievements_unlocked.append("ai_curious")
+    
+    if ai_usage_count >= 10:
+        if unlock_achievement("ai_student"):
+            achievements_unlocked.append("ai_student")
+    
+    if ai_usage_count >= 50:
+        if unlock_achievement("ai_apprentice"):
+            achievements_unlocked.append("ai_apprentice")
+    
+    if ai_usage_count >= 100:
+        if unlock_achievement("ai_master"):
+            achievements_unlocked.append("ai_master")
+    
+    # Check if all 4 AI models have been used
+    all_models = {'tensorflow', 'ollama', 'together_ai', 'heuristic'}
+    if models_used_set >= all_models:  # Superset check
+        if unlock_achievement("ai_polyglot"):
+            achievements_unlocked.append("ai_polyglot")
     
     return achievements_unlocked
 
