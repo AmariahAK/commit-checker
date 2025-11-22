@@ -1,172 +1,19 @@
-"""AI-powered commit message assistant with model management.
+"""AI-powered commit message assistant - Heuristic coaching only.
 
-This module provides:
-- AI-based commit message suggestions using transformers (DialoGPT, DistilBERT)
-- Intelligent fallback to heuristic-based suggestions
-- Model download and management
-- Status checking for AI availability
-- Profile-aware coaching for personalized suggestions
+This module provides intelligent commit message coaching without requiring
+heavy ML models. For AI-powered suggestions, see ai_models.py.
 """
 import os
-import json
 import re
+from typing import Dict, List, Optional, Any
 
-MODEL_DIR = os.path.expanduser("~/.commit-checker/models")
-PROFILE_FILE = os.path.expanduser("~/.commit-checker/profile.json")
 
-class CommitAIModel:
-    def __init__(self):
-        self.model = None
-        self.tokenizer = None
-        self.generator = None
-        self.use_model = False
-        self.model_loaded = False
-    
-    def is_model_available(self):
-        try:
-            import transformers
-            import torch
-            return os.path.exists(MODEL_DIR) and os.path.isdir(MODEL_DIR)
-        except ImportError:
-            return False
-    
-    def ai_status_message(self):
-        """Get a detailed status message about AI availability"""
-        try:
-            import transformers
-            import torch
-            transformers_available = True
-        except ImportError:
-            transformers_available = False
-        
-        if not transformers_available:
-            return {
-                'available': False,
-                'reason': 'missing_dependencies',
-                'message': '⚠️  AI models not available - transformers/torch not installed',
-                'suggestion': '💡 Install with: pip install transformers torch --break-system-packages\n   Or run: commit-checker --download-models (requires dependencies first)'
-            }
-        
-        if not os.path.exists(MODEL_DIR) or not os.path.isdir(MODEL_DIR):
-            return {
-                'available': False,
-                'reason': 'models_not_downloaded',
-                'message': '⚠️  AI models not downloaded',
-                'suggestion': '💡 Download models with: commit-checker --download-models'
-            }
-        
-        return {
-            'available': True,
-            'reason': 'ready',
-            'message': '✅ AI models available and ready',
-            'suggestion': ''
-        }
-    
-    def load_model(self, model_type='generator'):
-        if self.model_loaded:
-            return True
-        
-        try:
-            import transformers
-            import torch
-            
-            if model_type == 'generator':
-                model_path = os.path.join(MODEL_DIR, 'dialogpt')
-                if os.path.exists(model_path):
-                    self.tokenizer = transformers.AutoTokenizer.from_pretrained(model_path)
-                    self.generator = transformers.AutoModelForCausalLM.from_pretrained(model_path)
-                    self.model_loaded = True
-                    return True
-            elif model_type == 'analyzer':
-                model_path = os.path.join(MODEL_DIR, 'distilbert')
-                if os.path.exists(model_path):
-                    self.tokenizer = transformers.AutoTokenizer.from_pretrained(model_path)
-                    self.model = transformers.AutoModelForSequenceClassification.from_pretrained(model_path)
-                    self.model_loaded = True
-                    return True
-            
-            return False
-        except Exception:
-            return False
-    
-    def download_models(self, hf_token=None):
-        try:
-            import transformers
-            import torch
-            
-            os.makedirs(MODEL_DIR, exist_ok=True)
-            
-            print("📥 Downloading commit suggestion models...")
-            print("   This is a one-time download (~300MB)")
-            
-            try:
-                print("   - Downloading DialoGPT-small for generation...")
-                dialogpt_path = os.path.join(MODEL_DIR, 'dialogpt')
-                tokenizer = transformers.AutoTokenizer.from_pretrained('microsoft/DialoGPT-small')
-                model = transformers.AutoModelForCausalLM.from_pretrained('microsoft/DialoGPT-small')
-                tokenizer.save_pretrained(dialogpt_path)
-                model.save_pretrained(dialogpt_path)
-                print("   ✅ DialoGPT downloaded")
-            except Exception as e:
-                print(f"   ⚠️  DialoGPT download failed: {e}")
-            
-            try:
-                print("   - Downloading DistilBERT for analysis...")
-                distilbert_path = os.path.join(MODEL_DIR, 'distilbert')
-                tokenizer = transformers.AutoTokenizer.from_pretrained('distilbert-base-uncased')
-                model = transformers.AutoModel.from_pretrained('distilbert-base-uncased')
-                tokenizer.save_pretrained(distilbert_path)
-                model.save_pretrained(distilbert_path)
-                print("   ✅ DistilBERT downloaded")
-            except Exception as e:
-                print(f"   ⚠️  DistilBERT download failed: {e}")
-            
-            print("✅ Model download complete!")
-            print("💡 You can now use AI-powered commit suggestions")
-            
-            if hf_token:
-                print("🗑️  Deleting HuggingFace token (not needed after download)...")
-            
-            return True
-        
-        except ImportError:
-            print("❌ transformers or torch not installed")
-            print("   Install with: pip install transformers torch --break-system-packages")
-            return False
-        except Exception as e:
-            print(f"❌ Model download failed: {e}")
-            return False
+class CommitCoach:
+    """Heuristic-based commit message coaching."""
     
     def suggest_commit(self, draft_message, context=None, profile=None):
-        if self.use_model and self.load_model('generator'):
-            return self._suggest_with_model(draft_message, context, profile)
-        else:
-            return self._suggest_with_heuristics(draft_message, context, profile)
-    
-    def _suggest_with_model(self, draft, context, profile):
-        try:
-            prompt = f"Improve this commit message: {draft}"
-            if context:
-                prompt += f"\nContext: {context.get('summary', '')}"
-            if profile and profile.get('tone'):
-                prompt += f"\nTone: {profile['tone']}"
-            
-            inputs = self.tokenizer.encode(prompt + self.tokenizer.eos_token, return_tensors='pt')
-            outputs = self.generator.generate(
-                inputs,
-                max_length=100,
-                pad_token_id=self.tokenizer.eos_token_id,
-                temperature=0.7,
-                top_k=50,
-                top_p=0.9,
-                do_sample=True
-            )
-            
-            suggestion = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
-            return self._clean_suggestion(suggestion)
-        
-        except Exception:
-            return self._suggest_with_heuristics(draft, context, profile)
+        """Generate suggestions using rule-based heuristics."""
+        return self._suggest_with_heuristics(draft_message, context, profile)
     
     def _suggest_with_heuristics(self, draft, context, profile):
         suggestions = []
@@ -183,6 +30,7 @@ class CommitAIModel:
         draft_lower = draft.lower().strip()
         words = draft.split()
         
+        # Check for vague words
         vague_words = ['stuff', 'things', 'updates', 'changes', 'fixes', 'misc', 'various']
         has_vague = any(word in draft_lower for word in vague_words)
         
@@ -193,12 +41,14 @@ class CommitAIModel:
             else:
                 suggestions.append(f"💡 Be more specific - what exactly changed?")
         
+        # Check length
         if len(words) < 3 and not has_vague:
             if context and context.get('summary'):
                 suggestions.append(f"💡 Add detail: {self._enhance_short_message(draft, context)}")
             else:
                 suggestions.append("💡 Consider adding more detail to your message")
         
+        # Conventional commits
         if context:
             commit_type = self._infer_commit_type(context)
             scope = self._infer_scope(context)
@@ -211,23 +61,28 @@ class CommitAIModel:
                 else:
                     suggestions.append(f"💡 Conventional format: {commit_type}: {draft}")
         
+        # Action verb check
         action_verbs = ['add', 'fix', 'update', 'remove', 'refactor', 'docs', 'test', 'feat', 'chore', 'improve', 'optimize']
         if not any(draft_lower.startswith(verb) for verb in action_verbs):
             verb_suggestion = self._suggest_verb_from_context(context) if context else 'add'
             suggestions.append(f"💡 Start with action verb (e.g., '{verb_suggestion}: {draft}')")
         
+        # Length check
         if len(draft) > 72:
             shortened = draft[:69] + '...'
             suggestions.append(f"💡 Shorten to <72 chars: '{shortened}'")
         
+        # Capitalization
         if draft[0].isupper() and ':' not in draft[:10] and not draft_lower.startswith('feat'):
             suggestions.append("💡 Use lowercase for non-conventional commits or add type prefix")
         
+        # Profile comparison
         if profile:
             avg_len = profile.get('avg_length', 50)
             if len(draft) < avg_len * 0.5:
                 suggestions.append(f"💡 Your commits are usually {int(avg_len)} chars - add more context?")
         
+        # Typo detection
         typos = {
             'teh': 'the', 'adn': 'and', 'recieve': 'receive', 
             'seperate': 'separate', 'definately': 'definitely'
@@ -334,13 +189,8 @@ class CommitAIModel:
         
         return 'update implementation'
     
-    def _clean_suggestion(self, text):
-        text = re.sub(r'\s+', ' ', text).strip()
-        if len(text) > 72:
-            text = text[:69] + '...'
-        return text
-    
     def adapt_from_history(self, profile):
+        """Adapt suggestions based on user's commit history."""
         if not profile or not profile.get('commit_history'):
             return
         
@@ -354,18 +204,27 @@ class CommitAIModel:
         
         return profile
 
-ai_model = CommitAIModel()
 
-def get_ai_suggestion(draft, context=None, profile=None, use_model=False):
-    ai_model.use_model = use_model
-    return ai_model.suggest_commit(draft, context, profile)
+# Global instance
+coach = CommitCoach()
 
-def download_ai_models(hf_token=None):
-    return ai_model.download_models(hf_token)
+
+# Convenience functions for CLI compatibility
+def get_ai_suggestion(draft, context=None, profile=None, **kwargs):
+    """Get commit message suggestions (heuristic-based)."""
+    return coach.suggest_commit(draft, context, profile)
+
 
 def is_ai_available():
-    return ai_model.is_model_available()
+    """Heuristic coach is always available."""
+    return True
+
 
 def get_ai_status():
-    """Get detailed AI status information"""
-    return ai_model.ai_status_message()
+    """Get AI status information."""
+    return {
+        'available': True,
+        'reason': 'heuristic',
+        'message': '✅ Heuristic coach available',
+        'suggestion': '💡 For AI-powered suggestions, use: commit-checker --setup-ai'
+    }
