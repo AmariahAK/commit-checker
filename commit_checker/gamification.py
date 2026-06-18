@@ -437,7 +437,92 @@ XP_LEVELS = [
     {"level": 12, "threshold": 110000, "title": "Digital Sage"},
     {"level": 13, "threshold": 160000, "title": "Binary Master"},
     {"level": 14, "threshold": 230000, "title": "Algorithm God"},
-    {"level": 15, "threshold": 320000, "title": "Omniscient Developer"}
+    {"level": 15, "threshold": 320000, "title": "Omniscient Developer"},
+    {"level": 16, "threshold": 430000, "title": "Omniscient Developer"},
+    {"level": 17, "threshold": 560000, "title": "Omniscient Developer"},
+    {"level": 18, "threshold": 710000, "title": "Omniscient Developer"},
+    {"level": 19, "threshold": 880000, "title": "Omniscient Developer"},
+    {"level": 20, "threshold": 1070000, "title": "Omniscient Developer"},
+    {"level": 21, "threshold": 1280000, "title": "Omniscient Developer"},
+    {"level": 22, "threshold": 1510000, "title": "Omniscient Developer"},
+    {"level": 23, "threshold": 1760000, "title": "Omniscient Developer"},
+    {"level": 24, "threshold": 2030000, "title": "Omniscient Developer"},
+    {"level": 25, "threshold": 2320000, "title": "Omniscient Developer"},
+    {"level": 26, "threshold": 2630000, "title": "Omniscient Developer"},
+    {"level": 27, "threshold": 2960000, "title": "Omniscient Developer"},
+    {"level": 28, "threshold": 3310000, "title": "Omniscient Developer"},
+    {"level": 29, "threshold": 3680000, "title": "Omniscient Developer"},
+    {"level": 30, "threshold": 4070000, "title": "Legendary Programmer"},
+    {"level": 31, "threshold": 4470000, "title": "Legendary Programmer"},
+    {"level": 32, "threshold": 4920000, "title": "Legendary Programmer"},
+    {"level": 33, "threshold": 5420000, "title": "Legendary Programmer"},
+    {"level": 34, "threshold": 5970000, "title": "Legendary Programmer"},
+    {"level": 35, "threshold": 6570000, "title": "Legendary Programmer"},
+    {"level": 36, "threshold": 7220000, "title": "Legendary Programmer"},
+    {"level": 37, "threshold": 7920000, "title": "Legendary Programmer"},
+    {"level": 38, "threshold": 8670000, "title": "Legendary Programmer"},
+    {"level": 39, "threshold": 9470000, "title": "Legendary Programmer"},
+    {"level": 40, "threshold": 10320000, "title": "Legendary Programmer"},
+    {"level": 41, "threshold": 11220000, "title": "Legendary Programmer"},
+    {"level": 42, "threshold": 12170000, "title": "Legendary Programmer"},
+    {"level": 43, "threshold": 13170000, "title": "Legendary Programmer"},
+    {"level": 44, "threshold": 14220000, "title": "Legendary Programmer"},
+    {"level": 45, "threshold": 15320000, "title": "Legendary Programmer"},
+    {"level": 46, "threshold": 16470000, "title": "Legendary Programmer"},
+    {"level": 47, "threshold": 17670000, "title": "Legendary Programmer"},
+    {"level": 48, "threshold": 18920000, "title": "Legendary Programmer"},
+    {"level": 49, "threshold": 20220000, "title": "Legendary Programmer"},
+    {"level": 50, "threshold": 21570000, "title": "Master Coder"},
+    {"level": 51, "threshold": 23000000, "title": "Master Coder"},
+    {"level": 52, "threshold": 24500000, "title": "Master Coder"},
+    {"level": 53, "threshold": 26100000, "title": "Master Coder"},
+    {"level": 54, "threshold": 27800000, "title": "Master Coder"},
+    {"level": 55, "threshold": 29600000, "title": "Master Coder"},
+    {"level": 56, "threshold": 31500000, "title": "Master Coder"},
+    {"level": 57, "threshold": 33500000, "title": "Master Coder"},
+    {"level": 58, "threshold": 35600000, "title": "Master Coder"},
+    {"level": 59, "threshold": 37800000, "title": "Master Coder"},
+    {"level": 60, "threshold": 40100000, "title": "Master Coder"},
+    {"level": 61, "threshold": 42500000, "title": "Master Coder"},
+    {"level": 62, "threshold": 45000000, "title": "Master Coder"},
+    {"level": 63, "threshold": 47600000, "title": "Master Coder"},
+    {"level": 64, "threshold": 50300000, "title": "Master Coder"},
+    {"level": 65, "threshold": 53100000, "title": "Master Coder"},
+    {"level": 66, "threshold": 56000000, "title": "Master Coder"},
+    {"level": 67, "threshold": 59000000, "title": "Master Coder"},
+    {"level": 68, "threshold": 62100000, "title": "Master Coder"},
+    {"level": 69, "threshold": 65300000, "title": "Master Coder"},
+    {"level": 70, "threshold": 68600000, "title": "Master Coder"},
+    {"level": 71, "threshold": 72000000, "title": "Master Coder"},
+    {"level": 72, "threshold": 75500000, "title": "Master Coder"},
+    {"level": 73, "threshold": 79100000, "title": "Master Coder"},
+    {"level": 74, "threshold": 82800000, "title": "Master Coder"},
+    {"level": 75, "threshold": 86600000, "title": "Master Coder"},
+    {"level": 76, "threshold": 90500000, "title": "Master Coder"},
+    {"level": 77, "threshold": 94500000, "title": "Master Coder"},
+    {"level": 78, "threshold": 98600000, "title": "Master Coder"},
+    {"level": 79, "threshold": 102800000, "title": "Master Coder"},
+    {"level": 80, "threshold": 107100000, "title": "Master Coder"},
+    {"level": 81, "threshold": 111500000, "title": "Master Coder"},
+    {"level": 82, "threshold": 116000000, "title": "Master Coder"},
+    {"level": 83, "threshold": 120600000, "title": "Master Coder"},
+    {"level": 84, "threshold": 125300000, "title": "Master Coder"},
+    {"level": 85, "threshold": 130100000, "title": "Master Coder"},
+    {"level": 86, "threshold": 135000000, "title": "Master Coder"},
+    {"level": 87, "threshold": 140000000, "title": "Master Coder"},
+    {"level": 88, "threshold": 145100000, "title": "Master Coder"},
+    {"level": 89, "threshold": 150300000, "title": "Master Coder"},
+    {"level": 90, "threshold": 155600000, "title": "Master Coder"},
+    {"level": 91, "threshold": 161000000, "title": "Master Coder"},
+    {"level": 92, "threshold": 166500000, "title": "Master Coder"},
+    {"level": 93, "threshold": 172100000, "title": "Master Coder"},
+    {"level": 94, "threshold": 177800000, "title": "Master Coder"},
+    {"level": 95, "threshold": 183600000, "title": "Master Coder"},
+    {"level": 96, "threshold": 189500000, "title": "Master Coder"},
+    {"level": 97, "threshold": 195500000, "title": "Master Coder"},
+    {"level": 98, "threshold": 201600000, "title": "Master Coder"},
+    {"level": 99, "threshold": 207800000, "title": "Master Coder"},
+    {"level": 100, "threshold": 214100000, "title": "Diamond Scripter"},
 ]
 
 
@@ -524,7 +609,7 @@ def calculate_commit_xp(repo_path, commit_hash, config):
         xp_weights = config.get('xp_weights', {
             'insertions': 0.5,  # Reduced from 1.0
             'deletions': 0.3,   # Reduced from 0.5
-            'files': 2.0,       # Bonus for touching multiple files
+            'files': 5.0,       # Bonus for touching multiple files
             'projects': {}
         })
         
@@ -532,13 +617,13 @@ def calculate_commit_xp(repo_path, commit_hash, config):
         base_xp = (
             insertions * xp_weights.get('insertions', 0.5) + 
             deletions * xp_weights.get('deletions', 0.3) +
-            files_changed * xp_weights.get('files', 2.0)
+            files_changed * xp_weights.get('files', 5.0)
         )
         
         # Apply logarithmic scaling to prevent inflation
         if base_xp > 0:
             import math
-            scaled_xp = math.log(1 + base_xp) * 8  # Logarithmic scaling
+            scaled_xp = math.log(1 + base_xp) * (1 + math.log(1 + base_xp) / 5) * 10  # Logarithmic scaling
         else:
             scaled_xp = get_base_commit_xp(config)
         
@@ -551,7 +636,7 @@ def calculate_commit_xp(repo_path, commit_hash, config):
         final_xp = int(scaled_xp * project_multiplier)
         
         # Cap maximum XP per commit based on level
-        max_xp = min(50, 15 + (current_level * 3))
+        max_xp = 100 + (current_level * 10)
         final_xp = min(final_xp, max_xp)
         
         # Check for big diff achievement
